@@ -1,0 +1,11 @@
+{
+  "nombre": "Nombre Apellido",
+  "activo": true,
+  "vence": "",
+  "colorAcento": "#3B82F6",
+  "moneda": "PYG",
+  "locale": "es-PY",
+  "logoTexto": "",
+  "producto": "",
+  "contacto": ""
+}
