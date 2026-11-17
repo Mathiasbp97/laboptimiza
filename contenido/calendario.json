@@ -1,14 +1,58 @@
 {
-  "ig_user_id": "17841455874113136",
-  "media_base": "https://raw.githubusercontent.com/Mathiasbp97/laboptimiza/main/media/",
-  "publicaciones": [
-    {"id": "reel-pago-minimo", "cuando": "2026-11-17T12:00-03:00", "tipo": "REELS", "archivo": "reel-pago-minimo.mp4",
-     "texto": "¿Pagás solo el mínimo de la tarjeta? 😬\n\nCon una deuda de Gs. 5.000.000 al 3% mensual:\n🔴 Pagando Gs. 200.000 → 47 meses y Gs. 4,4 M de intereses\n🟢 Pagando Gs. 500.000 → 13 meses y te ahorrás Gs. 3,3 M\n\nEn la app lo simulás con TU deuda en segundos 📱\n\n👉 Escribinos DEMO y probala gratis (link en el perfil)\n\n#tarjetadecredito #finanzaspersonales #deudas #paraguay #asuncion #educacionfinanciera"},
-    {"id": "c2-regla-50-30-20", "cuando": "2026-11-17T19:00-03:00", "tipo": "CAROUSEL", "carpeta": "C2-regla-50-30-20", "imagenes": 5,
-     "texto": "La regla 50/30/20 en guaraníes 💸👇\n\n50% necesidades · 30% gustos · 20% ahorro y deudas\n\nCon un sueldo de Gs. 5.000.000:\n🔵 Gs. 2.500.000 para lo necesario\n🟠 Gs. 1.500.000 para tus gustos\n🟢 Gs. 1.000.000 para ahorrar o pagar deudas\n\nGuardalo para fin de mes 📌\n\n👉 La app te avisa antes de pasarte del techo. Escribinos DEMO (link en el perfil)\n\n#presupuesto #ahorro #finanzaspersonales #paraguay #sueldo #organizacion"},
-    {"id": "c3-ahorro-500mil", "cuando": "2026-11-18T12:00-03:00", "tipo": "CAROUSEL", "carpeta": "C3-ahorro-500mil", "imagenes": 5,
-     "texto": "¿Cuánto juntás ahorrando Gs. 500.000 al mes? 🤔👇\n\nCon un rendimiento de ejemplo del 6% anual:\n1 año → Gs. 6,1 M\n5 años → Gs. 34,9 M\n10 años → Gs. 82 M (¡Gs. 22 M solo de intereses!)\n\nLo importante es empezar 💪 Guardalo y mandáselo a quien lo necesite.\n\n👉 Creá tus metas en la app. Escribinos DEMO (link en el perfil)\n\n#ahorro #interescompuesto #finanzaspersonales #paraguay #metas #inversion"},
-    {"id": "c1-pago-minimo", "cuando": "2026-11-18T19:00-03:00", "tipo": "CAROUSEL", "carpeta": "C1-pago-minimo", "imagenes": 6,
-     "texto": "La trampa del pago mínimo 💳👇\n\nHicimos las cuentas con una deuda de Gs. 5.000.000: pagando lo mínimo terminás pagando casi el doble.\n\nDeslizá y mirá cuánto te ahorrás con solo Gs. 300.000 más por mes 👉\n\nGuardalo 📌 y compartilo con alguien que esté pagando tarjeta.\n\n👉 Simulalo con tu deuda en la app. Escribinos DEMO (link en el perfil)\n\n#tarjetadecredito #deudas #finanzaspersonales #paraguay #asuncion #ahorro"}
-  ]
+ "ig_user_id": "17841455874113136",
+ "media_base": "https://raw.githubusercontent.com/Mathiasbp97/laboptimiza/main/media/",
+ "publicaciones": [
+  {
+   "id": "reel-tarjetas",
+   "cuando": "2026-11-17T12:00-03:00",
+   "tipo": "REELS",
+   "archivo": "reel-tarjetas.mp4",
+   "texto": "¿Cuánto debés en TODAS tus tarjetas? Sin mirar el extracto 👀\n\nVisa, Master, la tarjeta de la tienda, el préstamo… sumado da miedo. Y cada una cobra interés todos los meses.\n\nMis Finanzas te muestra el total al instante, desde el celular.\n\n👉 Escribime DEMO y te paso la demo gratis\n\n#tarjetadecredito #deudas #finanzaspersonales #paraguay #asuncion"
+  },
+  {
+   "id": "c2-regla-50-30-20",
+   "cuando": "2026-11-17T19:00-03:00",
+   "tipo": "CAROUSEL",
+   "carpeta": "C2-regla-50-30-20",
+   "imagenes": 5,
+   "texto": "La regla 50/30/20 en guaraníes 💸👇\n\n50% necesidades · 30% gustos · 20% ahorro y deudas\n\nCon un sueldo de Gs. 5.000.000:\n🔵 Gs. 2.500.000 para lo necesario\n🟠 Gs. 1.500.000 para tus gustos\n🟢 Gs. 1.000.000 para ahorrar o pagar deudas\n\nGuardalo para fin de mes 📌\n\n👉 La app te avisa antes de pasarte del techo. Escribinos DEMO (link en el perfil)\n\n#presupuesto #ahorro #finanzaspersonales #paraguay #sueldo #organizacion"
+  },
+  {
+   "id": "reel-quincena",
+   "cuando": "2026-11-18T12:00-03:00",
+   "tipo": "REELS",
+   "archivo": "reel-quincena.mp4",
+   "texto": "Cobré el 5. El 15 ya no tenía nada. ¿Te pasa? 🫠\n\nNingún gasto fue grande: alquiler, súper, combustible, delivery, suscripciones… Todos juntos, sí.\n\nCon Mis Finanzas anotás cada gasto en 5 segundos y ves adónde se va tu plata.\n\n👉 Escribime DEMO y probala gratis\n\n#sueldo #ahorro #finanzaspersonales #paraguay #findemes"
+  },
+  {
+   "id": "c1-pago-minimo",
+   "cuando": "2026-11-18T19:00-03:00",
+   "tipo": "CAROUSEL",
+   "carpeta": "C1-pago-minimo",
+   "imagenes": 6,
+   "texto": "La trampa del pago mínimo 💳👇\n\nHicimos las cuentas con una deuda de Gs. 5.000.000: pagando lo mínimo terminás pagando casi el doble.\n\nDeslizá y mirá cuánto te ahorrás con solo Gs. 300.000 más por mes 👉\n\nGuardalo 📌 y compartilo con alguien que esté pagando tarjeta.\n\n👉 Simulalo con tu deuda en la app. Escribinos DEMO (link en el perfil)\n\n#tarjetadecredito #deudas #finanzaspersonales #paraguay #asuncion #ahorro"
+  },
+  {
+   "id": "reel-amigo",
+   "cuando": "2026-11-19T12:00-03:00",
+   "tipo": "REELS",
+   "archivo": "reel-amigo.mp4",
+   "texto": "Etiquetá a ese amigo que a mitad de mes ya está en cero 😂👇\n\nNo es que gane poco: no sabe en qué se le va. Pasale esto.\n\nMis Finanzas: anotás lo que gastás y te muestra todo ordenado.\n\n👉 Escribime DEMO y te paso la demo\n\n#amigos #plata #finanzaspersonales #paraguay #humor"
+  },
+  {
+   "id": "reel-pago-minimo",
+   "cuando": "2026-11-19T19:00-03:00",
+   "tipo": "REELS",
+   "archivo": "reel-pago-minimo.mp4",
+   "texto": "¿Pagás solo el mínimo de la tarjeta? 😬\n\nCon una deuda de Gs. 5.000.000 al 3% mensual:\n🔴 Pagando Gs. 200.000 → 47 meses y Gs. 4,4 M de intereses\n🟢 Pagando Gs. 500.000 → 13 meses y te ahorrás Gs. 3,3 M\n\nEn la app lo simulás con TU deuda en segundos 📱\n\n👉 Escribinos DEMO y probala gratis (link en el perfil)\n\n#tarjetadecredito #finanzaspersonales #deudas #paraguay #asuncion #educacionfinanciera"
+  },
+  {
+   "id": "c3-ahorro-500mil",
+   "cuando": "2026-11-20T12:00-03:00",
+   "tipo": "CAROUSEL",
+   "carpeta": "C3-ahorro-500mil",
+   "imagenes": 5,
+   "texto": "¿Cuánto juntás ahorrando Gs. 500.000 al mes? 🤔👇\n\nCon un rendimiento de ejemplo del 6% anual:\n1 año → Gs. 6,1 M\n5 años → Gs. 34,9 M\n10 años → Gs. 82 M (¡Gs. 22 M solo de intereses!)\n\nLo importante es empezar 💪 Guardalo y mandáselo a quien lo necesite.\n\n👉 Creá tus metas en la app. Escribinos DEMO (link en el perfil)\n\n#ahorro #interescompuesto #finanzaspersonales #paraguay #metas #inversion"
+  }
+ ]
 }
