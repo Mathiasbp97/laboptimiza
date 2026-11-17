@@ -134,6 +134,11 @@ input:focus,select:focus{border-color:var(--ac)}
 #ambThumbs button:hover{opacity:1}
 #ambThumbs button span{position:absolute;left:6px;bottom:4px;font-size:10.5px;font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.9)}
 #dragHint{position:absolute;right:22px;bottom:128px;font-size:12px;color:var(--mu);padding:8px 12px;border-radius:999px;z-index:5}
+#tx{position:fixed;inset:0;z-index:25;background:#000;opacity:0;pointer-events:none;transition:opacity .35s}
+#tx.on{opacity:1}
+#tx video{width:100%;height:100%;object-fit:cover;display:block}
+.view.zoomout{transition:transform .8s cubic-bezier(.6,0,.3,1),opacity .8s;opacity:0!important}
+.view.zoomin{transform:scale(1.08);opacity:0}
 #toasts{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 .toast{padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;animation:ti .2s ease-out}
 @keyframes ti{from{opacity:0;transform:translateY(-6px)}}
@@ -209,6 +214,7 @@ input:focus,select:focus{border-color:var(--ac)}
  <div class="glass" id="ambThumbs"></div>
 </section>
 
+<div id="tx"><video id="txv" muted playsinline preload="auto"></video></div>
 <div id="toasts"></div>
 <div class="modal" id="menu"><div class="mbox glass">
  <h3>Opciones</h3>
@@ -262,7 +268,9 @@ const CONFIG = {
     suite: { n: "Suite principal", img: "img/suite.jpg" }, bano: { n: "Baño principal", img: "img/bano.jpg" } },
   amenities: [ { n: "Azotea con piscina", img: "img/rooftop.jpg" }, { n: "Lobby doble altura", img: "img/lobby.jpg" } ],
   cotizador: { anticipo: 30, cuotasPct: 40, cuotas: 30, tasaAnual: 9, anios: 15 },
-  planilla:  { url: "", cadaSeg: 60 }
+  planilla:  { url: "", cadaSeg: 60 },
+  // Vuelos de cámara entre niveles (videos de 5 s). Si falta uno, se usa un acercamiento animado.
+  transiciones: { 'torre>planta': 'vid/torre-planta.mp4', 'planta>living': 'vid/planta-living.mp4', 'living>cocina': 'vid/living-cocina.mp4' }
 };
 // ===================================================================
 
@@ -317,7 +325,7 @@ function renderTorre() {
     return `<div class="frow" data-p="${p}"><b class="num">Piso ${String(p).padStart(2, '0')}</b><span style="display:flex;align-items:center;gap:10px"><span class="dots">${D.map(u => `<i style="background:${COL[u.estado]}"></i>`).join('')}</span><span class="num" style="color:var(--mu);font-size:12px;width:16px;text-align:right">${nd}</span></span></div>`; }).join('');
   $$('#floors .fl, #floorList .frow').forEach(el => {
     el.onmouseenter = e => hiFloor(+el.dataset.p, e); el.onmouseleave = () => hiFloor(null);
-    el.onclick = () => irPiso(+el.dataset.p);
+    el.onclick = () => irPiso(+el.dataset.p, true);
   });
   $('#torreSvg').onmousemove = e => { if (UI.hf) tipAt(e); };
 }
@@ -332,7 +340,8 @@ function tipAt(e) { const t = $('#floorTip'); t.style.left = Math.min(innerWidth
 function fitTorre() { const mob = innerWidth / innerHeight < .9; $('#torreSvg').setAttribute('viewBox', mob ? `${T.xL - 40} -70 ${T.xR - T.xL + 80} 1800` : '0 0 2688 1520'); }
 
 // ---------- 2. PLANTA ----------
-function irPiso(p) { UI.piso = Math.max(1, Math.min(T.pisos, p)); UI.sel = null; hiFloor(null); setView('planta'); renderPlanta(); }
+function irPiso(p, anim) { const go = () => { UI.piso = Math.max(1, Math.min(T.pisos, p)); UI.sel = null; hiFloor(null); setView('planta'); renderPlanta(); };
+  if (anim && UI.view === 'torre') { const kt = T.pisos - p; const [x, y] = ptOnSvg('#torreSvg', (T.xC + T.xR) / 2, (yL(kt) + yR(kt + 1)) / 2); transicion('torre>planta', '#vTorre', x, y, go); } else go(); }
 function renderPlanta() {
   const p = UI.piso, D = del(p);
   $('#fNum').textContent = String(p).padStart(2, '0'); $('#fUp').disabled = p >= T.pisos; $('#fDn').disabled = p <= 1;
@@ -346,7 +355,7 @@ function renderPlanta() {
   $$('#units .ug').forEach(g => g.onclick = () => selUnidad(g.dataset.id));
   const u = D.find(x => x.id === UI.sel);
   $('#pins').innerHTML = u ? Object.entries(CONFIG.planta.unidades[u.letra].pins).map(([k, [x, y]]) => `<g class="pin" data-k="${k}" transform="translate(${x} ${y})"><circle class="o" r="28" fill="${CONFIG.colorAcento}"/><circle r="28" fill="${CONFIG.colorAcento}" stroke="#fff" stroke-width="6"/><circle r="9" fill="#fff"/><g transform="translate(0 -64)"><rect x="-160" y="-34" width="320" height="60" rx="30" fill="rgba(11,13,18,.88)"/><text y="6" text-anchor="middle" font-size="30" font-weight="700" fill="#fff" font-family="Plus Jakarta Sans,Inter">${esc(CONFIG.ambientes[k].n)}</text></g></g>`).join('') : '';
-  $$('#pins .pin').forEach(g => g.onclick = e => { e.stopPropagation(); abrirAmb('u', g.dataset.k); });
+  $$('#pins .pin').forEach(g => g.onclick = e => { e.stopPropagation(); entrarAmb(g.dataset.k, e.clientX, e.clientY); });
   u ? renderFicha(u) : renderListaPiso(D);
 }
 function renderListaPiso(D) {
@@ -385,7 +394,7 @@ function renderFicha(u) {
    <a class="btn p no-print" target="_blank" rel="noopener" href="${waLink(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`)}">Consultar por WhatsApp</a>
    <div class="btns no-print"><button class="btn g" id="bPdf">Cotización PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
   $('#bLista').onclick = () => selUnidad(u.id);
-  $$('#sideBody .amb button').forEach(b => b.onclick = () => abrirAmb('u', b.dataset.k));
+  $$('#sideBody .amb button').forEach(b => b.onclick = () => { const u = DB.unidades.find(x => x.id === UI.sel); const pin = u && CONFIG.planta.unidades[u.letra].pins[b.dataset.k]; const [x, y] = pin ? ptOnSvg('#plantaSvg', pin[0], pin[1]) : [innerWidth / 2, innerHeight / 2]; entrarAmb(b.dataset.k, x, y); });
   $$('#sideBody [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? Math.max(0, v) : 0; $('#qOut').innerHTML = qOut(cotizar(u)); });
   $('#bPdf').onclick = () => pdfCot(u); $('#bPrint').onclick = () => print();
   if ($('#aSave')) $('#aSave').onclick = () => { u.estado = $('#aE').value; const pr = parseFloat($('#aP').value); if (pr > 0) u.precio = pr; DB.actualizado = new Date().toISOString(); save(); renderTorre(); renderPlanta(); toast(`Depto ${u.id} actualizado`); };
@@ -405,7 +414,7 @@ function abrirAmb(modo, k) {
   $('#ambSub').textContent = modo === 'a' ? `${CONFIG.proyecto.nombre} · Amenities` : u ? `Depto ${u.id} · ${u.tipo}` : CONFIG.proyecto.nombre;
   $('#ambName').textContent = a.n;
   $('#ambThumbs').innerHTML = L.map(x => `<button class="${x.k === a.k ? 'on' : ''}" data-k="${x.k}" style="background-image:url(${x.img.replace('.jpg', '-t.jpg')})"><span>${esc(x.n)}</span></button>`).join('');
-  $$('#ambThumbs button').forEach(b => b.onclick = e => { e.stopPropagation(); abrirAmb(modo, b.dataset.k); });
+  $$('#ambThumbs button').forEach(b => b.onclick = e => { e.stopPropagation(); if (b.dataset.k === UI.amb) return; const key = `${UI.amb}>${b.dataset.k}`; transicion(key, '#vAmb', innerWidth / 2, innerHeight / 2, () => abrirAmb(modo, b.dataset.k)); });
   setView('amb');
 }
 function placePano() { pan.x = Math.max(pan.min, Math.min(0, pan.x)); $('#pano').style.transform = `translate3d(${pan.x}px,0,0) scale(1.02)`; }
@@ -414,6 +423,29 @@ ambEl.addEventListener('pointerdown', e => { if (e.target.closest('#ambThumbs'))
 addEventListener('pointermove', e => { if (!pan.drag) return; const dx = e.clientX - pan.lx; pan.lx = e.clientX; pan.x += dx; pan.v = dx; placePano(); });
 addEventListener('pointerup', () => { if (pan.drag) { pan.drag = false; ambEl.classList.remove('drag'); } });
 (function inertia() { if (UI.view === 'amb' && !pan.drag && Math.abs(pan.v) > .05) { pan.x += pan.v; if (Math.abs(pan.v) > .4) pan.v *= .94; if (pan.x <= pan.min || pan.x >= 0) pan.v = -pan.v; placePano(); } requestAnimationFrame(inertia); })();
+
+
+// ---------- TRANSICIONES (vuelo de cámara o acercamiento) ----------
+const TXC = {};
+Object.entries(CONFIG.transiciones || {}).forEach(([k, src]) => { const v = document.createElement('video'); v.src = src; v.muted = true; v.playsInline = true; v.preload = 'auto'; TXC[k] = v; });
+let busy = false;
+function zoomTo(fromSel, ox, oy) { const el = $(fromSel); el.style.transformOrigin = `${ox}px ${oy}px`; el.classList.add('zoomout'); el.style.transform = 'scale(2.4)';
+  return new Promise(r => setTimeout(() => { el.classList.remove('zoomout'); el.style.transform = ''; r(); }, 780)); }
+async function transicion(key, fromSel, ox, oy, aplicar) {
+  if (busy) return; busy = true;
+  const v = TXC[key];
+  if (v && v.readyState >= 2) {
+    const tv = $('#txv'); tv.src = v.src; tv.currentTime = 0; $('#tx').classList.add('on');
+    await new Promise(r => setTimeout(r, 300));
+    try { await tv.play(); } catch (e) {}
+    await new Promise(r => { tv.onended = r; setTimeout(r, (tv.duration || 5) * 1000 + 500); });
+    aplicar(); await new Promise(r => setTimeout(r, 60)); $('#tx').classList.remove('on');
+  } else {
+    await zoomTo(fromSel, ox ?? innerWidth / 2, oy ?? innerHeight / 2); aplicar();
+  }
+  busy = false;
+}
+function ptOnSvg(svgSel, x, y) { const svg = $(svgSel), pt = svg.createSVGPoint(); pt.x = x; pt.y = y; const p = pt.matrixTransform(svg.getScreenCTM()); return [p.x, p.y]; }
 
 // ---------- navegación ----------
 function setView(v) {
@@ -481,7 +513,8 @@ pre.forEach(s => { const i = new Image(); i.onload = i.onerror = () => { $('#ldB
 setTimeout(hideLoader, 6000);
 setTimeout(() => [...Object.values(CONFIG.ambientes), ...CONFIG.amenities].forEach(a => { const i = new Image(); i.src = a.img; }), 1500);
 sync(); setInterval(sync, Math.max(15, CONFIG.planilla.cadaSeg) * 1000);
-window.__sr = { DB, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
+function entrarAmb(k, x, y) { transicion(`planta>${k}`, '#vPlanta', x, y, () => abrirAmb('u', k)); }
+window.__sr = { entrarAmb, transicion, DB, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
 </script>
 </body>
 </html>
