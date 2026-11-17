@@ -283,7 +283,7 @@ const CONFIG = {
   colorAcento:"#3B82F6",
   moneda:     "PYG",                 // PYG | USD | EUR
   locale:     "es-PY",
-  version:    "2.1.0",
+  version:    "2.2.0",
   contacto:   "",                    // WhatsApp de soporte, ej: "595981000000"
   carpetaClientes: "clientes",       // de donde se leen las licencias (?c=slug)
   // Plan Básico (archivo suelto): completá el nombre y el archivo queda licenciado sin servidor.
@@ -374,7 +374,7 @@ const CATS_DEF = ['Supermercado','Comidas fuera','Transporte','Salud','Educació
 const FUENTES_DEF = ['Salario','Aguinaldo','Bonificación','Comisión','Freelance','Alquiler cobrado','Otro ingreso'];
 const TIPOS_ACT = ['Inmueble','Vehículo','Fondo mutuo','CDA / Plazo fijo','Bono / Título','Acciones','Criptomonedas','Efectivo','Otro'];
 const vacio = () => ({ v:2, cuentas:[{id:'c1',nombre:'Cuenta principal',saldoInicial:0}], tarjetas:[], movs:[], fijos:[], limites:{}, metas:[], activos:[], pasivos:[],
-  ajustes:{ colchon:0, categorias:[...CATS_DEF], fuentes:[...FUENTES_DEF], pinHash:'', cuentaActiva:'' } });
+  ajustes:{ colchon:0, categorias:[...CATS_DEF], fuentes:[...FUENTES_DEF], pinHash:'', cuentaActiva:'', ultimoRespaldo:'' } });
 let S = vacio();
 const Store = {
   load(){ try{ const j = JSON.parse(localStorage.getItem(LSKEY())||'null'); return j && j.v ? normalizar(j) : null; }catch{ return null; } },
@@ -529,6 +529,7 @@ function header(){
   const logo = /^https?:|^data:/.test(CONFIG.logoTexto) ? `<img src="${CONFIG.logoTexto.replace(/"/g,'%22')}" alt="">` : esc(CONFIG.logoTexto);
   let ban = '';
   if(LIC.modo==='demo') ban = `<div class="banner"><div class="grow"><b>Versión demo</b> · Datos de ejemplo. Probá todo: nada se envía a internet.</div><button class="btn sm" onclick="limpiarTodo()">Empezar de cero</button></div>`;
+  if(LIC.modo!=='demo' && S.movs.length>=5 && (!S.ajustes.ultimoRespaldo || days(S.ajustes.ultimoRespaldo, hoy())>30)) ban = `<div class="banner warn"><div class="grow"><b>Hacé un respaldo.</b> Tus datos están solo en este dispositivo; guardá una copia por si cambiás o se borra el navegador.</div><button class="btn sm" onclick="exportJSON()">Respaldar</button></div>`;
   if(LIC.estado==='vencida') ban = `<div class="banner warn"><div class="grow"><b>Licencia vencida</b> el ${fDate(LIC.vence)}. Tus datos siguen acá; exportalos o renová.</div>${CONFIG.contacto?`<a class="btn sm" href="https://wa.me/${esc(CONFIG.contacto)}" target="_blank">Renovar</a>`:''}</div>`;
   return `<div class="top"><div class="logo">${logo}</div><div class="grow"><h1>${n?`Hola, ${esc(n)}`:esc(CONFIG.producto)}</h1><div class="sub">${n?esc(CONFIG.producto)+' · ':''}${mLong(M)}</div></div>
     ${S.ajustes.pinHash?`<button class="icon-btn" title="Bloquear" onclick="bloquear()">${ic('lock')}</button>`:''}
@@ -1071,18 +1072,19 @@ function vAjustes(){
   <div class="card"><h3>Seguridad</h3><p class="small mut" style="margin-bottom:12px">El PIN evita que otra persona que use tu celular vea tus números. ${S.ajustes.pinHash?'<span class="ok">PIN activo.</span>':'Sin PIN.'}</p>
     <div class="btns"><button class="btn" onclick="configPin()">${S.ajustes.pinHash?'Cambiar PIN':'Activar PIN'}</button>${S.ajustes.pinHash?`<button class="btn danger" onclick="S.ajustes.pinHash='';Store.save();render();toast('PIN desactivado')">Quitar PIN</button>`:''}</div></div>
   <div class="card"><h3>Respaldo de datos ${tip('Tus datos viven solo en este dispositivo y navegador. Exportá un respaldo cada tanto: si borrás el historial o cambiás de celular, lo importás y recuperás todo.')}</h3>
+    <p class="small mut" style="margin-bottom:12px">La app funciona <b>por dispositivo</b>: lo que cargás acá no aparece en otro celular o compu. Para pasarte a otro equipo, exportá el respaldo e importalo allá.${S.ajustes.ultimoRespaldo?` Último respaldo: ${fDate(S.ajustes.ultimoRespaldo)}.`:''}</p>
     <div class="btns"><button class="btn" onclick="exportJSON()">Exportar respaldo (.json)</button><button class="btn" onclick="$('#fImp').click()">Importar respaldo</button><button class="btn" onclick="exportExcel()">Excel</button></div>
     <input type="file" id="fImp" accept=".json,application/json" class="hide" onchange="importJSON(this.files[0])"></div>
   <div class="card"><h3>Zona de reinicio</h3><div class="btns"><button class="btn" onclick="cargarDemo()">Cargar datos de ejemplo</button><button class="btn danger" onclick="limpiarTodo()">Limpiar y empezar de cero</button></div></div>
   <div class="card"><h3>Tutorial</h3><p class="small mut" style="margin-bottom:12px">Un recorrido de 1 minuto por lo más importante de la app.</p><button class="btn" onclick="tourStart()">Ver el tutorial</button></div>
   <div class="card"><h3>Acerca de</h3><div class="small mut">${esc(CONFIG.producto)} v${CONFIG.version} · ${esc(CONFIG.marca)}<br>${LIC.modo==='demo'?'Modo demo':`Licencia de <b>${esc(LIC.nombre)}</b>${LIC.vence?` · vence ${fDate(LIC.vence)}`:''}`}<br>
-    Para usarla como app: en el celular abrí el menú del navegador → <b>Agregar a pantalla de inicio</b>.${CONFIG.contacto?`<br><a href="https://wa.me/${esc(CONFIG.contacto)}" target="_blank">Soporte por WhatsApp</a>`:''}</div></div>`;
+    Para usarla como app: en el celular abrí el menú del navegador → <b>Agregar a pantalla de inicio</b>.<br><a href="terminos" target="_blank">Condiciones de uso</a>${CONFIG.contacto?`<br><a href="https://wa.me/${esc(CONFIG.contacto)}" target="_blank">Soporte por WhatsApp</a>`:''}</div></div>`;
 }
 function saveCats(){ const sp = s => [...new Set(s.split(',').map(x=>x.trim()).filter(Boolean))];
   const c = sp(val('sCat')), f = sp(val('sFue')); if(!c.includes('Fijos')) c.push('Fijos'); if(!c.length||!f.length) return toast('Las listas no pueden quedar vacías','err');
   S.ajustes.categorias = c; S.ajustes.fuentes = f; Store.save(); render(); toast('Listas guardadas'); }
 function exportJSON(){ const b = new Blob([JSON.stringify({app:CONFIG.producto,version:CONFIG.version,cliente:LIC.slug||'demo',exportado:new Date().toISOString(),data:S},null,2)],{type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileBase()+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); toast('Respaldo descargado'); }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = fileBase()+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); S.ajustes.ultimoRespaldo = hoy(); Store.save(); render(); toast('Respaldo descargado. Guardalo en tu mail o Drive'); }
 function importJSON(file){ if(!file) return; const fr = new FileReader(); fr.onload = e => { try{ const j = JSON.parse(e.target.result); const d = j.data || j; if(!d.cuentas || !d.movs) throw 0;
   if(!confirm(`Importar ${d.movs.length} movimientos y reemplazar los datos actuales?`)) return; const pin = S.ajustes.pinHash; S = normalizar(d); if(!S.ajustes.pinHash) S.ajustes.pinHash = pin; Store.save(); render(); toast('Respaldo importado'); }
   catch{ toast('El archivo no es un respaldo válido','err'); } }; fr.readAsText(file); $('#fImp').value=''; }
