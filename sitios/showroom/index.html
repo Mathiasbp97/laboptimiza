@@ -133,6 +133,8 @@ input:focus,select:focus{border-color:var(--ac)}
 #ambThumbs button.on{border-color:var(--ac);opacity:1}
 #ambThumbs button:hover{opacity:1}
 #ambThumbs button span{position:absolute;left:6px;bottom:4px;font-size:10.5px;font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+#ambNav{position:absolute;right:22px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+#ambNav button:disabled{opacity:.35;pointer-events:none}
 #dragHint{position:absolute;right:22px;bottom:128px;font-size:12px;color:var(--mu);padding:8px 12px;border-radius:999px;z-index:5}
 #tx{position:fixed;inset:0;z-index:25;background:#000;opacity:0;pointer-events:none;transition:opacity .35s}
 #tx.on{opacity:1}
@@ -168,7 +170,7 @@ input:focus,select:focus{border-color:var(--ac)}
  #floorStep{top:62px;left:12px;padding:6px 12px}#floorStep .big{font-size:26px}
  .stepb{flex-direction:row}
  #side{left:0;right:0;bottom:0;top:auto;width:auto;height:52%;border-radius:20px 20px 0 0}
- #ambLbl{bottom:96px;left:12px}#dragHint{display:none}
+ #ambLbl{bottom:96px;left:12px}#ambNav{top:auto;bottom:160px;right:12px}#dragHint{display:none}
  #ambThumbs button{width:84px;height:50px}
 }
 @media print{
@@ -211,6 +213,7 @@ input:focus,select:focus{border-color:var(--ac)}
  <img id="pano" alt="" draggable="false">
  <div class="glass" id="ambLbl"><small id="ambSub"></small><b id="ambName"></b></div>
  <div class="glass" id="dragHint">Arrastrá para mirar alrededor</div>
+ <div id="ambNav"><button class="tbtn g" id="aPrev"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span class="lbl">Volver</span></button><button class="tbtn p" id="aNext"><span id="aNextLbl"></span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button></div>
  <div class="glass" id="ambThumbs"></div>
 </section>
 
@@ -253,24 +256,29 @@ const CONFIG = {
   torre: { pisos: 10, xL: 985, xC: 1110, xR: 1745, yIzq0: 200, pasoIzq: 98, yDer0: 280, pasoDer: 89.5, lateral0: 72 },
   // Departamentos sobre el render de planta (px de 2688×1520): rectángulo [x,y,w,h] y pines de ambientes.
   planta: { unidades: {
-    A: { rect: [190, 760, 990, 520], pins: { living: [860, 1060], cocina: [930, 840], suite: [420, 1060], bano: [610, 850] } },
-    B: { rect: [200, 175, 720, 540], pins: { living: [520, 590], cocina: [760, 470], suite: [480, 290], bano: [760, 280] } },
-    C: { rect: [1270, 170, 1150, 560], pins: { living: [2140, 600], cocina: [1560, 560], suite: [1660, 280], bano: [1350, 400] } },
-    D: { rect: [1300, 760, 1020, 520], pins: { living: [1660, 1080], cocina: [1560, 840], suite: [2160, 1060], bano: [1900, 860] } } } },
+    A: { rect: [190, 760, 990, 520], pins: { entrada: [1110, 830], living: [860, 1060], cocina: [930, 840], suite: [420, 1060], bano: [610, 850] } },
+    B: { rect: [200, 175, 720, 540], pins: { entrada: [870, 650], living: [520, 590], cocina: [760, 470], suite: [480, 290], bano: [760, 280] } },
+    C: { rect: [1270, 170, 1150, 560], pins: { entrada: [1330, 650], living: [2140, 600], cocina: [1560, 560], suite: [1660, 280], bano: [1350, 400] } },
+    D: { rect: [1300, 760, 1020, 520], pins: { entrada: [1350, 830], living: [1660, 1080], cocina: [1560, 840], suite: [2160, 1060], bano: [1900, 860] } } } },
   tipologias: {
     A: { tipo: "2 dormitorios", dorm: 2, banos: 2, m2: 86,  balcon: 14, orient: "Norte" },
     B: { tipo: "1 dormitorio",  dorm: 1, banos: 1, m2: 58,  balcon: 10, orient: "Sur" },
     C: { tipo: "3 dormitorios", dorm: 3, banos: 3, m2: 128, balcon: 22, orient: "Sur · Este" },
     D: { tipo: "2 dormitorios", dorm: 2, banos: 2, m2: 84,  balcon: 14, orient: "Norte · Este" } },
   precio: { m2: 1850, incrementoPiso: 0.015, balconFactor: 0.5 },
+  // Recorrido del departamento, en el ORDEN del camino real (entrada → … → baño).
   ambientes: {
-    living: { n: "Living y comedor", img: "img/living.jpg" }, cocina: { n: "Cocina", img: "img/cocina.jpg" },
-    suite: { n: "Suite principal", img: "img/suite.jpg" }, bano: { n: "Baño principal", img: "img/bano.jpg" } },
+    entrada: { n: "Entrada", img: "img/entrada.jpg" }, living: { n: "Living y comedor", img: "img/living.jpg" },
+    cocina: { n: "Cocina", img: "img/cocina.jpg" }, suite: { n: "Suite principal", img: "img/suite.jpg" }, bano: { n: "Baño en suite", img: "img/bano.jpg" } },
+  // Vista real desde el balcón según la altura del piso.
+  vistas: [ { hasta: 3, n: "Vista pisos 1 a 3", img: "img/vista-bajo.jpg" }, { hasta: 7, n: "Vista pisos 4 a 7", img: "img/vista-medio.jpg" }, { hasta: 99, n: "Vista pisos 8 a 10", img: "img/vista-alto.jpg" } ],
   amenities: [ { n: "Azotea con piscina", img: "img/rooftop.jpg" }, { n: "Lobby doble altura", img: "img/lobby.jpg" } ],
   cotizador: { anticipo: 30, cuotasPct: 40, cuotas: 30, tasaAnual: 9, anios: 15 },
   planilla:  { url: "", cadaSeg: 60 },
   // Vuelos de cámara entre niveles (videos de 5 s). Si falta uno, se usa un acercamiento animado.
-  transiciones: { 'torre>planta': 'vid/torre-planta.mp4', 'planta>living': 'vid/planta-living.mp4', 'living>cocina': 'vid/living-cocina.mp4' }
+  transiciones: { 'torre>planta': 'vid/torre-planta.mp4', 'planta>entrada': 'vid/planta-entrada.mp4',
+    'entrada>living': 'vid/entrada-living.mp4', 'living>cocina': 'vid/living-cocina.mp4', 'cocina>suite': 'vid/cocina-suite.mp4', 'suite>bano': 'vid/suite-bano.mp4',
+    'living>entrada': 'vid/living-entrada.mp4', 'cocina>living': 'vid/cocina-living.mp4', 'suite>cocina': 'vid/suite-cocina.mp4', 'bano>suite': 'vid/bano-suite.mp4' }
 };
 // ===================================================================
 
@@ -363,7 +371,9 @@ function renderListaPiso(D) {
   $('#sideBody').innerHTML = `<div class="sec" style="margin-top:0">Piso ${UI.piso} · ${nd} disponible${nd === 1 ? '' : 's'}</div>
    <div class="legend"><span><i style="background:${COL.disponible}"></i>Disponible</span><span><i style="background:${COL.reservado}"></i>Reservado</span><span><i style="background:${COL.vendido}"></i>Vendido</span></div>
    ${D.map(u => `<div class="ucard" data-id="${u.id}"><div><b>Depto ${u.id}</b><small>${u.tipo} · ${u.m2} m² + ${u.balcon} m² balcón</small></div><div style="text-align:right"><div class="num" style="font-weight:700;font-size:14px;margin-bottom:5px">${u.estado === 'vendido' ? '—' : money(u.precio)}</div><span class="st ${u.estado}">${u.estado}</span></div></div>`).join('')}
-   <p style="color:var(--mu);font-size:12.5px;margin-top:12px;line-height:1.5">Tocá un departamento para ver su ficha, recorrer los ambientes y simular el pago.</p>`;
+   <p style="color:var(--mu);font-size:12.5px;margin-top:12px;line-height:1.5">Tocá un departamento para ver su ficha, recorrer los ambientes y simular el pago.</p>
+   <button class="btn g" id="bVista2" style="margin-top:10px">Ver la vista desde el piso ${UI.piso}</button>`;
+  $('#bVista2').onclick = e => abrirVista(e.clientX, e.clientY);
   $$('#sideBody .ucard').forEach(c => c.onclick = () => selUnidad(c.dataset.id));
 }
 function selUnidad(id) { UI.sel = UI.sel === id ? null : id; renderPlanta(); $('#sideBody').scrollTop = 0; }
@@ -383,7 +393,8 @@ function renderFicha(u) {
    <div class="dh"><div><h2>Depto ${u.id}</h2><p>${esc(CONFIG.proyecto.nombre)} · Piso ${u.piso} · ${u.tipo}</p></div><span class="st ${u.estado}">${u.estado}</span></div>
    <div class="price num">${money(u.precio)}<small>${money(u.precio / u.m2)} / m²</small></div>
    <div class="grid2"><div class="cell"><small>Cubierta</small><b class="num">${u.m2} m²</b></div><div class="cell"><small>Balcón</small><b class="num">${u.balcon} m²</b></div><div class="cell"><small>Dormitorios · baños</small><b>${u.dorm} · ${u.banos}</b></div><div class="cell"><small>Orientación</small><b>${esc(u.orient)}</b></div></div>
-   <div class="sec no-print">Recorré los ambientes</div>
+   <button class="btn g no-print" id="bVista" style="margin-top:14px">Ver la vista desde el piso ${u.piso}</button>
+   <div class="sec no-print">Recorré el departamento</div>
    <div class="amb no-print">${Object.keys(pins).map(k => `<button data-k="${k}" style="background-image:url(${CONFIG.ambientes[k].img.replace('.jpg', '-t.jpg')})"><span>${esc(CONFIG.ambientes[k].n)}</span></button>`).join('')}</div>
    <div class="sec">Simulá tu pago <span class="tip-i no-print" data-t="Anticipo al firmar, cuotas mensuales sin interés durante la obra y saldo a la entrega, que se puede financiar con un banco.">?</span></div>
    <div class="no-print"><div class="f2"><div><label>Anticipo %</label><input type="number" min="0" max="100" data-c="anticipo" value="${q.c.anticipo}"></div><div><label>% en cuotas de obra</label><input type="number" min="0" max="100" data-c="cuotasPct" value="${q.c.cuotasPct}"></div>
@@ -396,6 +407,7 @@ function renderFicha(u) {
   $('#bLista').onclick = () => selUnidad(u.id);
   $$('#sideBody .amb button').forEach(b => b.onclick = () => { const u = DB.unidades.find(x => x.id === UI.sel); const pin = u && CONFIG.planta.unidades[u.letra].pins[b.dataset.k]; const [x, y] = pin ? ptOnSvg('#plantaSvg', pin[0], pin[1]) : [innerWidth / 2, innerHeight / 2]; entrarAmb(b.dataset.k, x, y); });
   $$('#sideBody [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? Math.max(0, v) : 0; $('#qOut').innerHTML = qOut(cotizar(u)); });
+  $('#bVista').onclick = e => abrirVista(e.clientX, e.clientY);
   $('#bPdf').onclick = () => pdfCot(u); $('#bPrint').onclick = () => print();
   if ($('#aSave')) $('#aSave').onclick = () => { u.estado = $('#aE').value; const pr = parseFloat($('#aP').value); if (pr > 0) u.precio = pr; DB.actualizado = new Date().toISOString(); save(); renderTorre(); renderPlanta(); toast(`Depto ${u.id} actualizado`); };
 }
@@ -403,7 +415,9 @@ $('#fUp').onclick = () => irPiso(UI.piso + 1); $('#fDn').onclick = () => irPiso(
 
 // ---------- 3. AMBIENTES ----------
 const pan = { x: 0, v: 0, drag: false, lx: 0, min: 0 };
-function listaAmb(modo) { return modo === 'a' ? CONFIG.amenities.map((a, i) => ({ k: 'a' + i, ...a })) : Object.entries(CONFIG.ambientes).map(([k, a]) => ({ k, ...a })); }
+function listaAmb(modo) { return modo === 'a' ? CONFIG.amenities.map((a, i) => ({ k: 'a' + i, ...a })) : modo === 'v' ? CONFIG.vistas.map((a, i) => ({ k: 'v' + i, ...a })) : Object.entries(CONFIG.ambientes).map(([k, a]) => ({ k, ...a })); }
+const ORDEN = Object.keys(CONFIG.ambientes);
+function ruta(a, b) { const i = ORDEN.indexOf(a), j = ORDEN.indexOf(b), r = []; if (i < 0 || j < 0) return r; const d = j > i ? 1 : -1; for (let k = i; k !== j; k += d) r.push(`${ORDEN[k]}>${ORDEN[k + d]}`); return r; }
 function abrirAmb(modo, k) {
   if (UI.view !== 'amb') UI.prevView = UI.view;
   UI.ambModo = modo; const L = listaAmb(modo), a = L.find(x => x.k === k) || L[0]; UI.amb = a.k;
@@ -411,10 +425,13 @@ function abrirAmb(modo, k) {
   const fit = () => { const w = img.getBoundingClientRect().width || innerHeight * img.naturalWidth / img.naturalHeight; pan.min = Math.min(0, innerWidth - w * 1.02); pan.x = pan.min / 2; pan.v = -0.35; placePano(); };
   img.onload = fit; img.src = a.img; if (img.complete && img.naturalWidth) fit();
   const u = DB.unidades.find(x => x.id === UI.sel);
-  $('#ambSub').textContent = modo === 'a' ? `${CONFIG.proyecto.nombre} · Amenities` : u ? `Depto ${u.id} · ${u.tipo}` : CONFIG.proyecto.nombre;
+  $('#ambSub').textContent = modo === 'a' ? `${CONFIG.proyecto.nombre} · Amenities` : modo === 'v' ? `${CONFIG.proyecto.nombre} · Piso ${UI.piso}` : u ? `Depto ${u.id} · ${u.tipo}` : CONFIG.proyecto.nombre;
   $('#ambName').textContent = a.n;
   $('#ambThumbs').innerHTML = L.map(x => `<button class="${x.k === a.k ? 'on' : ''}" data-k="${x.k}" style="background-image:url(${x.img.replace('.jpg', '-t.jpg')})"><span>${esc(x.n)}</span></button>`).join('');
-  $$('#ambThumbs button').forEach(b => b.onclick = e => { e.stopPropagation(); if (b.dataset.k === UI.amb) return; const key = `${UI.amb}>${b.dataset.k}`; transicion(key, '#vAmb', innerWidth / 2, innerHeight / 2, () => abrirAmb(modo, b.dataset.k)); });
+  $$('#ambThumbs button').forEach(b => b.onclick = e => { e.stopPropagation(); irAmb(modo, b.dataset.k); });
+  const i = ORDEN.indexOf(a.k); $('#ambNav').style.display = modo === 'u' ? 'flex' : 'none';
+  $('#aPrev').disabled = i <= 0; $('#aNext').disabled = i < 0 || i >= ORDEN.length - 1;
+  $('#aNextLbl').textContent = i >= 0 && i < ORDEN.length - 1 ? CONFIG.ambientes[ORDEN[i + 1]].n : '';
   setView('amb');
 }
 function placePano() { pan.x = Math.max(pan.min, Math.min(0, pan.x)); $('#pano').style.transform = `translate3d(${pan.x}px,0,0) scale(1.02)`; }
@@ -427,18 +444,22 @@ addEventListener('pointerup', () => { if (pan.drag) { pan.drag = false; ambEl.cl
 
 // ---------- TRANSICIONES (vuelo de cámara o acercamiento) ----------
 const TXC = {};
-Object.entries(CONFIG.transiciones || {}).forEach(([k, src]) => { const v = document.createElement('video'); v.src = src; v.muted = true; v.playsInline = true; v.preload = 'auto'; TXC[k] = v; });
+const mkV = ([k, src]) => { if (TXC[k]) return; const v = document.createElement('video'); v.src = src; v.muted = true; v.playsInline = true; v.preload = 'auto'; v.load(); TXC[k] = v; };
+const TXL = Object.entries(CONFIG.transiciones || {}); TXL.filter(([k]) => k.startsWith('torre')).forEach(mkV);
+setTimeout(() => TXL.forEach(mkV), 2500); // el resto se precarga después de mostrar la torre
 let busy = false;
 function zoomTo(fromSel, ox, oy) { const el = $(fromSel); el.style.transformOrigin = `${ox}px ${oy}px`; el.classList.add('zoomout'); el.style.transform = 'scale(2.4)';
   return new Promise(r => setTimeout(() => { el.classList.remove('zoomout'); el.style.transform = ''; r(); }, 780)); }
-async function transicion(key, fromSel, ox, oy, aplicar) {
-  if (busy) return; busy = true;
-  const v = TXC[key];
-  if (v && v.readyState >= 2) {
-    const tv = $('#txv'); tv.src = v.src; tv.currentTime = 0; $('#tx').classList.add('on');
-    await new Promise(r => setTimeout(r, 300));
-    try { await tv.play(); } catch (e) {}
-    await new Promise(r => { tv.onended = r; setTimeout(r, (tv.duration || 5) * 1000 + 500); });
+async function transicion(keys, fromSel, ox, oy, aplicar) {
+  if (busy) return; busy = true; keys = [].concat(keys);
+  const ok = keys.length && keys.every(k => TXC[k] && TXC[k].readyState >= 2);
+  if (ok) {
+    const tv = $('#txv'); $('#tx').classList.add('on'); await new Promise(r => setTimeout(r, 280));
+    for (let n = 0; n < keys.length; n++) {
+      tv.src = TXC[keys[n]].src; tv.playbackRate = keys.length > 1 ? 1.45 : 1; tv.currentTime = 0;
+      try { await tv.play(); } catch (e) {}
+      await new Promise(r => { tv.onended = r; setTimeout(r, 6500); });
+    }
     aplicar(); await new Promise(r => setTimeout(r, 60)); $('#tx').classList.remove('on');
   } else {
     await zoomTo(fromSel, ox ?? innerWidth / 2, oy ?? innerHeight / 2); aplicar();
@@ -513,7 +534,11 @@ pre.forEach(s => { const i = new Image(); i.onload = i.onerror = () => { $('#ldB
 setTimeout(hideLoader, 6000);
 setTimeout(() => [...Object.values(CONFIG.ambientes), ...CONFIG.amenities].forEach(a => { const i = new Image(); i.src = a.img; }), 1500);
 sync(); setInterval(sync, Math.max(15, CONFIG.planilla.cadaSeg) * 1000);
-function entrarAmb(k, x, y) { transicion(`planta>${k}`, '#vPlanta', x, y, () => abrirAmb('u', k)); }
+function entrarAmb(k, x, y) { transicion(['planta>' + ORDEN[0], ...ruta(ORDEN[0], k)], '#vPlanta', x, y, () => abrirAmb('u', k)); }
+function irAmb(modo, k) { if (k === UI.amb) return; transicion(modo === 'u' ? ruta(UI.amb, k) : [], '#vAmb', innerWidth / 2, innerHeight / 2, () => abrirAmb(modo, k)); }
+function abrirVista(x, y) { const i = CONFIG.vistas.findIndex(v => UI.piso <= v.hasta); transicion([], '#vPlanta', x, y, () => abrirAmb('v', 'v' + Math.max(0, i))); }
+$('#aPrev').onclick = e => { e.stopPropagation(); const i = ORDEN.indexOf(UI.amb); if (i > 0) irAmb('u', ORDEN[i - 1]); };
+$('#aNext').onclick = e => { e.stopPropagation(); const i = ORDEN.indexOf(UI.amb); if (i >= 0 && i < ORDEN.length - 1) irAmb('u', ORDEN[i + 1]); };
 window.__sr = { entrarAmb, transicion, DB, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
 </script>
 </body>
