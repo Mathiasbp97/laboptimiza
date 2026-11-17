@@ -234,6 +234,24 @@ nav.bn button.on{color:var(--ac)}
   .g3{grid-template-columns:1fr 1fr}
   .hero .big{font-size:30px}
 }
+
+/* tutorial guiado */
+#tour{position:fixed;inset:0;z-index:70;display:none}
+#tour.on{display:block}
+#tour .blk{position:fixed;inset:0}
+#tour .hole{position:fixed;border-radius:14px;box-shadow:0 0 0 200vmax rgba(0,0,0,.74);outline:2px solid var(--ac);outline-offset:2px;transition:all .28s ease;pointer-events:none}
+#tour .hole.none{outline:0;width:0!important;height:0!important;left:50%!important;top:40%!important}
+#tour .tcard{position:fixed;background:var(--bg2);border:1px solid var(--line2);border-radius:16px;padding:16px 16px 14px;width:min(330px,calc(100vw - 24px));box-shadow:0 20px 50px rgba(0,0,0,.6);transition:top .28s ease,left .28s ease;animation:tin .25s ease}
+#tour .tcard .stp{font-size:11px;color:var(--ac);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#tour .tcard h4{font-size:17px;font-weight:700;margin:4px 0 6px;letter-spacing:-.01em}
+#tour .tcard p{font-size:13.5px;color:var(--tx2);line-height:1.5}
+#tour .prog{display:flex;gap:4px;margin-top:12px}
+#tour .prog i{flex:1;height:4px;border-radius:99px;background:var(--bg3)}
+#tour .prog i.f{background:var(--ac)}
+#tour .act{display:flex;gap:8px;margin-top:12px;align-items:center}
+#tour .act .sk2{margin-right:auto;background:none;border:0;color:var(--tx3);font-size:13px;cursor:pointer;padding:6px 0}
+.fab.tour-top{z-index:75!important;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--ac-soft),0 10px 28px rgba(0,0,0,.45)}50%{box-shadow:0 0 0 14px rgba(59,130,246,0),0 10px 28px rgba(0,0,0,.45)}}
 @media print{
   nav.bn,.fab,.icon-btn,.btn,.banner,#toasts,.filters{display:none!important}
   body{background:#fff;color:#000;padding:0}
@@ -244,6 +262,7 @@ nav.bn button.on{color:var(--ac)}
 </head>
 <body>
 <div id="toasts"></div>
+<div id="tour"><div class="blk"></div><div class="hole"></div><div class="tcard"></div></div>
 <div id="lock" class="lock hide"></div>
 <div class="app" id="app">
   <div class="sk" style="height:60px"></div>
@@ -513,6 +532,7 @@ function header(){
   if(LIC.estado==='vencida') ban = `<div class="banner warn"><div class="grow"><b>Licencia vencida</b> el ${fDate(LIC.vence)}. Tus datos siguen acá; exportalos o renová.</div>${CONFIG.contacto?`<a class="btn sm" href="https://wa.me/${esc(CONFIG.contacto)}" target="_blank">Renovar</a>`:''}</div>`;
   return `<div class="top"><div class="logo">${logo}</div><div class="grow"><h1>${n?`Hola, ${esc(n)}`:esc(CONFIG.producto)}</h1><div class="sub">${n?esc(CONFIG.producto)+' · ':''}${mLong(M)}</div></div>
     ${S.ajustes.pinHash?`<button class="icon-btn" title="Bloquear" onclick="bloquear()">${ic('lock')}</button>`:''}
+    <button class="icon-btn" title="Ver tutorial" onclick="tourStart()" style="font-weight:700;font-size:16px">?</button>
     <button class="icon-btn" title="Ajustes" onclick="go('mas','ajustes')">${ic('gear')}</button></div>${ban}`;
 }
 
@@ -563,7 +583,7 @@ function vInicio(){
   </div>
   <div class="card sec"><h3>Ingresos vs gastos <span class="mut small">· últimos 6 meses</span></h3><div class="chart-box"><canvas id="chMeses"></canvas></div></div>
   </div><div>
-  <div class="card sec"><h3>Alertas</h3>${al.length ? al.map(([t,m,a])=>`<div class="alert" style="cursor:pointer" onclick="${a}"><span class="dot" style="background:var(--${t==='ok'?'ok':t==='bad'?'bad':'warn'})"></span><div>${m}</div></div>`).join('') : `<div class="empty"><b>Todo en orden</b>Sin alertas este mes.</div>`}</div>
+  <div class="card sec" id="cardAlertas"><h3>Alertas</h3>${al.length ? al.map(([t,m,a])=>`<div class="alert" style="cursor:pointer" onclick="${a}"><span class="dot" style="background:var(--${t==='ok'?'ok':t==='bad'?'bad':'warn'})"></span><div>${m}</div></div>`).join('') : `<div class="empty"><b>Todo en orden</b>Sin alertas este mes.</div>`}</div>
   <div class="card sec"><h3><span class="grow">Últimos movimientos</span><button class="btn sm" onclick="go('movs')">Ver todos</button></h3>
     ${ult.length ? `<div class="list">${ult.map(rowMov).join('')}</div>` : `<div class="empty"><b>Sin movimientos todavía</b>Registrá tu primer ingreso o gasto.<br><button class="btn pri" onclick="openMov()">${ic('plus')} Agregar</button></div>`}
   </div></div></div>`;
@@ -1054,6 +1074,7 @@ function vAjustes(){
     <div class="btns"><button class="btn" onclick="exportJSON()">Exportar respaldo (.json)</button><button class="btn" onclick="$('#fImp').click()">Importar respaldo</button><button class="btn" onclick="exportExcel()">Excel</button></div>
     <input type="file" id="fImp" accept=".json,application/json" class="hide" onchange="importJSON(this.files[0])"></div>
   <div class="card"><h3>Zona de reinicio</h3><div class="btns"><button class="btn" onclick="cargarDemo()">Cargar datos de ejemplo</button><button class="btn danger" onclick="limpiarTodo()">Limpiar y empezar de cero</button></div></div>
+  <div class="card"><h3>Tutorial</h3><p class="small mut" style="margin-bottom:12px">Un recorrido de 1 minuto por lo más importante de la app.</p><button class="btn" onclick="tourStart()">Ver el tutorial</button></div>
   <div class="card"><h3>Acerca de</h3><div class="small mut">${esc(CONFIG.producto)} v${CONFIG.version} · ${esc(CONFIG.marca)}<br>${LIC.modo==='demo'?'Modo demo':`Licencia de <b>${esc(LIC.nombre)}</b>${LIC.vence?` · vence ${fDate(LIC.vence)}`:''}`}<br>
     Para usarla como app: en el celular abrí el menú del navegador → <b>Agregar a pantalla de inicio</b>.${CONFIG.contacto?`<br><a href="https://wa.me/${esc(CONFIG.contacto)}" target="_blank">Soporte por WhatsApp</a>`:''}</div></div>`;
 }
@@ -1112,7 +1133,7 @@ async function boot(){
     $('#nav').classList.remove('hide'); $('#fab').classList.remove('hide');
     if(S.ajustes.pinHash) bloquear();
     render();
-    if(!saved && LIC.modo!=='demo') setTimeout(()=>toast(`Bienvenido${primerNombre()?', '+primerNombre():''}. Empezá cargando el saldo de tu cuenta.`),500);
+    tourAuto();
   }catch(e){
     console.error(e);
     $('#app').innerHTML = `<div class="card"><b>No se pudo iniciar la app</b><p class="small mut mt8">${esc(e.message)}</p><p class="small mut mt8">Si abriste el archivo desde WhatsApp o Drive, abrilo con Chrome o Safari.</p></div>`;
@@ -1120,6 +1141,58 @@ async function boot(){
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 window.addEventListener('load', ()=>{ if(!window.Chart) toast('Sin internet: los gráficos no se muestran, el resto funciona','err'); });
+/* ═══════════════ Tutorial guiado (primera vez) ═══════════════ */
+const TOUR_KEY = () => LSKEY() + '.tour';
+function tourSteps(){
+  const demo = LIC.modo === 'demo';
+  return [
+    { t:'¡Bienvenido! 👋', p: demo ? 'Te muestro la app en 1 minuto. Tiene datos de ejemplo, así que podés tocar todo sin miedo.' : `Hola${primerNombre()?' '+primerNombre():''}, te muestro cómo arrancar en 1 minuto.` },
+    demo
+      ? { view:'inicio', sel:'.hero', t:'Tu plata disponible', p:'Lo que tenés hoy en tus cuentas. Abajo, lo que te queda libre después de pagar los fijos y las tarjetas.' }
+      : { view:'inicio', sel:'.hero .chip', t:'Empezá por acá', p:'Tocá tu cuenta y poné cuánto tenés hoy en el banco. Con eso la app ya sabe desde dónde arrancar.' },
+    { view:'inicio', sel:'.grid.g4', t:'Tu mes de un vistazo', p:'Lo que entró, lo que gastaste y cuánto te quedó. La tasa de ahorro te dice qué parte del sueldo no se fue.' },
+    { view:'inicio', sel:'#cardAlertas', t:'Te avisa sola', p:'Fijos sin pagar, tarjetas muy usadas o si te estás pasando de un techo. No tenés que acordarte de nada.' },
+    { view:'inicio', sel:'#nav button:nth-child(3)', t:'Tarjetas', p:'Cuánto debés en cada tarjeta y cuánto del límite estás usando. Desde ahí registrás el pago.' },
+    { view:'inicio', sel:'#nav button:nth-child(4)', t:'Presupuesto', p:'Tus gastos fijos del mes (alquiler, luz, colegio) y un techo para cada categoría.' },
+    { view:'inicio', sel:'#nav button:nth-child(5)', t:'Más herramientas', p:'Metas de ahorro, simulador de deudas, inversiones y reportes en PDF o Excel.' },
+    { view:'inicio', sel:'#fab', t:'Ahora probá vos', p:'Tocá el botón + y cargá un gasto. Vas a ver que se hace en segundos.', fab:true, last:true }
+  ];
+}
+let TI = 0, TS = [];
+function tourStart(){ closeModal(); TS = tourSteps(); TI = 0; $('#tour').classList.add('on'); tourShow(); }
+function tourEnd(done=true){ $('#tour').classList.remove('on'); $('#fab').classList.remove('tour-top'); try{ localStorage.setItem(TOUR_KEY(),'1'); }catch{} if(done) toast('¡Listo! Si querés repasar, tocá el ? de arriba'); }
+function tourShow(){
+  const st = TS[TI]; if(!st) return tourEnd();
+  $('#fab').classList.toggle('tour-top', !!st.fab);
+  if(st.view && UI.view !== st.view) go(st.view);
+  setTimeout(tourPlace, st.view ? 220 : 0);
+}
+function tourPlace(){
+  const st = TS[TI]; if(!st || !$('#tour').classList.contains('on')) return;
+  const hole = $('#tour .hole'), tip = $('#tour .tcard');
+  tip.innerHTML = `<div class="stp">Paso ${TI+1} de ${TS.length}</div><h4>${st.t}</h4><p>${st.p}</p>
+    <div class="prog">${TS.map((_,i)=>`<i class="${i<=TI?'f':''}"></i>`).join('')}</div>
+    <div class="act"><button class="sk2" onclick="tourEnd(false)">${st.last?'':'Saltar'}</button>
+    ${TI>0?`<button class="btn sm" onclick="TI--;tourShow()">Atrás</button>`:''}
+    <button class="btn sm pri" onclick="${st.last?'tourEnd()':'TI++;tourShow()'}">${st.last?'Entendido':TI===0?'Empezar':'Siguiente'}</button></div>`;
+  const el = st.sel ? document.querySelector(st.sel) : null;
+  const vw = innerWidth, vh = innerHeight, tw = tip.offsetWidth, th = tip.offsetHeight;
+  if(!el){ hole.classList.add('none'); tip.style.left = (vw-tw)/2+'px'; tip.style.top = Math.max(16,(vh-th)/2)+'px'; return; }
+  hole.classList.remove('none');
+  const fixed = getComputedStyle(el).position === 'fixed' || el.closest('#nav');
+  if(!fixed){ const r0 = el.getBoundingClientRect(); if(r0.top < 70 || r0.bottom > vh-140) window.scrollTo({top: scrollY + r0.top - 90}); }
+  requestAnimationFrame(()=>{
+    const r = el.getBoundingClientRect(), pad = 6;
+    Object.assign(hole.style,{left:(r.left-pad)+'px',top:(r.top-pad)+'px',width:(r.width+pad*2)+'px',height:(r.height+pad*2)+'px'});
+    let top = r.bottom + 14; if(top + th > vh - 10) top = r.top - th - 14; if(top < 10) top = Math.min(vh - th - 10, r.bottom + 14);
+    let left = r.left + r.width/2 - tw/2; left = Math.max(12, Math.min(vw - tw - 12, left));
+    tip.style.top = top+'px'; tip.style.left = left+'px';
+  });
+}
+window.addEventListener('resize', ()=>{ if($('#tour').classList.contains('on')) tourPlace(); });
+document.addEventListener('click', e=>{ if(e.target.closest('#fab') && $('#tour').classList.contains('on')) tourEnd(); }, true);
+function tourAuto(){ try{ if(localStorage.getItem(TOUR_KEY())) return; }catch{ return; } setTimeout(()=>{ if(!$('#lock').classList.contains('hide')) return; tourStart(); }, 900); }
+
 boot();
 </script>
 </body>
