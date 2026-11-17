@@ -3,515 +3,448 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Showroom 3D</title>
+<meta name="theme-color" content="#0B0D12">
+<title>Showroom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <!--
 CONTEXTO
 ========
-Showroom 3D white-label para desarrolladoras inmobiliarias. Un solo archivo, sin build.
+Showroom inmobiliario white-label. Un HTML + carpeta img/ (renders). Sin build.
 
-Arquitectura
-- CONFIG (inicio del <script type="module">): marca, proyecto, colores, moneda, WhatsApp, PIN admin,
-  parámetros del edificio, del cotizador y URL opcional de planilla (CSV publicado de Google Sheets).
-- DATA: unidades generadas desde CONFIG.edificio (o importadas por JSON / planilla). Cada unidad:
-  {id, piso, letra, tipo, dorm, banos, m2, balcon, orient, precio, estado}.
-- Escena (Three.js): torre procedural; cada unidad es un "vidrio" clickeable coloreado por estado.
-- UI: KPIs, filtros, panel de unidad (plano SVG + cotizador), lista ordenable, modo admin.
-- Persistencia: localStorage (clave showroom.<slug>). Planilla en vivo: polling cada CONFIG.planilla.cadaSeg.
+Recorrido (3 niveles, como un showroom de sala de ventas):
+ 1) TORRE: render exterior a pantalla completa. Cada piso es un polígono SVG calibrado sobre el render
+    (CONFIG.torre: coordenadas de las losas en píxeles de la imagen original). Hover/tap = resalta el piso.
+ 2) PLANTA: render isométrico del piso tipo con los departamentos marcados por estado (CONFIG.planta.unidades).
+    Tocar un departamento abre la ficha: precio, superficies, ambientes, simulador de pago, WhatsApp, PDF.
+ 3) AMBIENTES: renders panorámicos que se recorren arrastrando (CONFIG.ambientes / CONFIG.amenities).
 
-Planos de venta (orientativo)
-- Básico (estático): CONFIG.planilla.url = "" y modo admin deshabilitado (CONFIG.admin=false).
-- En vivo: CONFIG.planilla.url = CSV publicado con columnas: unidad,estado,precio  (estado: disponible|reservado|vendido).
-- Premium: agregar CONFIG.galeria por tipología (imágenes / videos cortos por ambiente).
+Datos: DB.unidades [{id,piso,letra,tipo,dorm,banos,m2,balcon,orient,precio,estado}] en localStorage.
+Planilla en vivo (plan "en tiempo real"): CSV publicado de Google Sheets con columnas unidad,estado,precio,
+ polling cada CONFIG.planilla.cadaSeg. Modo administrador con PIN para editar estado/precio.
 
-Cotizador (auditable)
-- Anticipo = Precio × anticipo%
-- Cuotas en pozo (sin interés) = Precio × cuotas% / N cuotas
-- Saldo a la entrega = Precio − anticipo − total cuotas
-- Si se financia el saldo: PMT = S·i / (1 − (1+i)^−n), i = tasa anual/12, n = años×12
+Cotizador (auditable):
+ Anticipo = P × a% · Cuotas de obra (sin interés) = P × c% / N · Saldo = P − anticipo − cuotas
+ Financiación del saldo (sistema francés): PMT = S·i / (1 − (1+i)^−n), i = tasa/12, n = años×12
 
-Extender
-- Otra torre / forma: editar construirEdificio() y CONFIG.edificio.
-- Otra planilla: adaptar parseCSV() (mapea columnas por nombre de encabezado).
+Proyecto nuevo: reemplazar img/*.jpg por los renders del cliente, recalibrar CONFIG.torre
+(y de cada losa en la esquina y en el borde derecho) y CONFIG.planta.unidades (rectángulos y pines).
 -->
 <style>
-:root{--ac:#3B82F6;--bg:#0F1115;--bg2:#16181D;--bd:rgba(255,255,255,.08);--tx:#E8EAED;--mu:#9AA0AA;--ok:#10B981;--wa:#F59E0B;--no:#EF4444}
+:root{--ac:#C8A97E;--bg:#0B0D12;--glass:rgba(14,16,22,.62);--bd:rgba(255,255,255,.12);--tx:#F4F1EC;--mu:rgba(244,241,236,.62);--ok:#10B981;--wa:#F59E0B;--no:#EF4444}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
 .num{font-variant-numeric:tabular-nums}
-button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
-input,select{font-family:inherit;font-size:14px;color:var(--tx);background:#0B0C10;border:1px solid var(--bd);border-radius:10px;padding:9px 10px;width:100%;outline:none;transition:border-color .15s}
+button,a{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;text-decoration:none}
+input,select{font-family:inherit;font-size:14px;color:var(--tx);background:rgba(0,0,0,.35);border:1px solid var(--bd);border-radius:10px;padding:9px 10px;width:100%;outline:none;transition:border-color .15s}
 input:focus,select:focus{border-color:var(--ac)}
-#app{display:grid;grid-template-rows:auto 1fr;height:100%}
-header{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--bd);background:var(--bg);z-index:5}
-.logo{width:36px;height:36px;border-radius:10px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex-shrink:0;overflow:hidden}
-.logo img{width:100%;height:100%;object-fit:cover}
-.ttl b{display:block;font-size:15px;font-weight:700;letter-spacing:-.01em}.ttl span{font-size:12px;color:var(--mu)}
-.kpis{display:flex;gap:8px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
-.kpi{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;padding:6px 12px;white-space:nowrap}
-.kpi small{display:block;font-size:10.5px;color:var(--mu);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.kpi b{font-size:15px;font-weight:700}
-.live{display:none;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ok);background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);padding:6px 10px;border-radius:999px;white-space:nowrap}
-.live i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pl 1.6s infinite}
-@keyframes pl{50%{opacity:.3}}
-.hbtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--bd);background:var(--bg2);display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
-.hbtn:hover{background:#1E2128}
-main{position:relative;display:grid;grid-template-columns:1fr 390px;min-height:0}
-#stage{position:relative;min-height:0}
-#c3d{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.float{position:absolute;z-index:3}
-#filters{top:14px;left:14px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 28px)}
-.pill{padding:8px 12px;border-radius:999px;background:rgba(22,24,29,.88);backdrop-filter:blur(8px);border:1px solid var(--bd);font-size:13px;font-weight:600;color:var(--mu);transition:all .15s}
-.pill:hover{color:var(--tx)}.pill.on{background:var(--ac);border-color:var(--ac);color:#fff}
-#legend{bottom:14px;left:14px;display:flex;gap:12px;padding:8px 12px;border-radius:12px;background:rgba(22,24,29,.88);backdrop-filter:blur(8px);border:1px solid var(--bd);font-size:12px;color:var(--mu)}
-#legend span{display:flex;align-items:center;gap:6px}#legend i{width:10px;height:10px;border-radius:3px}
-#views{bottom:14px;right:14px;display:flex;gap:6px}
-#tip{pointer-events:none;padding:8px 10px;border-radius:10px;background:#0B0C10;border:1px solid var(--bd);font-size:12.5px;opacity:0;transition:opacity .12s;white-space:nowrap}
-#tip b{font-size:13px}
-#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--mu);font-size:13px;background:var(--bg);z-index:4;transition:opacity .4s}
-.sk{width:220px;height:8px;border-radius:4px;background:linear-gradient(90deg,#1A1D23,#262A33,#1A1D23);background-size:200% 100%;animation:sk 1.2s infinite}
-@keyframes sk{to{background-position:-200% 0}}
-aside{border-left:1px solid var(--bd);background:var(--bg);display:flex;flex-direction:column;min-height:0}
-.tabs{display:flex;gap:4px;padding:10px 12px;border-bottom:1px solid var(--bd)}
-.tab{flex:1;padding:9px;border-radius:10px;font-size:13px;font-weight:600;color:var(--mu);transition:all .15s}
-.tab.on{background:var(--bg2);color:var(--tx);border:1px solid var(--bd)}
-.pane{flex:1;overflow-y:auto;padding:14px;display:none}.pane.on{display:block}
-.card{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
-.uh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.uh h2{font-size:22px;font-weight:800;letter-spacing:-.02em}.uh p{font-size:13px;color:var(--mu);margin-top:2px}
-.st{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}
-.st.disponible{background:rgba(16,185,129,.12);color:var(--ok)}.st.reservado{background:rgba(245,158,11,.12);color:var(--wa)}.st.vendido{background:rgba(239,68,68,.12);color:var(--no)}
-.price{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:12px}.price small{font-size:12px;color:var(--mu);font-weight:500;margin-left:6px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.cell{background:#0B0C10;border:1px solid var(--bd);border-radius:10px;padding:9px 10px}
-.cell small{display:block;font-size:11px;color:var(--mu)}.cell b{font-size:14px}
-.sec{font-size:12px;font-weight:700;color:var(--mu);letter-spacing:.06em;text-transform:uppercase;margin:4px 0 10px;display:flex;align-items:center;gap:6px}
-.plan{background:#F7F7F5;border-radius:10px;padding:8px}
-.plan svg{width:100%;height:auto;display:block}
-.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:13.5px;border-bottom:1px dashed var(--bd)}
+.glass{background:var(--glass);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);border:1px solid var(--bd);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.view{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.view.on{opacity:1;pointer-events:auto}
+#top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;pointer-events:none}
+#top>*{pointer-events:auto}
+.brand{position:absolute;left:50%;transform:translateX(-50%);text-align:center;letter-spacing:.42em;font-weight:700;font-size:15px;text-transform:uppercase;text-shadow:0 2px 14px rgba(0,0,0,.5);white-space:nowrap}
+.brand small{display:block;font-size:9px;letter-spacing:.38em;font-weight:500;color:var(--mu);margin-top:3px}
+.tbtn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600;transition:background .2s,transform .1s}
+.tbtn:active{transform:scale(.97)}
+.tbtn.g{background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.tbtn.g:hover{background:rgba(30,32,40,.8)}
+.tbtn.p{background:var(--ac);color:#17130D}
+.tbtn.p:hover{filter:brightness(1.08)}
+.icon{width:16px;height:16px;flex-shrink:0}
+#vTorre svg{position:absolute;inset:0;width:100%;height:100%}
+#extImg{transform-origin:50% 50%;transform-box:fill-box;animation:kb 28s ease-in-out infinite alternate}
+@keyframes kb{to{transform:scale(1.04)}}
+.fl{fill:transparent;stroke:transparent;transition:fill .25s,stroke .25s;cursor:pointer}
+.fl.hi{fill:rgba(200,169,126,.32);stroke:rgba(255,236,205,.95);stroke-width:3}
+#heroCard{position:absolute;left:22px;bottom:22px;width:350px;padding:20px;z-index:5}
+#heroCard h1{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+#heroCard p{color:var(--mu);font-size:13px;margin-top:6px;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.stat{background:rgba(0,0,0,.28);border:1px solid var(--bd);border-radius:12px;padding:10px}
+.stat small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.stat b{font-size:15px;font-weight:700;white-space:nowrap}
+#floorList{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:230px;padding:10px;z-index:5;max-height:calc(100% - 180px);overflow:auto}
+#floorList h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);padding:8px 10px 10px;font-weight:600}
+.frow{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:10px;font-size:13.5px;transition:background .15s;cursor:pointer}
+.frow:hover,.frow.hi{background:rgba(255,255,255,.08)}
+.dots{display:flex;gap:4px}.dots i{width:8px;height:8px;border-radius:50%}
+#floorTip{position:absolute;z-index:6;pointer-events:none;padding:10px 14px;opacity:0;transition:opacity .15s;font-size:13px;white-space:nowrap}
+#floorTip b{font-size:18px;display:block}
+#hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-size:12.5px;color:var(--mu);padding:8px 14px;border-radius:999px;z-index:4;white-space:nowrap}
+#vPlanta{background:#0B0D12}
+#vPlanta .bgimg{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(28px) brightness(.35) saturate(1.2);transform:scale(1.05)}
+#plantaWrap{position:absolute;left:0;right:430px;top:70px;bottom:20px;display:flex;align-items:center;justify-content:center;padding:20px}
+#plantaSvg{width:100%;height:100%;-webkit-mask-image:radial-gradient(ellipse 58% 60% at 50% 50%,#000 78%,transparent 100%);mask-image:radial-gradient(ellipse 58% 60% at 50% 50%,#000 78%,transparent 100%)}
+.ug{cursor:pointer}
+.ulbl{pointer-events:none;transition:opacity .2s}
+.pin{cursor:pointer}
+.pin circle.o{animation:pp 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pp{from{opacity:.8;transform:scale(1)}to{opacity:0;transform:scale(2.4)}}
+#floorStep{position:absolute;left:22px;top:84px;padding:14px 16px;z-index:5;display:flex;align-items:center;gap:14px}
+#floorStep .big{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+#floorStep small{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mu)}
+.stepb{display:flex;flex-direction:column;gap:6px}
+.stepb button{width:34px;height:34px;border-radius:10px;border:1px solid var(--bd);background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.stepb button:hover{background:rgba(255,255,255,.1)}
+.stepb button:disabled{opacity:.3;cursor:default}
+#side{position:absolute;right:16px;top:76px;bottom:16px;width:400px;z-index:6;display:flex;flex-direction:column;overflow:hidden}
+#sideBody{flex:1;overflow:auto;padding:18px}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--mu);margin-bottom:12px}
+.legend span{display:flex;align-items:center;gap:6px}.legend i{width:9px;height:9px;border-radius:50%}
+.ucard{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:14px;border:1px solid var(--bd);background:rgba(0,0,0,.22);margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s}
+.ucard:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.05)}
+.ucard b{font-size:15px}.ucard small{display:block;color:var(--mu);font-size:12px;margin-top:2px}
+.st{font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap;text-transform:capitalize}
+.st.disponible{background:rgba(16,185,129,.16);color:#34D399}.st.reservado{background:rgba(245,158,11,.16);color:#FBBF24}.st.vendido{background:rgba(239,68,68,.14);color:#F87171}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dh h2{font-size:26px;font-weight:800;letter-spacing:-.02em}.dh p{color:var(--mu);font-size:13px;margin-top:3px}
+.price{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:14px}.price small{font-size:12px;color:var(--mu);font-weight:500;margin-left:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.cell{background:rgba(0,0,0,.25);border:1px solid var(--bd);border-radius:12px;padding:10px}
+.cell small{display:block;font-size:11px;color:var(--mu)}.cell b{font-size:15px}
+.sec{font-size:11px;font-weight:700;color:var(--mu);letter-spacing:.12em;text-transform:uppercase;margin:20px 0 10px;display:flex;align-items:center;gap:6px}
+.amb{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.amb button{position:relative;height:84px;border-radius:12px;overflow:hidden;border:1px solid var(--bd);background-size:cover;background-position:center;transition:transform .15s}
+.amb button:hover{transform:scale(1.02)}
+.amb button::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.6))}
+.amb button span{position:absolute;left:8px;bottom:7px;font-size:12px;font-weight:700;z-index:1}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13.5px;border-bottom:1px dashed var(--bd)}
 .row:last-child{border:0}.row span{color:var(--mu)}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .f2 label{font-size:11.5px;color:var(--mu);display:block;margin-bottom:4px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;font-weight:700;font-size:14px;transition:filter .15s,transform .1s}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;font-weight:700;font-size:14px;transition:filter .15s,transform .1s}
 .btn:active{transform:scale(.98)}
-.btn.p{background:var(--ac);color:#fff}.btn.p:hover{filter:brightness(1.1)}
-.btn.g{background:var(--bg2);border:1px solid var(--bd)}.btn.g:hover{background:#1E2128}
+.btn.p{background:var(--ac);color:#17130D}.btn.p:hover{filter:brightness(1.08)}
+.btn.g{background:rgba(255,255,255,.06);border:1px solid var(--bd)}.btn.g:hover{background:rgba(255,255,255,.1)}
 .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.empty{text-align:center;padding:40px 16px;color:var(--mu);font-size:14px;line-height:1.5}
-.empty b{display:block;color:var(--tx);font-size:16px;margin-bottom:6px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;font-size:11px;color:var(--mu);font-weight:600;padding:8px 6px;border-bottom:1px solid var(--bd);cursor:pointer;user-select:none;white-space:nowrap}
-th:hover{color:var(--tx)}
-td{padding:9px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
-tr.r{cursor:pointer;transition:background .12s}tr.r:hover{background:var(--bg2)}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-.tip-i{display:inline-flex;width:15px;height:15px;border-radius:50%;border:1px solid var(--mu);font-size:10px;align-items:center;justify-content:center;color:var(--mu);cursor:help;position:relative}
-.tip-i:hover::after{content:attr(data-t);position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:220px;background:#0B0C10;border:1px solid var(--bd);padding:8px 10px;border-radius:8px;font-size:12px;color:var(--tx);text-transform:none;letter-spacing:0;font-weight:500;line-height:1.4;z-index:20}
-#toasts{position:fixed;top:66px;left:50%;transform:translateX(-50%);z-index:50;display:flex;flex-direction:column;gap:6px;pointer-events:none}
-.toast{background:#0B0C10;border:1px solid var(--bd);padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;animation:ti .2s ease-out}
+.back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mu);margin-bottom:12px}
+.back:hover{color:var(--tx)}
+.tip-i{display:inline-flex;width:15px;height:15px;border-radius:50%;border:1px solid var(--mu);font-size:10px;align-items:center;justify-content:center;color:var(--mu);cursor:help;position:relative;text-transform:none;letter-spacing:0}
+.tip-i:hover::after{content:attr(data-t);position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:230px;background:#0B0D12;border:1px solid var(--bd);padding:8px 10px;border-radius:8px;font-size:12px;color:var(--tx);font-weight:500;line-height:1.4;z-index:20}
+#vAmb{background:#000;cursor:grab;touch-action:none;overflow:hidden}
+#vAmb.drag{cursor:grabbing}
+#pano{position:absolute;top:0;left:0;height:100%;width:auto;max-width:none;user-select:none;-webkit-user-drag:none;will-change:transform}
+#ambLbl{position:absolute;left:22px;bottom:118px;padding:12px 16px;z-index:5}
+#ambLbl small{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mu)}
+#ambLbl b{font-size:20px}
+#ambThumbs{position:absolute;left:50%;transform:translateX(-50%);bottom:20px;display:flex;gap:8px;padding:8px;z-index:5;max-width:calc(100% - 32px);overflow-x:auto}
+#ambThumbs button{width:110px;height:62px;border-radius:10px;background-size:cover;background-position:center;border:2px solid transparent;flex-shrink:0;position:relative;opacity:.75;transition:opacity .15s,border-color .15s}
+#ambThumbs button.on{border-color:var(--ac);opacity:1}
+#ambThumbs button:hover{opacity:1}
+#ambThumbs button span{position:absolute;left:6px;bottom:4px;font-size:10.5px;font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+#dragHint{position:absolute;right:22px;bottom:128px;font-size:12px;color:var(--mu);padding:8px 12px;border-radius:999px;z-index:5}
+#toasts{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;animation:ti .2s ease-out}
 @keyframes ti{from{opacity:0;transform:translateY(-6px)}}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;display:none;align-items:center;justify-content:center;padding:16px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
 .modal.on{display:flex}
-.mbox{background:var(--bg);border:1px solid var(--bd);border-radius:16px;width:100%;max-width:440px;max-height:90vh;overflow:auto;padding:18px}
+.mbox{width:100%;max-width:420px;max-height:90vh;overflow:auto;padding:18px}
 .mbox h3{font-size:17px;margin-bottom:12px}
 .mi{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:600;width:100%;text-align:left;transition:background .12s}
-.mi:hover{background:var(--bg2)}
+.mi:hover{background:rgba(255,255,255,.07)}
+#loader{position:fixed;inset:0;z-index:80;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .6s}
+#loader .brand{position:static;transform:none}
+#loader .bar{width:180px;height:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+#loader .bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
 .adm{display:none}.admin .adm{display:block}
 @media (max-width:860px){
- main{grid-template-columns:1fr;grid-template-rows:1fr auto}
- aside{position:absolute;left:0;right:0;bottom:0;max-height:58%;border-left:0;border-top:1px solid var(--bd);border-radius:18px 18px 0 0;z-index:6;transition:transform .25s}
- aside.min{transform:translateY(calc(100% - 52px))}
- .grab{display:block!important}
- .kpis .kpi:nth-child(n+2){display:none}
- .ttl span{display:none}
- #legend{bottom:66px;font-size:11.5px;gap:9px}#views{bottom:112px}
+ #top{padding:12px}
+ .brand{font-size:11px;letter-spacing:.28em}.brand small{display:none}
+ #bAmen{display:none}
+ #floorTip{display:none}
+ .tbtn .lbl{display:none}.tbtn{padding:10px 12px}
+ #heroCard{left:12px;right:12px;bottom:12px;width:auto;padding:14px}
+ #heroCard h1{font-size:22px}#heroCard p{display:none}
+ .stats{margin-top:10px}
+ #floorList{display:none}
+ #hint{bottom:auto;top:64px;font-size:11.5px}
+ #plantaWrap{right:0;top:116px;bottom:auto;height:38%;padding:6px}
+ #floorStep{top:62px;left:12px;padding:6px 12px}#floorStep .big{font-size:26px}
+ .stepb{flex-direction:row}
+ #side{left:0;right:0;bottom:0;top:auto;width:auto;height:52%;border-radius:20px 20px 0 0}
+ #ambLbl{bottom:96px;left:12px}#dragHint{display:none}
+ #ambThumbs button{width:84px;height:50px}
 }
-.grab{display:none;width:44px;height:5px;border-radius:3px;background:#3A3F4A;margin:8px auto 0}
 @media print{
- header .kpis,header .hbtn,#stage,.tabs,.no-print{display:none!important}
+ #top,#vTorre,#vAmb,#plantaWrap,#floorStep,.bgimg,.no-print{display:none!important}
  html,body{overflow:visible;background:#fff;color:#111}
- main{display:block}aside{border:0;position:static;max-height:none}
- .pane{display:block!important;overflow:visible}.card{border-color:#ddd;background:#fff}
+ #vPlanta{position:static;opacity:1}
+ #side{position:static;width:auto;border:0;box-shadow:none;background:#fff;color:#111}
 }
 </style>
 </head>
 <body>
-<div id="app">
- <header>
-  <div class="logo" id="logo"></div>
-  <div class="ttl"><b id="pName"></b><span id="pSub"></span></div>
-  <div class="kpis" id="kpis"></div>
-  <div class="live" id="live"><i></i>En vivo</div>
-  <button class="hbtn" id="menuBtn" title="Menú" aria-label="Menú"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
- </header>
- <main>
-  <section id="stage">
-   <canvas id="c3d"></canvas>
-   <div id="loading"><div class="sk"></div>Cargando el edificio…</div>
-   <div class="float" id="filters"></div>
-   <div class="float" id="legend"><span><i style="background:var(--ok)"></i>Disponible</span><span><i style="background:var(--wa)"></i>Reservado</span><span><i style="background:#5B6070"></i>Vendido</span></div>
-   <div class="float" id="views">
-    <button class="pill" id="vNight" title="Día / noche">Noche</button>
-    <button class="pill" id="vHome" title="Vista general">Vista general</button>
-   </div>
-   <div class="float" id="tip"></div>
-  </section>
-  <aside id="side">
-   <div class="grab" id="grab"></div>
-   <div class="tabs"><button class="tab on" data-p="pU">Unidad</button><button class="tab" data-p="pL">Lista</button><button class="tab" data-p="pP">Proyecto</button></div>
-   <div class="pane on" id="pU"></div>
-   <div class="pane" id="pL"></div>
-   <div class="pane" id="pP"></div>
-  </aside>
- </main>
-</div>
+<div id="loader"><div class="brand" id="ldBrand"></div><div class="bar"><i id="ldBar"></i></div></div>
+
+<header id="top">
+ <button class="tbtn g" id="bBack" style="visibility:hidden"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span class="lbl" id="bBackLbl">Volver</span></button>
+ <div class="brand" id="brand"></div>
+ <div style="display:flex;gap:8px">
+  <button class="tbtn g" id="bAmen"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg><span class="lbl">Amenities</span></button>
+  <a class="tbtn p" id="bInteres" target="_blank" rel="noopener"><span class="lbl">Registrar interés</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  <button class="tbtn g" id="bMenu" aria-label="Menú"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+ </div>
+</header>
+
+<section class="view on" id="vTorre">
+ <svg id="torreSvg" viewBox="0 0 2688 1520" preserveAspectRatio="xMidYMid slice"><rect x="0" y="-600" width="2688" height="620" fill="#1B2A5C"/><rect x="0" y="1500" width="2688" height="600" fill="#0B0D12"/><image id="extImg" href="img/exterior.jpg" x="0" y="0" width="2688" height="1520"/><g id="floors"></g></svg>
+ <div class="glass" id="heroCard"></div>
+ <div class="glass" id="floorList"></div>
+ <div class="glass" id="floorTip"></div>
+ <div class="glass" id="hint">Tocá un piso para ver los departamentos</div>
+</section>
+
+<section class="view" id="vPlanta">
+ <div class="bgimg" style="background-image:url(img/exterior-t.jpg)"></div>
+ <div class="glass" id="floorStep"><div class="stepb"><button id="fUp" aria-label="Piso de arriba"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg></button><button id="fDn" aria-label="Piso de abajo"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button></div><div><small>Piso</small><div class="big num" id="fNum">07</div></div></div>
+ <div id="plantaWrap"><svg id="plantaSvg" viewBox="0 0 2688 1520" preserveAspectRatio="xMidYMid meet"><image href="img/planta.jpg" width="2688" height="1520"/><g id="units"></g><g id="pins"></g></svg></div>
+ <aside class="glass" id="side"><div id="sideBody"></div></aside>
+</section>
+
+<section class="view" id="vAmb">
+ <img id="pano" alt="" draggable="false">
+ <div class="glass" id="ambLbl"><small id="ambSub"></small><b id="ambName"></b></div>
+ <div class="glass" id="dragHint">Arrastrá para mirar alrededor</div>
+ <div class="glass" id="ambThumbs"></div>
+</section>
+
 <div id="toasts"></div>
-<div class="modal" id="menu"><div class="mbox">
+<div class="modal" id="menu"><div class="mbox glass">
  <h3>Opciones</h3>
+ <button class="mi" data-a="amen">Ver amenities</button>
  <button class="mi" data-a="xlsx">Exportar unidades a Excel</button>
  <button class="mi" data-a="json">Exportar datos (JSON)</button>
  <button class="mi" data-a="imp">Importar datos (JSON)</button>
- <button class="mi" data-a="print">Imprimir / guardar ficha</button>
  <button class="mi" data-a="admin">Modo administrador</button>
  <button class="mi" data-a="sheet">Conectar planilla en vivo</button>
  <button class="mi" data-a="demo">Restaurar datos demo</button>
- <button class="mi" data-a="clear" style="color:var(--no)">Limpiar y empezar de cero</button>
+ <button class="mi" data-a="clear" style="color:#F87171">Limpiar y empezar de cero</button>
  <button class="btn g" style="margin-top:10px" data-a="close">Cerrar</button>
  <input type="file" id="fileIn" accept=".json" hidden>
 </div></div>
 
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" defer></script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
+<script>
 // ======================= CONFIG (editar acá) =======================
 const CONFIG = {
-  producto:   "Showroom 3D",
-  marca:      "Acme Desarrollos",          // el comprador cambia esto
-  logoTexto:  "AD",                        // iniciales o URL de imagen
-  colorAcento:"#3B82F6",
-  moneda:     "USD",                       // PYG | USD | EUR
+  producto:   "Showroom",
+  marca:      "Acme Desarrollos",           // el comprador cambia esto
+  logoTexto:  "AURORA",                     // texto del logo central (o URL de imagen)
+  colorAcento:"#C8A97E",
+  moneda:     "USD",                        // PYG | USD | EUR
   locale:     "es-PY",
-  version:    "1.0.0",
-  proyecto: { nombre: "Torre Aurora", ubicacion: "Barrio Norte · Asunción", entrega: "Diciembre 2028",
-    descripcion: "Torre residencial de 14 pisos con amenities en la azotea: piscina, quincho y gimnasio. Departamentos de 1, 2 y 3 dormitorios.",
-    amenities: ["Piscina en azotea","Quincho con parrilla","Gimnasio","Cowork","Cocheras","Seguridad 24 h"] },
-  whatsapp:   "595900000000",              // número de ventas (con código de país, sin +)
-  admin:      true,                        // false = versión estática (plan básico)
-  pin:        "1234",                      // PIN del modo administrador
-  edificio: { pisos: 14, pisoInicial: 1, precioM2: 1650, incrementoPiso: 0.012, extraEsquina: 0.04,
-    tipologias: {
-      A: { tipo: "2 dormitorios", dorm: 2, banos: 2, m2: 78,  balcon: 9,  orient: "Norte" },
-      B: { tipo: "1 dormitorio",  dorm: 1, banos: 1, m2: 52,  balcon: 6,  orient: "Norte" },
-      C: { tipo: "3 dormitorios", dorm: 3, banos: 2, m2: 112, balcon: 14, orient: "Sur" },
-      D: { tipo: "2 dormitorios", dorm: 2, banos: 2, m2: 80,  balcon: 9,  orient: "Sur" } } },
+  version:    "2.0.0",
+  proyecto: { nombre: "Torre Aurora", sub: "Residences", ubicacion: "Barrio Norte · Asunción", entrega: "Diciembre 2028",
+    descripcion: "10 pisos de departamentos de 1, 2 y 3 dormitorios con balcones corridos, lobby de doble altura y azotea con piscina infinita." },
+  whatsapp:   "595900000000",               // número de ventas con código de país, sin +
+  admin:      true,                         // false = versión estática
+  pin:        "1234",
+  // Calibración del render exterior (px de la imagen original 2688×1520).
+  // Losas k=0 (techo) a k=10 (sobre el lobby). yIzq: esquina (x=xC). yDer: borde derecho (x=xR).
+  torre: { pisos: 10, xL: 985, xC: 1110, xR: 1745, yIzq0: 200, pasoIzq: 98, yDer0: 280, pasoDer: 89.5, lateral0: 72 },
+  // Departamentos sobre el render de planta (px de 2688×1520): rectángulo [x,y,w,h] y pines de ambientes.
+  planta: { unidades: {
+    A: { rect: [190, 760, 990, 520], pins: { living: [860, 1060], cocina: [930, 840], suite: [420, 1060], bano: [610, 850] } },
+    B: { rect: [200, 175, 720, 540], pins: { living: [520, 590], cocina: [760, 470], suite: [480, 290], bano: [760, 280] } },
+    C: { rect: [1270, 170, 1150, 560], pins: { living: [2140, 600], cocina: [1560, 560], suite: [1660, 280], bano: [1350, 400] } },
+    D: { rect: [1300, 760, 1020, 520], pins: { living: [1660, 1080], cocina: [1560, 840], suite: [2160, 1060], bano: [1900, 860] } } } },
+  tipologias: {
+    A: { tipo: "2 dormitorios", dorm: 2, banos: 2, m2: 86,  balcon: 14, orient: "Norte" },
+    B: { tipo: "1 dormitorio",  dorm: 1, banos: 1, m2: 58,  balcon: 10, orient: "Sur" },
+    C: { tipo: "3 dormitorios", dorm: 3, banos: 3, m2: 128, balcon: 22, orient: "Sur · Este" },
+    D: { tipo: "2 dormitorios", dorm: 2, banos: 2, m2: 84,  balcon: 14, orient: "Norte · Este" } },
+  precio: { m2: 1850, incrementoPiso: 0.015, balconFactor: 0.5 },
+  ambientes: {
+    living: { n: "Living y comedor", img: "img/living.jpg" }, cocina: { n: "Cocina", img: "img/cocina.jpg" },
+    suite: { n: "Suite principal", img: "img/suite.jpg" }, bano: { n: "Baño principal", img: "img/bano.jpg" } },
+  amenities: [ { n: "Azotea con piscina", img: "img/rooftop.jpg" }, { n: "Lobby doble altura", img: "img/lobby.jpg" } ],
   cotizador: { anticipo: 30, cuotasPct: 40, cuotas: 30, tasaAnual: 9, anios: 15 },
-  planilla:  { url: "", cadaSeg: 60 }      // CSV publicado de Google Sheets: unidad,estado,precio
+  planilla:  { url: "", cadaSeg: 60 }
 };
 // ===================================================================
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-const KEY = 'showroom.' + CONFIG.proyecto.nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const KEY = 'showroom.' + CONFIG.proyecto.nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.v2';
 const fm = new Intl.NumberFormat(CONFIG.locale, { maximumFractionDigits: 0 });
 const money = v => (CONFIG.moneda === 'PYG' ? 'Gs. ' : CONFIG.moneda === 'EUR' ? '€ ' : 'USD ') + fm.format(Math.round(v));
-const COL = { disponible: 0x10B981, reservado: 0xF59E0B, vendido: 0x3A3F4A };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function toast(m) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; $('#toasts').appendChild(t); setTimeout(() => t.remove(), 2400); }
+const COL = { disponible: '#10B981', reservado: '#F59E0B', vendido: '#EF4444' };
+const LET = Object.keys(CONFIG.tipologias);
+function toast(m) { const t = document.createElement('div'); t.className = 'toast glass'; t.textContent = m; $('#toasts').appendChild(t); setTimeout(() => t.remove(), 2400); }
 
-// ---------- Branding ----------
 document.documentElement.style.setProperty('--ac', CONFIG.colorAcento);
 document.title = `${CONFIG.proyecto.nombre} · ${CONFIG.producto}`;
-$('#logo').innerHTML = /^https?:|^data:/.test(CONFIG.logoTexto) ? `<img src="${CONFIG.logoTexto}" alt="">` : esc(CONFIG.logoTexto);
-$('#pName').textContent = CONFIG.proyecto.nombre;
-$('#pSub').textContent = `${CONFIG.marca} · ${CONFIG.proyecto.ubicacion}`;
+const brandHTML = /^https?:|^data:/.test(CONFIG.logoTexto) ? `<img src="${CONFIG.logoTexto}" alt="" style="height:30px">` : `${esc(CONFIG.logoTexto)}<small>${esc(CONFIG.proyecto.sub)}</small>`;
+$('#brand').innerHTML = brandHTML; $('#ldBrand').innerHTML = brandHTML;
+const waLink = txt => `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(txt)}`;
+$('#bInteres').href = waLink(`Hola! Me interesa ${CONFIG.proyecto.nombre}. ¿Me pasan información?`);
 
-// ---------- Datos ----------
-function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+// ---------- datos ----------
+function rng(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 function demoData() {
-  const E = CONFIG.edificio, r = rng(7), U = [];
-  for (let p = E.pisoInicial; p < E.pisoInicial + E.pisos; p++) {
-    Object.entries(E.tipologias).forEach(([L, t]) => {
-      const esquina = L === 'A' || L === 'D' || L === 'C';
-      const pm2 = E.precioM2 * (1 + E.incrementoPiso * (p - E.pisoInicial)) * (esquina ? 1 + E.extraEsquina : 1);
-      const precio = Math.round((t.m2 + t.balcon * 0.5) * pm2 / 100) * 100;
-      const x = r(), alto = (p - E.pisoInicial) / E.pisos;
-      const estado = x < 0.32 + alto * 0.25 ? 'vendido' : x < 0.46 + alto * 0.2 ? 'reservado' : 'disponible';
-      U.push({ id: `${p}${String(['A','B','C','D'].indexOf(L) + 1).padStart(2,'0')}`, piso: p, letra: L, ...t, precio, estado });
-    });
-  }
+  const r = rng(11), U = [], P = CONFIG.precio;
+  for (let p = 1; p <= CONFIG.torre.pisos; p++) LET.forEach((L, i) => {
+    const t = CONFIG.tipologias[L], x = r(), alto = (p - 1) / CONFIG.torre.pisos;
+    const precio = Math.round((t.m2 + t.balcon * P.balconFactor) * P.m2 * (1 + P.incrementoPiso * (p - 1)) / 100) * 100;
+    const estado = x < .30 + alto * .2 ? 'vendido' : x < .44 + alto * .15 ? 'reservado' : 'disponible';
+    U.push({ id: `${p}0${i + 1}`, piso: p, letra: L, ...t, precio, estado });
+  });
   return { unidades: U, actualizado: new Date().toISOString() };
 }
-let DB;
-try { DB = JSON.parse(localStorage.getItem(KEY)) } catch (e) { DB = null }
-if (!DB || !Array.isArray(DB.unidades)) DB = demoData();
+let DB; try { DB = JSON.parse(localStorage.getItem(KEY)) } catch (e) { DB = null }
+if (!DB || !Array.isArray(DB.unidades) || !DB.unidades.every(u => u.letra in CONFIG.tipologias)) DB = demoData();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)) } catch (e) {} };
-const UI = { sel: null, f: { dorm: 0, estado: 'todos' }, sort: { k: 'id', d: 1 }, admin: false, night: false };
-const visible = u => (UI.f.dorm === 0 || u.dorm === UI.f.dorm) && (UI.f.estado === 'todos' || u.estado === UI.f.estado);
+const UI = { view: 'torre', piso: 7, sel: null, amb: null, cot: { ...CONFIG.cotizador }, admin: false };
+const del = p => DB.unidades.filter(u => u.piso === p);
 
-// ---------- KPIs ----------
-function kpis() {
-  const U = DB.unidades, n = U.length, disp = U.filter(u => u.estado === 'disponible'), vend = U.filter(u => u.estado === 'vendido');
-  const m2d = disp.reduce((a, u) => a + u.m2, 0), vald = disp.reduce((a, u) => a + u.precio, 0);
-  $('#kpis').innerHTML = [
-    ['Disponibles', `${disp.length} / ${n}`],
-    ['Vendido', `${Math.round(vend.length / n * 100)}%`],
-    ['Precio prom. m²', m2d ? money(vald / m2d) : '—'],
-    ['Stock disponible', money(vald)]
-  ].map(([a, b]) => `<div class="kpi"><small>${a}</small><b class="num">${b}</b></div>`).join('');
-}
-
-// ---------- Escena 3D ----------
-const canvas = $('#c3d'), stage = $('#stage');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(38, 1, 0.5, 900);
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true; controls.maxPolarAngle = Math.PI * 0.49; controls.minDistance = 22; controls.maxDistance = 190;
-controls.autoRotate = true; controls.autoRotateSpeed = 0.45;
-const hemi = new THREE.HemisphereLight(0xdbe8ff, 0x2a2f3a, 1.1); scene.add(hemi);
-const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(40, 70, 30); sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 70, bottom: -10, far: 200 }); scene.add(sun);
-
-const FH = 3.1, W = 22, Dp = 14; // altura de piso, ancho, profundidad
-const unitMesh = new Map(); const pickables = [];
-function box(w, h, d, mat, x, y, z) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; }
-const matSlab = new THREE.MeshStandardMaterial({ color: 0xE9E6E0, roughness: .8 });
-const matCore = new THREE.MeshStandardMaterial({ color: 0xBDB8AE, roughness: .9 });
-const matDark = new THREE.MeshStandardMaterial({ color: 0x2A2F3A, roughness: .9 });
-const matGround = new THREE.MeshStandardMaterial({ color: 0x3B4250, roughness: 1 });
-const matGrass = new THREE.MeshStandardMaterial({ color: 0x4F7A4A, roughness: 1 });
-const matWater = new THREE.MeshStandardMaterial({ color: 0x38BDF8, roughness: .2, metalness: .1, emissive: 0x0c4a6e, emissiveIntensity: .3 });
-
-function construirEdificio() {
-  const E = CONFIG.edificio, pisos = E.pisos;
-  const g = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), matGround); g.rotation.x = -Math.PI / 2; g.receiveShadow = true; scene.add(g);
-  box(60, .3, 46, matGrass, 0, .15, 0);
-  box(W + 6, .5, Dp + 6, matSlab, 0, .4, 0);
-  // planta baja (lobby)
-  box(W, FH * 1.3, Dp, new THREE.MeshStandardMaterial({ color: 0x1F2937, roughness: .3, metalness: .4 }), 0, .65 + FH * .65, 0);
-  const base = .65 + FH * 1.3;
-  // núcleo
-  box(4, pisos * FH + 4, 4, matCore, 0, base + (pisos * FH + 4) / 2, 0);
-  // unidades: A (NO), B (NE), C (SE), D (SO) — 2 al frente (z+) y 2 al fondo (z-)
-  const slots = { A: [-W / 4, Dp / 4], B: [W / 4, Dp / 4], C: [W / 4, -Dp / 4], D: [-W / 4, -Dp / 4] };
-  DB.unidades.forEach(u => {
-    const i = u.piso - E.pisoInicial, y = base + i * FH + FH / 2, [x, z] = slots[u.letra] || [0, 0];
-    const mat = new THREE.MeshStandardMaterial({ color: COL[u.estado], roughness: .15, metalness: .3, transparent: true, opacity: .92, emissive: COL[u.estado], emissiveIntensity: .15 });
-    const m = box(W / 2 - .5, FH - .55, Dp / 2 - .5, mat, x, y, z); m.userData.u = u; unitMesh.set(u.id, m); pickables.push(m);
+// ---------- 1. TORRE ----------
+const T = CONFIG.torre;
+const yL = k => T.yIzq0 + k * T.pasoIzq, yR = k => T.yDer0 + k * T.pasoDer, lat = k => T.lateral0 * (1 - k / 10) + 6;
+function poly(p) { const kt = T.pisos - p, kb = kt + 1;
+  return [[T.xL, yL(kt) + lat(kt)], [T.xC, yL(kt)], [T.xR, yR(kt)], [T.xR, yR(kb)], [T.xC, yL(kb)], [T.xL, yL(kb) + lat(kb)]].map(q => q.join(',')).join(' '); }
+function renderTorre() {
+  $('#floors').innerHTML = Array.from({ length: T.pisos }, (_, i) => i + 1).map(p => `<polygon class="fl" data-p="${p}" points="${poly(p)}"/>`).join('');
+  const U = DB.unidades, n = U.length, d = U.filter(u => u.estado === 'disponible');
+  const desde = d.length ? Math.min(...d.map(u => u.precio)) : 0;
+  $('#heroCard').innerHTML = `<div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);font-weight:700">${esc(CONFIG.marca)}</div>
+   <h1 style="margin-top:6px">${esc(CONFIG.proyecto.nombre)}</h1><p>${esc(CONFIG.proyecto.ubicacion)} · Entrega ${esc(CONFIG.proyecto.entrega)}<br>${esc(CONFIG.proyecto.descripcion)}</p>
+   <div class="stats"><div class="stat"><small>Disponibles</small><b class="num">${d.length} de ${n}</b></div><div class="stat"><small>Vendido</small><b class="num">${Math.round(U.filter(u => u.estado === 'vendido').length / n * 100)}%</b></div><div class="stat"><small>Desde</small><b class="num">${desde ? money(desde) : '—'}</b></div></div>`;
+  $('#floorList').innerHTML = `<h3>Elegí tu piso</h3>` + Array.from({ length: T.pisos }, (_, i) => T.pisos - i).map(p => {
+    const D = del(p), nd = D.filter(u => u.estado === 'disponible').length;
+    return `<div class="frow" data-p="${p}"><b class="num">Piso ${String(p).padStart(2, '0')}</b><span style="display:flex;align-items:center;gap:10px"><span class="dots">${D.map(u => `<i style="background:${COL[u.estado]}"></i>`).join('')}</span><span class="num" style="color:var(--mu);font-size:12px;width:16px;text-align:right">${nd}</span></span></div>`; }).join('');
+  $$('#floors .fl, #floorList .frow').forEach(el => {
+    el.onmouseenter = e => hiFloor(+el.dataset.p, e); el.onmouseleave = () => hiFloor(null);
+    el.onclick = () => irPiso(+el.dataset.p);
   });
-  for (let i = 0; i <= pisos; i++) { box(W + .8, .32, Dp + .8, matSlab, 0, base + i * FH, 0); }
-  // balcones al frente
-  for (let i = 0; i < pisos; i++) { const y = base + i * FH + .25; box(W - 1, .18, 1.6, matSlab, 0, y, Dp / 2 + .8); box(W - 1, .9, .06, new THREE.MeshStandardMaterial({ color: 0x9fd3ff, transparent: true, opacity: .35 }), 0, y + .5, Dp / 2 + 1.55); }
-  // azotea: piscina + pérgola
-  const top = base + pisos * FH;
-  box(W + .8, .5, Dp + .8, matSlab, 0, top + .25, 0);
-  box(9, .3, 4.5, matWater, -4, top + .6, 2.5);
-  for (let k = 0; k < 5; k++) box(.25, .2, 5, matDark, 4 + k * 1.4, top + 3, -2);
-  [[3.6, -4.2], [9.4, -4.2], [3.6, .2], [9.4, .2]].forEach(([x, z]) => box(.25, 2.6, .25, matDark, x, top + 1.8, z));
-  // entorno: edificios vecinos y árboles
-  const r = rng(3);
-  for (let k = 0; k < 16; k++) {
-    const a = k / 16 * Math.PI * 2, R = 115 + r() * 45, h = 8 + r() * 30;
-    box(10 + r() * 10, h, 10 + r() * 10, new THREE.MeshStandardMaterial({ color: 0x4A5263, roughness: 1 }), Math.cos(a) * R, h / 2, Math.sin(a) * R);
-  }
-  const trunk = new THREE.MeshStandardMaterial({ color: 0x6b4f3a }), leaf = new THREE.MeshStandardMaterial({ color: 0x3f7a43, roughness: 1 });
-  for (let k = 0; k < 14; k++) {
-    const a = k / 14 * Math.PI * 2, R = 20 + (k % 2) * 4, x = Math.cos(a) * R * 1.2, z = Math.sin(a) * R;
-    box(.4, 2.4, .4, trunk, x, 1.4, z);
-    const s = new THREE.Mesh(new THREE.SphereGeometry(1.6 + r(), 12, 10), leaf); s.position.set(x, 3.6, z); s.castShadow = true; scene.add(s);
-  }
-  return base + pisos * FH;
+  $('#torreSvg').onmousemove = e => { if (UI.hf) tipAt(e); };
 }
-const H = construirEdificio();
-const narrow = () => Math.min(1, camera.aspect * 1.3);
-const HOME = { pos: new THREE.Vector3(56, H * 0.85, 66), tgt: new THREE.Vector3(0, H * 0.5, 0) };
-function homePos() { const k = 1 / Math.pow(narrow(), .85); return { pos: HOME.tgt.clone().add(HOME.pos.clone().sub(HOME.tgt).multiplyScalar(k)), tgt: HOME.tgt.clone() }; }
+function hiFloor(p, e) {
+  UI.hf = p; $$('#floors .fl').forEach(f => f.classList.toggle('hi', +f.dataset.p === p)); $$('#floorList .frow').forEach(f => f.classList.toggle('hi', +f.dataset.p === p));
+  const tip = $('#floorTip'); if (!p) { tip.style.opacity = 0; return; }
+  const nd = del(p).filter(u => u.estado === 'disponible').length;
+  tip.innerHTML = `<b class="num">Piso ${String(p).padStart(2, '0')}</b>${nd ? `${nd} disponible${nd > 1 ? 's' : ''}` : 'Sin disponibilidad'}`;
+  tip.style.opacity = 1; if (e && e.clientX) tipAt(e);
+}
+function tipAt(e) { const t = $('#floorTip'); t.style.left = Math.min(innerWidth - 190, e.clientX + 18) + 'px'; t.style.top = (e.clientY - 20) + 'px'; }
+function fitTorre() { const mob = innerWidth / innerHeight < .9; $('#torreSvg').setAttribute('viewBox', mob ? `${T.xL - 40} -70 ${T.xR - T.xL + 80} 1800` : '0 0 2688 1520'); }
 
-function setNight(n) {
-  UI.night = n;
-  scene.background = new THREE.Color(n ? 0x0B1020 : 0xBFD4EA);
-  scene.fog = new THREE.Fog(scene.background, 120, 320);
-  hemi.intensity = n ? .35 : 1.1; sun.intensity = n ? .25 : 2.2; sun.color.set(n ? 0x8aa4ff : 0xffffff);
-  renderer.toneMappingExposure = n ? 1.2 : 1;
-  pintar(); $('#vNight').textContent = n ? 'Día' : 'Noche';
+// ---------- 2. PLANTA ----------
+function irPiso(p) { UI.piso = Math.max(1, Math.min(T.pisos, p)); UI.sel = null; hiFloor(null); setView('planta'); renderPlanta(); }
+function renderPlanta() {
+  const p = UI.piso, D = del(p);
+  $('#fNum').textContent = String(p).padStart(2, '0'); $('#fUp').disabled = p >= T.pisos; $('#fDn').disabled = p <= 1;
+  $('#units').innerHTML = D.map(u => { const [x, y, w, h] = CONFIG.planta.unidades[u.letra].rect, c = COL[u.estado], sel = UI.sel === u.id, cx = x + w / 2, cy = y + h / 2;
+    const lab = u.estado === 'vendido' ? 'Vendido' : u.estado === 'reservado' ? 'Reservado' : money(u.precio);
+    return `<g data-id="${u.id}" class="ug"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="34" fill="${c}" fill-opacity="${sel ? .22 : u.estado === 'disponible' ? .08 : .2}" stroke="${sel ? '#fff' : c}" stroke-width="${sel ? 10 : 6}" stroke-opacity="${sel ? 1 : .85}"/>
+     <g class="ulbl" style="opacity:${UI.sel && !sel ? .5 : sel ? 0 : 1}"><rect x="${cx - 240}" y="${cy - 64}" width="480" height="128" rx="64" fill="rgba(11,13,18,.84)" stroke="rgba(255,255,255,.18)" stroke-width="3"/>
+     <circle cx="${cx - 186}" cy="${cy}" r="16" fill="${c}"/>
+     <text x="${cx - 150}" y="${cy - 8}" font-size="44" font-weight="800" fill="#F4F1EC" font-family="Plus Jakarta Sans,Inter">Depto ${u.id}</text>
+     <text x="${cx - 150}" y="${cy + 40}" font-size="33" font-weight="600" fill="rgba(244,241,236,.72)" font-family="Plus Jakarta Sans,Inter">${u.dorm}D · ${u.m2} m² · ${lab}</text></g></g>`; }).join('');
+  $$('#units .ug').forEach(g => g.onclick = () => selUnidad(g.dataset.id));
+  const u = D.find(x => x.id === UI.sel);
+  $('#pins').innerHTML = u ? Object.entries(CONFIG.planta.unidades[u.letra].pins).map(([k, [x, y]]) => `<g class="pin" data-k="${k}" transform="translate(${x} ${y})"><circle class="o" r="28" fill="${CONFIG.colorAcento}"/><circle r="28" fill="${CONFIG.colorAcento}" stroke="#fff" stroke-width="6"/><circle r="9" fill="#fff"/><g transform="translate(0 -64)"><rect x="-160" y="-34" width="320" height="60" rx="30" fill="rgba(11,13,18,.88)"/><text y="6" text-anchor="middle" font-size="30" font-weight="700" fill="#fff" font-family="Plus Jakarta Sans,Inter">${esc(CONFIG.ambientes[k].n)}</text></g></g>`).join('') : '';
+  $$('#pins .pin').forEach(g => g.onclick = e => { e.stopPropagation(); abrirAmb('u', g.dataset.k); });
+  u ? renderFicha(u) : renderListaPiso(D);
 }
-function pintar() {
-  DB.unidades.forEach(u => {
-    const m = unitMesh.get(u.id); if (!m) return;
-    const on = visible(u), sel = UI.sel === u.id;
-    m.material.color.setHex(COL[u.estado]); m.material.emissive.setHex(sel ? 0xffffff : COL[u.estado]);
-    m.material.emissiveIntensity = sel ? .55 : UI.night ? (u.estado === 'vendido' ? .25 : .75) : .15;
-    m.material.opacity = on ? .94 : .12; m.visible = true;
-    m.scale.setScalar(sel ? 1.04 : 1);
-  });
+function renderListaPiso(D) {
+  const nd = D.filter(u => u.estado === 'disponible').length;
+  $('#sideBody').innerHTML = `<div class="sec" style="margin-top:0">Piso ${UI.piso} · ${nd} disponible${nd === 1 ? '' : 's'}</div>
+   <div class="legend"><span><i style="background:${COL.disponible}"></i>Disponible</span><span><i style="background:${COL.reservado}"></i>Reservado</span><span><i style="background:${COL.vendido}"></i>Vendido</span></div>
+   ${D.map(u => `<div class="ucard" data-id="${u.id}"><div><b>Depto ${u.id}</b><small>${u.tipo} · ${u.m2} m² + ${u.balcon} m² balcón</small></div><div style="text-align:right"><div class="num" style="font-weight:700;font-size:14px;margin-bottom:5px">${u.estado === 'vendido' ? '—' : money(u.precio)}</div><span class="st ${u.estado}">${u.estado}</span></div></div>`).join('')}
+   <p style="color:var(--mu);font-size:12.5px;margin-top:12px;line-height:1.5">Tocá un departamento para ver su ficha, recorrer los ambientes y simular el pago.</p>`;
+  $$('#sideBody .ucard').forEach(c => c.onclick = () => selUnidad(c.dataset.id));
 }
-
-// ---------- Interacción ----------
-const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let hover = null, downAt = null;
-function pick(e) {
-  const r = canvas.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-  ray.setFromCamera(ptr, camera); const hit = ray.intersectObjects(pickables)[0];
-  return hit && visible(hit.object.userData.u) ? hit.object.userData.u : null;
-}
-canvas.addEventListener('pointermove', e => {
-  const u = pick(e), tip = $('#tip');
-  if (u !== hover) { hover = u; canvas.style.cursor = u ? 'pointer' : 'grab'; }
-  if (u && e.pointerType === 'mouse') { const r = stage.getBoundingClientRect(); tip.style.left = (e.clientX - r.left + 14) + 'px'; tip.style.top = (e.clientY - r.top + 14) + 'px'; tip.innerHTML = `<b>Depto ${u.id}</b> · ${u.tipo}<br><span style="color:var(--mu)">${u.m2} m² · ${money(u.precio)} · ${u.estado}</span>`; tip.style.opacity = 1; }
-  else tip.style.opacity = 0;
-});
-canvas.addEventListener('pointerdown', e => { downAt = [e.clientX, e.clientY]; controls.autoRotate = false; });
-canvas.addEventListener('pointerup', e => {
-  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 6) return;
-  const u = pick(e); if (u) seleccionar(u.id, true);
-});
-let tween = null;
-function volar(pos, tgt, ms = 900) { tween = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: tgt, s: performance.now(), ms }; }
-function seleccionar(id, fly) {
-  UI.sel = id; pintar(); renderUnidad(); tabTo('pU');
-  if (innerWidth <= 860) $('#side').classList.remove('min');
-  const m = unitMesh.get(id); if (fly && m) { const p = m.position; const dir = new THREE.Vector3(p.x, 0, p.z).normalize(); const d = 58 / narrow(), mob = innerWidth <= 860; volar(new THREE.Vector3(p.x + dir.x * d + dir.z * d * .3, p.y + 10, p.z + dir.z * d - dir.x * d * .3), new THREE.Vector3(p.x * .3, p.y - (mob ? d * .18 : 0), p.z * .3)); }
-}
-$('#vHome').onclick = () => { const h = homePos(); volar(h.pos, h.tgt); controls.autoRotate = true; };
-$('#vNight').onclick = () => setNight(!UI.night);
-
-function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-addEventListener('resize', resize); new ResizeObserver(resize).observe(stage);
-function loop(now) {
-  if (tween) { const k = Math.min(1, (now - tween.s) / tween.ms), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-    camera.position.lerpVectors(tween.p0, tween.p1, e); controls.target.lerpVectors(tween.t0, tween.t1, e); if (k >= 1) tween = null; }
-  controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop);
-}
-
-// ---------- Filtros ----------
-function renderFiltros() {
-  const ds = [[0, 'Todos'], [1, '1 dorm'], [2, '2 dorm'], [3, '3 dorm']];
-  $('#filters').innerHTML = ds.map(([v, l]) => `<button class="pill ${UI.f.dorm === v ? 'on' : ''}" data-d="${v}">${l}</button>`).join('') +
-    `<button class="pill ${UI.f.estado === 'disponible' ? 'on' : ''}" data-e="disponible">Solo disponibles</button>`;
-  $$('#filters [data-d]').forEach(b => b.onclick = () => { UI.f.dorm = +b.dataset.d; refrescar(); });
-  $('#filters [data-e]').onclick = () => { UI.f.estado = UI.f.estado === 'disponible' ? 'todos' : 'disponible'; refrescar(); };
-}
-
-// ---------- Panel unidad ----------
-function planoSVG(u) {
-  // plano esquemático por cantidad de dormitorios (no a escala)
-  const rooms = { 1: [['Living / comedor', 0, 0, 60, 55], ['Cocina', 60, 0, 40, 30], ['Baño', 60, 30, 40, 25], ['Dormitorio', 0, 55, 100, 45]],
-    2: [['Living / comedor', 0, 0, 58, 50], ['Cocina', 58, 0, 42, 28], ['Baño', 58, 28, 20, 22], ['Baño', 78, 28, 22, 22], ['Dorm. principal', 0, 50, 55, 50], ['Dormitorio', 55, 50, 45, 50]],
-    3: [['Living / comedor', 0, 0, 55, 48], ['Cocina', 55, 0, 45, 26], ['Baño', 55, 26, 22, 22], ['Baño', 77, 26, 23, 22], ['Dorm. principal', 0, 48, 40, 52], ['Dormitorio', 40, 48, 30, 52], ['Dormitorio', 70, 48, 30, 52]] }[u.dorm] || [];
-  const S = 3.2, ox = 8, oy = 8;
-  return `<svg viewBox="0 0 ${100 * S + 16} ${118 * S + 16}" xmlns="http://www.w3.org/2000/svg" font-family="Inter">
-   ${rooms.map(([n, x, y, w, h]) => `<rect x="${ox + x * S}" y="${oy + y * S}" width="${w * S}" height="${h * S}" fill="${/Baño|Cocina/.test(n) ? '#E6EEF5' : '#fff'}" stroke="#333" stroke-width="3"/><text x="${ox + (x + w / 2) * S}" y="${oy + (y + h / 2) * S + 4}" text-anchor="middle" font-size="13" fill="#333" font-weight="600">${n}</text>`).join('')}
-   <rect x="${ox}" y="${oy + 100 * S}" width="${100 * S}" height="${18 * S}" fill="#F1E9DC" stroke="#333" stroke-width="2" stroke-dasharray="6 4"/>
-   <text x="${ox + 50 * S}" y="${oy + 109 * S + 4}" text-anchor="middle" font-size="13" fill="#555" font-weight="600">Balcón ${u.balcon} m²</text></svg>`;
-}
+function selUnidad(id) { UI.sel = UI.sel === id ? null : id; renderPlanta(); $('#sideBody').scrollTop = 0; }
 function pmt(i, n, pv) { return i === 0 ? pv / n : pv * i / (1 - Math.pow(1 + i, -n)); }
-function cotizar(u) {
-  const c = UI.cot || (UI.cot = { ...CONFIG.cotizador });
-  const P = u.precio, ant = P * c.anticipo / 100, cuo = P * c.cuotasPct / 100, cuota = c.cuotas > 0 ? cuo / c.cuotas : 0, saldo = P - ant - cuo;
-  const fin = pmt(c.tasaAnual / 100 / 12, c.anios * 12, Math.max(0, saldo));
-  return { P, ant, cuo, cuota, saldo, fin, c };
-}
-function renderUnidad() {
-  const u = DB.unidades.find(x => x.id === UI.sel), el = $('#pU');
-  if (!u) { el.innerHTML = `<div class="empty"><b>Tocá un departamento</b>Elegí una unidad en el edificio para ver su plano, precio y una simulación de pago. Arrastrá para girar, pellizcá o usá la rueda para acercar.</div>${listaMini()}`; bindLista(el); return; }
-  const q = cotizar(u), wa = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`)}`;
-  el.innerHTML = `<div class="card">
-    <div class="uh"><div><h2>Depto ${u.id}</h2><p>Piso ${u.piso} · ${u.tipo} · Orientación ${u.orient}</p></div><span class="st ${u.estado}">${u.estado[0].toUpperCase() + u.estado.slice(1)}</span></div>
-    <div class="price num">${money(u.precio)}<small>${money(u.precio / u.m2)} / m²</small></div>
-    <div class="grid2"><div class="cell"><small>Superficie cubierta</small><b class="num">${u.m2} m²</b></div><div class="cell"><small>Balcón</small><b class="num">${u.balcon} m²</b></div><div class="cell"><small>Dormitorios</small><b>${u.dorm}</b></div><div class="cell"><small>Baños</small><b>${u.banos}</b></div></div>
-   </div>
-   <div class="card"><div class="sec">Plano de la tipología <span class="tip-i" data-t="Plano esquemático de referencia, no a escala. Las medidas finales figuran en el boleto.">?</span></div><div class="plan">${planoSVG(u)}</div></div>
-   <div class="card no-print"><div class="sec">Simulá tu pago <span class="tip-i" data-t="Anticipo al firmar, cuotas mensuales sin interés durante la obra y saldo a la entrega. El saldo se puede financiar con un préstamo bancario.">?</span></div>
-    <div class="f2"><div><label>Anticipo %</label><input type="number" min="0" max="100" data-c="anticipo" value="${q.c.anticipo}"></div><div><label>% en cuotas de obra</label><input type="number" min="0" max="100" data-c="cuotasPct" value="${q.c.cuotasPct}"></div>
-     <div><label>Cantidad de cuotas</label><input type="number" min="0" max="120" data-c="cuotas" value="${q.c.cuotas}"></div><div><label>Tasa banco anual %</label><input type="number" min="0" max="40" step=".1" data-c="tasaAnual" value="${q.c.tasaAnual}"></div></div>
-    <div id="qOut">${qOut(q)}</div>
-   </div>
-   <div class="card adm" id="admBox"><div class="sec">Administrador</div>
-    <div class="f2"><div><label>Estado</label><select id="aE">${['disponible','reservado','vendido'].map(s => `<option ${s === u.estado ? 'selected' : ''}>${s}</option>`).join('')}</select></div><div><label>Precio</label><input type="number" id="aP" value="${u.precio}"></div></div>
-    <button class="btn g" id="aSave">Guardar cambios</button></div>
-   <a class="btn p no-print" href="${wa}" target="_blank" rel="noopener">Consultar por WhatsApp</a>
-   <div class="btns no-print"><button class="btn g" id="bPdf">Cotización PDF</button><button class="btn g" id="bClose">Ver todas</button></div>`;
-  $$('#pU [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? Math.max(0, v) : 0; $('#qOut').innerHTML = qOut(cotizar(u)); });
-  $('#bPdf').onclick = () => pdfCot(u); $('#bClose').onclick = () => { UI.sel = null; pintar(); renderUnidad(); };
-  if ($('#aSave')) $('#aSave').onclick = () => { u.estado = $('#aE').value; const p = parseFloat($('#aP').value); if (p > 0) u.precio = p; DB.actualizado = new Date().toISOString(); save(); refrescar(); toast(`Depto ${u.id} actualizado`); };
-}
+function cotizar(u) { const c = UI.cot, P = u.precio, ant = P * c.anticipo / 100, cuo = P * c.cuotasPct / 100, cuota = c.cuotas > 0 ? cuo / c.cuotas : 0, saldo = P - ant - cuo;
+  return { P, ant, cuo, cuota, saldo, fin: pmt(c.tasaAnual / 1200, c.anios * 12, Math.max(0, saldo)), c }; }
 function qOut(q) {
-  const warn = q.saldo < -0.5 ? `<div class="row" style="color:var(--no)">Anticipo + cuotas superan el 100% del precio</div>` : '';
-  return `${warn}<div class="row"><span>Anticipo</span><b class="num">${money(q.ant)}</b></div>
+  return `${q.saldo < -0.5 ? '<div class="row" style="color:#F87171">Anticipo + cuotas superan el 100% del precio</div>' : ''}
+   <div class="row"><span>Anticipo</span><b class="num">${money(q.ant)}</b></div>
    <div class="row"><span>${q.c.cuotas} cuotas de obra</span><b class="num">${money(q.cuota)} / mes</b></div>
    <div class="row"><span>Saldo a la entrega</span><b class="num">${money(Math.max(0, q.saldo))}</b></div>
-   <div class="row"><span>Si financiás el saldo a ${q.c.anios} años <span class="tip-i" data-t="Cuota de sistema francés: saldo × i / (1 − (1+i)^−n), con i = tasa anual / 12 y n = años × 12. Orientativo, sujeto a aprobación bancaria.">?</span></span><b class="num">${money(q.fin)} / mes</b></div>`;
+   <div class="row"><span>Financiado a ${q.c.anios} años <span class="tip-i" data-t="Sistema francés: saldo × i / (1 − (1+i)^−n), i = tasa anual / 12, n = años × 12. Orientativo, sujeto a aprobación bancaria.">?</span></span><b class="num">${money(q.fin)} / mes</b></div>`;
 }
-function listaMini() {
-  const d = DB.unidades.filter(u => u.estado === 'disponible' && visible(u)).sort((a, b) => a.precio - b.precio).slice(0, 5);
-  return d.length ? `<div class="card"><div class="sec">Disponibles desde</div>${d.map(u => `<div class="row r" data-id="${u.id}" style="cursor:pointer"><span>Depto ${u.id} · ${u.tipo}</span><b class="num">${money(u.precio)}</b></div>`).join('')}</div>` : '';
+function renderFicha(u) {
+  const q = cotizar(u), pins = CONFIG.planta.unidades[u.letra].pins;
+  $('#sideBody').innerHTML = `<button class="back no-print" id="bLista"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>Todos los del piso ${u.piso}</button>
+   <div class="dh"><div><h2>Depto ${u.id}</h2><p>${esc(CONFIG.proyecto.nombre)} · Piso ${u.piso} · ${u.tipo}</p></div><span class="st ${u.estado}">${u.estado}</span></div>
+   <div class="price num">${money(u.precio)}<small>${money(u.precio / u.m2)} / m²</small></div>
+   <div class="grid2"><div class="cell"><small>Cubierta</small><b class="num">${u.m2} m²</b></div><div class="cell"><small>Balcón</small><b class="num">${u.balcon} m²</b></div><div class="cell"><small>Dormitorios · baños</small><b>${u.dorm} · ${u.banos}</b></div><div class="cell"><small>Orientación</small><b>${esc(u.orient)}</b></div></div>
+   <div class="sec no-print">Recorré los ambientes</div>
+   <div class="amb no-print">${Object.keys(pins).map(k => `<button data-k="${k}" style="background-image:url(${CONFIG.ambientes[k].img.replace('.jpg', '-t.jpg')})"><span>${esc(CONFIG.ambientes[k].n)}</span></button>`).join('')}</div>
+   <div class="sec">Simulá tu pago <span class="tip-i no-print" data-t="Anticipo al firmar, cuotas mensuales sin interés durante la obra y saldo a la entrega, que se puede financiar con un banco.">?</span></div>
+   <div class="no-print"><div class="f2"><div><label>Anticipo %</label><input type="number" min="0" max="100" data-c="anticipo" value="${q.c.anticipo}"></div><div><label>% en cuotas de obra</label><input type="number" min="0" max="100" data-c="cuotasPct" value="${q.c.cuotasPct}"></div>
+    <div><label>Cantidad de cuotas</label><input type="number" min="0" max="120" data-c="cuotas" value="${q.c.cuotas}"></div><div><label>Tasa banco anual %</label><input type="number" min="0" max="40" step=".1" data-c="tasaAnual" value="${q.c.tasaAnual}"></div></div></div>
+   <div id="qOut">${qOut(q)}</div>
+   <div class="adm"><div class="sec">Administrador</div><div class="f2"><div><label>Estado</label><select id="aE">${['disponible', 'reservado', 'vendido'].map(s => `<option ${s === u.estado ? 'selected' : ''}>${s}</option>`).join('')}</select></div><div><label>Precio</label><input type="number" id="aP" value="${u.precio}"></div></div><button class="btn g" id="aSave">Guardar cambios</button></div>
+   <div style="height:14px"></div>
+   <a class="btn p no-print" target="_blank" rel="noopener" href="${waLink(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`)}">Consultar por WhatsApp</a>
+   <div class="btns no-print"><button class="btn g" id="bPdf">Cotización PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
+  $('#bLista').onclick = () => selUnidad(u.id);
+  $$('#sideBody .amb button').forEach(b => b.onclick = () => abrirAmb('u', b.dataset.k));
+  $$('#sideBody [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? Math.max(0, v) : 0; $('#qOut').innerHTML = qOut(cotizar(u)); });
+  $('#bPdf').onclick = () => pdfCot(u); $('#bPrint').onclick = () => print();
+  if ($('#aSave')) $('#aSave').onclick = () => { u.estado = $('#aE').value; const pr = parseFloat($('#aP').value); if (pr > 0) u.precio = pr; DB.actualizado = new Date().toISOString(); save(); renderTorre(); renderPlanta(); toast(`Depto ${u.id} actualizado`); };
 }
-function bindLista(root) { root.querySelectorAll('[data-id]').forEach(r => r.onclick = () => seleccionar(r.dataset.id, true)); }
+$('#fUp').onclick = () => irPiso(UI.piso + 1); $('#fDn').onclick = () => irPiso(UI.piso - 1);
 
-// ---------- Lista ----------
-function renderLista() {
-  const k = UI.sort.k, d = UI.sort.d, q = (UI.q || '').toLowerCase();
-  const U = DB.unidades.filter(visible).filter(u => !q || `${u.id} ${u.tipo} ${u.estado} ${u.orient}`.toLowerCase().includes(q))
-    .sort((a, b) => (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0) * d);
-  const th = (key, l) => `<th data-k="${key}">${l}${k === key ? (d > 0 ? ' ↑' : ' ↓') : ''}</th>`;
-  const col = { disponible: 'var(--ok)', reservado: 'var(--wa)', vendido: 'var(--no)' };
-  $('#pL').innerHTML = `<input id="q" placeholder="Buscar unidad, tipología, estado…" value="${esc(UI.q || '')}" style="margin-bottom:10px">
-   <table><thead><tr>${th('id', 'Unidad')}${th('dorm', 'Dorm')}${th('m2', 'm²')}${th('precio', 'Precio')}${th('estado', 'Estado')}</tr></thead>
-   <tbody>${U.map(u => `<tr class="r" data-id="${u.id}"><td><b>${u.id}</b></td><td>${u.dorm}</td><td class="num">${u.m2}</td><td class="num">${money(u.precio)}</td><td><span class="dot" style="background:${col[u.estado]}"></span>${u.estado}</td></tr>`).join('')}</tbody></table>
-   ${U.length ? '' : '<div class="empty"><b>Sin resultados</b>Probá con otro filtro o búsqueda.</div>'}`;
-  $('#q').oninput = e => { UI.q = e.target.value; const pos = e.target.selectionStart; renderLista(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
-  $$('#pL th').forEach(t => t.onclick = () => { UI.sort = { k: t.dataset.k, d: UI.sort.k === t.dataset.k ? -UI.sort.d : 1 }; renderLista(); });
-  bindLista($('#pL'));
+// ---------- 3. AMBIENTES ----------
+const pan = { x: 0, v: 0, drag: false, lx: 0, min: 0 };
+function listaAmb(modo) { return modo === 'a' ? CONFIG.amenities.map((a, i) => ({ k: 'a' + i, ...a })) : Object.entries(CONFIG.ambientes).map(([k, a]) => ({ k, ...a })); }
+function abrirAmb(modo, k) {
+  if (UI.view !== 'amb') UI.prevView = UI.view;
+  UI.ambModo = modo; const L = listaAmb(modo), a = L.find(x => x.k === k) || L[0]; UI.amb = a.k;
+  const img = $('#pano');
+  const fit = () => { const w = img.getBoundingClientRect().width || innerHeight * img.naturalWidth / img.naturalHeight; pan.min = Math.min(0, innerWidth - w * 1.02); pan.x = pan.min / 2; pan.v = -0.35; placePano(); };
+  img.onload = fit; img.src = a.img; if (img.complete && img.naturalWidth) fit();
+  const u = DB.unidades.find(x => x.id === UI.sel);
+  $('#ambSub').textContent = modo === 'a' ? `${CONFIG.proyecto.nombre} · Amenities` : u ? `Depto ${u.id} · ${u.tipo}` : CONFIG.proyecto.nombre;
+  $('#ambName').textContent = a.n;
+  $('#ambThumbs').innerHTML = L.map(x => `<button class="${x.k === a.k ? 'on' : ''}" data-k="${x.k}" style="background-image:url(${x.img.replace('.jpg', '-t.jpg')})"><span>${esc(x.n)}</span></button>`).join('');
+  $$('#ambThumbs button').forEach(b => b.onclick = e => { e.stopPropagation(); abrirAmb(modo, b.dataset.k); });
+  setView('amb');
 }
+function placePano() { pan.x = Math.max(pan.min, Math.min(0, pan.x)); $('#pano').style.transform = `translate3d(${pan.x}px,0,0) scale(1.02)`; }
+const ambEl = $('#vAmb');
+ambEl.addEventListener('pointerdown', e => { if (e.target.closest('#ambThumbs')) return; pan.drag = true; pan.lx = e.clientX; pan.v = 0; ambEl.classList.add('drag'); });
+addEventListener('pointermove', e => { if (!pan.drag) return; const dx = e.clientX - pan.lx; pan.lx = e.clientX; pan.x += dx; pan.v = dx; placePano(); });
+addEventListener('pointerup', () => { if (pan.drag) { pan.drag = false; ambEl.classList.remove('drag'); } });
+(function inertia() { if (UI.view === 'amb' && !pan.drag && Math.abs(pan.v) > .05) { pan.x += pan.v; if (Math.abs(pan.v) > .4) pan.v *= .94; if (pan.x <= pan.min || pan.x >= 0) pan.v = -pan.v; placePano(); } requestAnimationFrame(inertia); })();
 
-// ---------- Proyecto (gráfico de ventas por tipología) ----------
-function renderProyecto() {
-  const P = CONFIG.proyecto, U = DB.unidades, tipos = [...new Set(U.map(u => u.tipo))];
-  const bars = tipos.map(t => { const g = U.filter(u => u.tipo === t), n = g.length, c = s => g.filter(u => u.estado === s).length; return { t, n, v: c('vendido'), r: c('reservado'), d: c('disponible') }; });
-  $('#pP').innerHTML = `<div class="card"><div class="sec">${esc(CONFIG.marca)}</div><h2 style="font-size:20px;font-weight:800">${esc(P.nombre)}</h2><p style="color:var(--mu);font-size:13px;margin-top:2px">${esc(P.ubicacion)} · Entrega ${esc(P.entrega)}</p><p style="font-size:14px;line-height:1.5;margin-top:10px">${esc(P.descripcion)}</p></div>
-   <div class="card"><div class="sec">Amenities</div>${P.amenities.map(a => `<div class="row"><span style="color:var(--tx)">${esc(a)}</span></div>`).join('')}</div>
-   <div class="card"><div class="sec">Avance de ventas por tipología</div>${bars.map(b => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>${b.t}</span><span class="num" style="color:var(--mu)">${b.v + b.r}/${b.n} comprometidas</span></div>
-    <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;background:#0B0C10"><div style="width:${b.v / b.n * 100}%;background:#5B6070"></div><div style="width:${b.r / b.n * 100}%;background:var(--wa)"></div><div style="width:${b.d / b.n * 100}%;background:var(--ok)"></div></div></div>`).join('')}
-    <p style="font-size:12px;color:var(--mu)">Gris: vendido · Ámbar: reservado · Verde: disponible</p></div>
-   <p style="font-size:11.5px;color:var(--mu);text-align:center;padding:6px">${esc(CONFIG.producto)} v${CONFIG.version} · Imágenes y planos ilustrativos. Precios sujetos a cambio sin previo aviso.</p>`;
+// ---------- navegación ----------
+function setView(v) {
+  UI.view = v; $$('.view').forEach(x => x.classList.remove('on')); $({ torre: '#vTorre', planta: '#vPlanta', amb: '#vAmb' }[v]).classList.add('on');
+  $('#bBack').style.visibility = v === 'torre' ? 'hidden' : 'visible';
+  $('#bBackLbl').textContent = v === 'planta' ? 'Torre' : UI.ambModo === 'a' ? 'Volver' : 'Planta';
 }
+$('#bBack').onclick = () => { if (UI.view === 'planta') { setView('torre'); renderTorre(); } else setView(UI.ambModo === 'a' ? (UI.prevView || 'torre') : 'planta'); };
+$('#bAmen').onclick = () => abrirAmb('a', 'a0');
+addEventListener('keydown', e => { if (e.key === 'Escape' && UI.view !== 'torre') $('#bBack').click(); });
+addEventListener('resize', () => { fitTorre(); if (UI.view === 'amb') abrirAmb(UI.ambModo, UI.amb); });
 
-// ---------- Tabs / panel ----------
-function tabTo(p) { $$('.tab').forEach(t => t.classList.toggle('on', t.dataset.p === p)); $$('.pane').forEach(x => x.classList.toggle('on', x.id === p)); }
-$$('.tab').forEach(t => t.onclick = () => { tabTo(t.dataset.p); if (innerWidth <= 860) $('#side').classList.remove('min'); });
-$('#grab').onclick = () => $('#side').classList.toggle('min');
-
-function refrescar() { kpis(); renderFiltros(); pintar(); renderUnidad(); renderLista(); renderProyecto(); }
-
-// ---------- Menú: export / import / admin / planilla ----------
+// ---------- menú ----------
 const dl = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
-$('#menuBtn').onclick = () => $('#menu').classList.add('on');
+$('#bMenu').onclick = () => $('#menu').classList.add('on');
 $('#menu').onclick = e => { if (e.target.id === 'menu') $('#menu').classList.remove('on'); };
-$('#fileIn').onchange = async e => {
-  try { const d = JSON.parse(await e.target.files[0].text()); if (!Array.isArray(d.unidades)) throw 0; DB = d; save(); toast('Datos importados, recargando…'); setTimeout(() => location.reload(), 600); }
-  catch (x) { toast('El archivo no es válido'); } e.target.value = '';
-};
+$('#fileIn').onchange = async e => { try { const d = JSON.parse(await e.target.files[0].text()); if (!Array.isArray(d.unidades)) throw 0; DB = d; save(); toast('Datos importados'); refrescar(); } catch (x) { toast('El archivo no es válido'); } e.target.value = ''; };
 $$('#menu [data-a]').forEach(b => b.onclick = () => {
   const a = b.dataset.a; $('#menu').classList.remove('on');
   if (a === 'xlsx') { if (!window.XLSX) return toast('Cargando Excel, probá en un segundo');
     const ws = XLSX.utils.json_to_sheet(DB.unidades.map(u => ({ Unidad: u.id, Piso: u.piso, Tipologia: u.tipo, Dormitorios: u.dorm, Banos: u.banos, m2: u.m2, Balcon_m2: u.balcon, Orientacion: u.orient, Precio: u.precio, Precio_m2: Math.round(u.precio / u.m2), Estado: u.estado })));
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Unidades'); XLSX.writeFile(wb, `${KEY}.xlsx`); toast('Excel descargado'); }
+  if (a === 'amen') abrirAmb('a', 'a0');
   if (a === 'json') { dl(new Blob([JSON.stringify(DB, null, 1)], { type: 'application/json' }), `${KEY}.json`); toast('Datos exportados'); }
   if (a === 'imp') $('#fileIn').click();
-  if (a === 'print') { tabTo('pU'); setTimeout(() => print(), 100); }
   if (a === 'admin') { if (!CONFIG.admin) return toast('El modo administrador no está habilitado');
     if (UI.admin) { UI.admin = false; document.body.classList.remove('admin'); return toast('Modo administrador desactivado'); }
-    const p = prompt('PIN de administrador'); if (p === CONFIG.pin) { UI.admin = true; document.body.classList.add('admin'); toast('Modo administrador: tocá una unidad para editarla'); } else if (p !== null) toast('PIN incorrecto'); }
-  if (a === 'sheet') { const u = prompt('Pegá el link CSV publicado de Google Sheets (columnas: unidad, estado, precio)', CONFIG.planilla.url || ''); if (u) { CONFIG.planilla.url = u.trim(); try { localStorage.setItem(KEY + '.sheet', u.trim()) } catch (e) {} sync(); } }
-  if (a === 'demo') { DB = demoData(); save(); toast('Datos demo restaurados'); setTimeout(() => location.reload(), 500); }
-  if (a === 'clear') { if (confirm('Se borran los cambios guardados en este dispositivo. ¿Seguir?')) { localStorage.removeItem(KEY); localStorage.removeItem(KEY + '.sheet'); toast('Listo, empezando de cero'); setTimeout(() => location.reload(), 500); } }
+    const p = prompt('PIN de administrador'); if (p === CONFIG.pin) { UI.admin = true; document.body.classList.add('admin'); toast('Modo administrador activo'); } else if (p !== null) toast('PIN incorrecto'); }
+  if (a === 'sheet') { const u = prompt('Link CSV publicado de Google Sheets (columnas: unidad, estado, precio)', CONFIG.planilla.url || ''); if (u) { CONFIG.planilla.url = u.trim(); try { localStorage.setItem(KEY + '.sheet', u.trim()) } catch (e) {} sync(); } }
+  if (a === 'demo') { DB = demoData(); save(); toast('Datos demo restaurados'); refrescar(); }
+  if (a === 'clear') { if (confirm('Se borran los cambios guardados en este dispositivo. ¿Seguir?')) { localStorage.removeItem(KEY); localStorage.removeItem(KEY + '.sheet'); DB = demoData(); toast('Listo, empezando de cero'); refrescar(); } }
 });
 function pdfCot(u) {
   if (!window.jspdf) return toast('Cargando PDF, probá en un segundo');
@@ -520,35 +453,35 @@ function pdfCot(u) {
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(`${CONFIG.marca} · ${CONFIG.proyecto.ubicacion} · ${new Date().toLocaleDateString(CONFIG.locale)}`, 14, 27);
   doc.autoTable({ startY: 34, theme: 'grid', head: [['Unidad', 'Detalle']], body: [['Tipología', u.tipo], ['Piso', String(u.piso)], ['Superficie', `${u.m2} m² + balcón ${u.balcon} m²`], ['Orientación', u.orient], ['Precio', money(u.precio)], ['Estado', u.estado]] });
   doc.autoTable({ startY: doc.lastAutoTable.finalY + 6, theme: 'grid', head: [['Forma de pago', 'Monto']], body: [[`Anticipo (${q.c.anticipo}%)`, money(q.ant)], [`${q.c.cuotas} cuotas de obra (${q.c.cuotasPct}%)`, `${money(q.cuota)} / mes`], ['Saldo a la entrega', money(Math.max(0, q.saldo))], [`Financiación del saldo (${q.c.tasaAnual}% anual, ${q.c.anios} años)`, `${money(q.fin)} / mes`]] });
-  doc.setFontSize(8); doc.text('Cotización orientativa, sujeta a disponibilidad y aprobación. No constituye oferta vinculante.', 14, doc.lastAutoTable.finalY + 8);
+  doc.setFontSize(8); doc.text('Cotización orientativa, sujeta a disponibilidad y aprobación. Imágenes ilustrativas. No constituye oferta vinculante.', 14, doc.lastAutoTable.finalY + 8);
   doc.save(`cotizacion-${u.id}.pdf`); toast('Cotización descargada');
 }
-
-// ---------- Planilla en vivo ----------
 function parseCSV(t) {
   const L = t.trim().split(/\r?\n/).map(l => l.split(',').map(x => x.trim().replace(/^"|"$/g, '')));
   const h = L.shift().map(x => x.toLowerCase()), iu = h.indexOf('unidad'), ie = h.indexOf('estado'), ip = h.indexOf('precio');
-  if (iu < 0) throw new Error('Falta la columna "unidad"');
+  if (iu < 0) throw new Error('Falta la columna unidad');
   return L.map(r => ({ id: r[iu], estado: (r[ie] || '').toLowerCase(), precio: parseFloat((r[ip] || '').replace(/[^\d.]/g, '')) }));
 }
 async function sync() {
-  const url = CONFIG.planilla.url || (() => { try { return localStorage.getItem(KEY + '.sheet') } catch (e) { return '' } })();
-  if (!url) return;
-  try {
-    const rows = parseCSV(await (await fetch(url, { cache: 'no-store' })).text()); let n = 0;
+  const url = CONFIG.planilla.url || (() => { try { return localStorage.getItem(KEY + '.sheet') } catch (e) { return '' } })(); if (!url) return;
+  try { const rows = parseCSV(await (await fetch(url, { cache: 'no-store' })).text()); let n = 0;
     rows.forEach(r => { const u = DB.unidades.find(x => x.id === r.id); if (!u) return;
       if (['disponible', 'reservado', 'vendido'].includes(r.estado) && u.estado !== r.estado) { u.estado = r.estado; n++; }
       if (r.precio > 0 && u.precio !== r.precio) { u.precio = r.precio; n++; } });
-    $('#live').style.display = 'flex'; if (n) { save(); refrescar(); toast(`Planilla: ${n} cambios aplicados`); }
-  } catch (e) { $('#live').style.display = 'none'; toast('No se pudo leer la planilla'); }
+    if (n) { save(); refrescar(); toast(`Planilla en vivo: ${n} cambios`); }
+  } catch (e) { toast('No se pudo leer la planilla'); }
 }
+function refrescar() { renderTorre(); if (UI.view === 'planta') renderPlanta(); }
 
-// ---------- Arranque ----------
-setNight(false); refrescar(); resize(); { const h = homePos(); camera.position.copy(h.pos); controls.target.copy(h.tgt); } requestAnimationFrame(loop);
-setTimeout(() => { $('#loading').style.opacity = 0; setTimeout(() => $('#loading').remove(), 400); }, 300);
-if (innerWidth <= 860) $('#side').classList.add('min');
+// ---------- arranque ----------
+fitTorre(); renderTorre();
+const pre = ['img/exterior.jpg', 'img/planta.jpg', 'img/exterior-t.jpg']; let ok = 0;
+const hideLoader = () => { const l = $('#loader'); if (l) { l.style.opacity = 0; setTimeout(() => l.remove(), 600); } };
+pre.forEach(s => { const i = new Image(); i.onload = i.onerror = () => { $('#ldBar').style.width = (++ok / pre.length * 100) + '%'; if (ok === pre.length) setTimeout(hideLoader, 250); }; i.src = s; });
+setTimeout(hideLoader, 6000);
+setTimeout(() => [...Object.values(CONFIG.ambientes), ...CONFIG.amenities].forEach(a => { const i = new Image(); i.src = a.img; }), 1500);
 sync(); setInterval(sync, Math.max(15, CONFIG.planilla.cadaSeg) * 1000);
-window.__showroom = { DB, seleccionar, setNight, cotizar, pmt };
+window.__sr = { DB, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
 </script>
 </body>
 </html>
