@@ -173,6 +173,59 @@ input:focus,select:focus{border-color:var(--ac)}
  #ambLbl{bottom:96px;left:12px}#ambNav{top:auto;bottom:160px;right:12px}#dragHint{display:none}
  #ambThumbs button{width:84px;height:50px}
 }
+
+/* ---- v3: buscador, comparador, leads, panel ---- */
+.mw{width:min(1020px,100%);max-width:none;max-height:calc(100vh - 32px);overflow:auto;padding:22px}
+.mhd{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.mhd h3{font-size:21px;font-weight:800;letter-spacing:-.01em;margin:0}.mhd p{color:var(--mu);font-size:13px;margin-top:3px}
+.xb{width:36px;height:36px;flex:none;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--bd);font-size:20px;line-height:1;transition:background .15s}.xb:hover{background:rgba(255,255,255,.12)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:8px 14px;border-radius:999px;border:1px solid var(--bd);font-size:13px;font-weight:600;transition:background .15s,color .15s,border-color .15s}
+.chip:hover{border-color:rgba(255,255,255,.3)}.chip.on{background:var(--ac);color:#17130D;border-color:var(--ac)}
+.fgrid{display:grid;grid-template-columns:1.3fr 1.2fr 1fr 1fr;gap:16px;margin-bottom:18px;align-items:end}
+.fgrid label,.lab{font-size:11.5px;color:var(--mu);display:block;margin-bottom:6px;font-weight:600;letter-spacing:.02em}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac);height:30px}
+.rhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:var(--mu)}.rhd b{color:var(--tx);font-size:15px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.rcard{padding:14px;border-radius:14px;border:1px solid var(--bd);background:rgba(0,0,0,.25);cursor:pointer;transition:border-color .15s,transform .15s,background .15s;text-align:left}
+.rcard:hover{border-color:var(--ac);transform:translateY(-2px);background:rgba(255,255,255,.04)}
+.rcard .t{display:flex;justify-content:space-between;align-items:center}.rcard b{font-size:16px}
+.rcard small{display:block;color:var(--mu);font-size:12px;margin-top:4px}.rcard .pr{font-size:17px;font-weight:800;margin-top:10px}
+.empty{padding:28px;text-align:center;color:var(--mu);font-size:14px;border:1px dashed var(--bd);border-radius:14px}
+.fl.match{fill:rgba(200,169,126,.22);stroke:var(--ac);stroke-width:3}
+.frow.match b{color:var(--ac)}
+#fBadge{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);z-index:7;display:none;align-items:center;gap:10px;padding:7px 8px 7px 14px;border-radius:999px;font-size:13px;font-weight:600}
+#fBadge.on{display:flex}#fBadge button{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08);font-size:12px}
+#cmpBar{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140px);transition:transform .25s ease;z-index:31;display:flex;gap:8px;align-items:center;padding:8px 8px 8px 16px;border-radius:999px;font-size:13px;font-weight:600}
+#cmpBar.on{transform:translate(-50%,0)}#cmpBar .tbtn{padding:9px 14px}
+.btn.on{border-color:var(--ac);color:var(--ac)}
+.btns3{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+table.ct{width:100%;border-collapse:collapse;font-size:14px}
+.ct th,.ct td{padding:11px 12px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+.ct thead th{font-size:18px;font-weight:800}.ct tbody th{color:var(--mu);font-weight:600;font-size:12.5px}
+.ct td.best{color:#34D399;font-weight:800}.ct td.best::after{content:" ✓";font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi,.pcard{padding:14px 16px;border-radius:14px;border:1px solid var(--bd);background:rgba(0,0,0,.25)}
+.kpi small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);font-weight:700}
+.kpi b{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:6px}.kpi em{font-style:normal;font-size:12px;color:var(--mu)}
+.pgrid{display:grid;grid-template-columns:1.35fr 1fr;gap:10px;margin-top:10px}
+.pcard h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pcard canvas{width:100%!important;height:210px!important}
+.bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--ac);border-radius:99px;transition:width .6s ease}
+.top5 .r{display:grid;grid-template-columns:70px 1fr 52px 74px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--bd);font-size:13px}.top5 .r:last-child{border:0}
+.lt{width:100%;border-collapse:collapse;font-size:13px}.lt th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);text-align:left;padding:8px;border-bottom:1px solid var(--bd);cursor:pointer;user-select:none}
+.lt td{padding:9px 8px;border-bottom:1px dashed var(--bd)}.lt tr.new td{animation:nw 2.4s ease}
+@keyframes nw{0%,40%{background:rgba(200,169,126,.18)}100%{background:transparent}}
+.etq{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;background:rgba(255,255,255,.08)}
+.etq.caliente{background:rgba(239,68,68,.15);color:#F87171}.etq.tibio{background:rgba(245,158,11,.16);color:#FBBF24}.etq.frio{background:rgba(59,130,246,.16);color:#93C5FD}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#34D399;letter-spacing:.06em;text-transform:uppercase}
+.live i{width:7px;height:7px;border-radius:50%;background:#10B981;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}100%{box-shadow:0 0 0 9px rgba(16,185,129,0)}}
+.dots i.fx{animation:fx 1s ease 3}@keyframes fx{50%{transform:scale(2.1);box-shadow:0 0 0 4px rgba(255,255,255,.25)}}
+.fl.fx{animation:flfx 1s ease 3}@keyframes flfx{50%{fill:rgba(239,68,68,.35);stroke:#fff;stroke-width:3}}
+.lf{display:grid;gap:10px}.lf .ok{display:none;text-align:center;padding:10px 0}.lf.done .ok{display:block}.lf.done .frm{display:none}
+@media(max-width:760px){.fgrid,.kpis{grid-template-columns:1fr 1fr}.pgrid{grid-template-columns:1fr}.mw{padding:16px}.ct{font-size:12.5px}#fBadge{bottom:64px}}
+@media print{#cmpBar,#fBadge{display:none!important}}
 @media print{
  #top,#vTorre,#vAmb,#plantaWrap,#floorStep,.bgimg,.no-print{display:none!important}
  html,body{overflow:visible;background:#fff;color:#111}
@@ -188,6 +241,7 @@ input:focus,select:focus{border-color:var(--ac)}
  <button class="tbtn g" id="bBack" style="visibility:hidden"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg><span class="lbl" id="bBackLbl">Volver</span></button>
  <div class="brand" id="brand"></div>
  <div style="display:flex;gap:8px">
+  <button class="tbtn g" id="bBuscar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="lbl">Buscar depto</span></button>
   <button class="tbtn g" id="bAmen"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg><span class="lbl">Amenities</span></button>
   <a class="tbtn p" id="bInteres" target="_blank" rel="noopener"><span class="lbl">Registrar interés</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   <button class="tbtn g" id="bMenu" aria-label="Menú"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -199,6 +253,7 @@ input:focus,select:focus{border-color:var(--ac)}
  <div class="glass" id="heroCard"></div>
  <div class="glass" id="floorList"></div>
  <div class="glass" id="floorTip"></div>
+ <div class="glass" id="fBadge"><span id="fBadgeT"></span><button id="fBadgeX">Quitar filtro</button></div>
  <div class="glass" id="hint">Tocá un piso para ver los departamentos</div>
 </section>
 
@@ -219,8 +274,50 @@ input:focus,select:focus{border-color:var(--ac)}
 
 <div id="tx"><video id="txv" muted playsinline preload="auto"></video></div>
 <div id="toasts"></div>
+<div class="glass" id="cmpBar"><span id="cmpT"></span><button class="tbtn g" id="cmpClr">Limpiar</button><button class="tbtn p" id="cmpGo">Comparar</button></div>
+<div class="modal" id="mBuscar"><div class="mbox mw glass">
+ <div class="mhd"><div><h3>Encontrá tu departamento</h3><p>Filtrá por lo que necesitás y te mostramos solo lo que hay.</p></div><button class="xb" data-close>×</button></div>
+ <div class="fgrid">
+  <div><span class="lab">Dormitorios</span><div class="chips" id="fDorm"></div></div>
+  <div><label for="fMax">Precio máximo · <b class="num" id="fMaxV" style="color:var(--tx)"></b></label><input type="range" id="fMax"></div>
+  <div><label for="fPiso">Desde el piso</label><select id="fPiso"></select></div>
+  <div><label for="fOrd">Ordenar por</label><select id="fOrd"><option value="precio">Menor precio</option><option value="m2p">Menor precio por m²</option><option value="m2">Más metros</option><option value="piso">Piso más alto</option></select></div>
+ </div>
+ <div class="rhd"><span><b class="num" id="fCount"></b> disponibles con estos filtros</span><button class="tbtn g" id="fTorre">Ver en la torre</button></div>
+ <div class="rgrid" id="fRes"></div>
+</div></div>
+<div class="modal" id="mComp"><div class="mbox mw glass">
+ <div class="mhd"><div><h3>Comparación</h3><p>En verde, la mejor opción de cada fila.</p></div><button class="xb" data-close>×</button></div>
+ <div style="overflow:auto" id="compBody"></div>
+</div></div>
+<div class="modal" id="mLead"><div class="mbox glass" style="max-width:440px;padding:22px">
+ <div class="mhd"><div><h3 id="lTit">Me interesa</h3><p id="lSub"></p></div><button class="xb" data-close>×</button></div>
+ <form class="lf" id="lForm"><div class="frm lf">
+  <div><label class="lab" for="lNom">Nombre</label><input id="lNom" required autocomplete="name" placeholder="Tu nombre"></div>
+  <div><label class="lab" for="lTel">Teléfono / WhatsApp</label><input id="lTel" required inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx"></div>
+  <div><span class="lab">¿Para cuándo?</span><div class="chips" id="lCuando"><button type="button" class="chip on" data-v="caliente">Quiero reservar</button><button type="button" class="chip" data-v="tibio">Este año</button><button type="button" class="chip" data-v="frio">Solo mirando</button></div></div>
+  <button class="btn p" type="submit" style="margin-top:6px">Quiero que me contacten</button>
+  <a class="btn g" id="lWa" target="_blank" rel="noopener">Prefiero escribir por WhatsApp</a></div>
+  <div class="ok"><div style="font-size:40px;color:#34D399">✓</div><h3 style="margin:6px 0 4px">¡Listo!</h3><p style="color:var(--mu);font-size:14px">Un asesor te escribe en breve con la info del <b id="lOkU"></b>.</p><button type="button" class="btn g" data-close style="margin-top:14px">Seguir mirando</button></div>
+ </form>
+</div></div>
+<div class="modal" id="mPanel"><div class="mbox mw glass" style="width:min(1120px,100%)">
+ <div class="mhd"><div><h3>Panel de ventas</h3><p><span class="live"><i></i>En vivo</span> &nbsp;·&nbsp; lo que hace la gente dentro del showroom</p></div><div style="display:flex;gap:8px"><button class="tbtn g" id="pXls">Exportar leads</button><button class="xb" data-close>×</button></div></div>
+ <div class="kpis" id="pKpis"></div>
+ <div class="pgrid">
+  <div class="pcard"><h4>Consultas por día <span style="text-transform:none;letter-spacing:0;font-weight:600" id="pTot"></span></h4><canvas id="pChart"></canvas></div>
+  <div class="pcard"><h4>Disponibles más mirados</h4><div class="top5" id="pTop"></div></div>
+ </div>
+ <div class="pgrid" style="grid-template-columns:1fr 1.6fr">
+  <div class="pcard"><h4>Interés por tipología</h4><div id="pTipo"></div></div>
+  <div class="pcard"><h4>Últimas consultas <input id="pQ" placeholder="Buscar…" style="width:160px;padding:6px 10px;font-size:12px;text-transform:none;letter-spacing:0"></h4><div style="max-height:260px;overflow:auto"><table class="lt"><thead><tr><th data-s="fecha">Fecha</th><th data-s="nombre">Nombre</th><th data-s="unidad">Depto</th><th data-s="origen">Origen</th><th data-s="temp">Interés</th></tr></thead><tbody id="pLeads"></tbody></table></div></div>
+ </div>
+</div></div>
+
 <div class="modal" id="menu"><div class="mbox glass">
  <h3>Opciones</h3>
+ <button class="mi" data-a="panel">Panel de ventas (desarrolladora)</button>
+ <button class="mi" data-a="buscar">Buscar departamento</button>
  <button class="mi" data-a="amen">Ver amenities</button>
  <button class="mi" data-a="xlsx">Exportar unidades a Excel</button>
  <button class="mi" data-a="json">Exportar datos (JSON)</button>
@@ -233,6 +330,7 @@ input:focus,select:focus{border-color:var(--ac)}
  <input type="file" id="fileIn" accept=".json" hidden>
 </div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" defer></script>
@@ -245,7 +343,7 @@ const CONFIG = {
   colorAcento:"#C8A97E",
   moneda:     "USD",                        // PYG | USD | EUR
   locale:     "es-PY",
-  version:    "2.0.0",
+  version:    "3.0.0",
   proyecto: { nombre: "Torre Aurora", sub: "Residences", ubicacion: "Barrio Norte · Asunción", entrega: "Diciembre 2028",
     descripcion: "10 pisos de departamentos de 1, 2 y 3 dormitorios con balcones corridos, lobby de doble altura y azotea con piscina infinita." },
   whatsapp:   "595900000000",               // número de ventas con código de país, sin +
@@ -275,6 +373,8 @@ const CONFIG = {
   amenities: [ { n: "Azotea con piscina", img: "img/rooftop.jpg" }, { n: "Lobby doble altura", img: "img/lobby.jpg" } ],
   cotizador: { anticipo: 30, cuotasPct: 40, cuotas: 30, tasaAnual: 9, anios: 15 },
   planilla:  { url: "", cadaSeg: 60 },
+  panel:     { pedirPin: true },          // false = el panel de ventas se abre sin PIN (solo para demos)
+  comparar:  { max: 3 },
   // Vuelos de cámara entre niveles (videos de 5 s). Si falta uno, se usa un acercamiento animado.
   transiciones: { 'torre>planta': 'vid/torre-planta.mp4', 'planta>entrada': 'vid/planta-entrada.mp4',
     'entrada>living': 'vid/entrada-living.mp4', 'living>cocina': 'vid/living-cocina.mp4', 'cocina>suite': 'vid/cocina-suite.mp4', 'suite>bano': 'vid/suite-bano.mp4',
@@ -308,12 +408,24 @@ function demoData() {
     const estado = x < .30 + alto * .2 ? 'vendido' : x < .44 + alto * .15 ? 'reservado' : 'disponible';
     U.push({ id: `${p}0${i + 1}`, piso: p, letra: L, ...t, precio, estado });
   });
-  return { unidades: U, actualizado: new Date().toISOString() };
+  return { unidades: U, actualizado: new Date().toISOString(), ...demoActividad(U) };
+}
+// Actividad demo: vistas por unidad y consultas de los últimos 14 días (nombres ficticios).
+function demoActividad(U) {
+  const r = rng(29), N = ['Laura G.', 'Martín R.', 'Sofía B.', 'Diego A.', 'Carla M.', 'Andrés V.', 'Paula F.', 'Javier S.', 'Lucía P.', 'Tomás C.', 'Valeria O.', 'Nicolás D.', 'Camila E.', 'Federico L.', 'Ana T.', 'Gustavo N.', 'Micaela Z.', 'Rodrigo H.'];
+  const O = ['Instagram', 'Instagram', 'WhatsApp', 'Web', 'Sala de ventas'], TP = ['caliente', 'tibio', 'tibio', 'frio'];
+  const vistas = {}; U.forEach(u => { vistas[u.id] = Math.round(8 + r() * 30 + u.piso * 4 + (u.letra === 'C' ? 25 : u.letra === 'A' ? 12 : 0)); });
+  const vivos = U.filter(u => u.estado !== 'vendido'), leads = [], hoy = new Date(); hoy.setHours(12, 0, 0, 0);
+  for (let d = 13; d >= 0; d--) { const n = Math.round(1 + r() * 3 + (13 - d) * .18);
+    for (let k = 0; k < n; k++) { const u = vivos[Math.floor(r() * vivos.length)], f = new Date(Math.min(Date.now() - r() * 5 * 36e5, +hoy - d * 864e5 + (r() * 10 - 3) * 36e5));
+      leads.push({ fecha: f.toISOString(), nombre: N[Math.floor(r() * N.length)], tel: '09' + Math.floor(71e6 + r() * 2e7), unidad: u.id, origen: O[Math.floor(r() * O.length)], temp: TP[Math.floor(r() * TP.length)] }); } }
+  return { vistas, leads };
 }
 let DB; try { DB = JSON.parse(localStorage.getItem(KEY)) } catch (e) { DB = null }
 if (!DB || !Array.isArray(DB.unidades) || !DB.unidades.every(u => u.letra in CONFIG.tipologias)) DB = demoData();
+if (!DB.vistas || !Array.isArray(DB.leads)) Object.assign(DB, demoActividad(DB.unidades));
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)) } catch (e) {} };
-const UI = { view: 'torre', piso: 7, sel: null, amb: null, cot: { ...CONFIG.cotizador }, admin: false };
+const UI = { view: 'torre', piso: 7, sel: null, amb: null, cot: { ...CONFIG.cotizador }, admin: false, cmp: [], filtro: null, fx: [] };
 const del = p => DB.unidades.filter(u => u.piso === p);
 
 // ---------- 1. TORRE ----------
@@ -322,15 +434,16 @@ const yL = k => T.yIzq0 + k * T.pasoIzq, yR = k => T.yDer0 + k * T.pasoDer, lat 
 function poly(p) { const kt = T.pisos - p, kb = kt + 1;
   return [[T.xL, yL(kt) + lat(kt)], [T.xC, yL(kt)], [T.xR, yR(kt)], [T.xR, yR(kb)], [T.xC, yL(kb)], [T.xL, yL(kb) + lat(kb)]].map(q => q.join(',')).join(' '); }
 function renderTorre() {
-  $('#floors').innerHTML = Array.from({ length: T.pisos }, (_, i) => i + 1).map(p => `<polygon class="fl" data-p="${p}" points="${poly(p)}"/>`).join('');
+  $('#floors').innerHTML = Array.from({ length: T.pisos }, (_, i) => i + 1).map(p => `<polygon class="fl${matchPiso(p) ? ' match' : ''}${UI.fx.some(id => pisoDe(id) === p) ? ' fx' : ''}" data-p="${p}" points="${poly(p)}"/>`).join('');
   const U = DB.unidades, n = U.length, d = U.filter(u => u.estado === 'disponible');
   const desde = d.length ? Math.min(...d.map(u => u.precio)) : 0;
   $('#heroCard').innerHTML = `<div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);font-weight:700">${esc(CONFIG.marca)}</div>
    <h1 style="margin-top:6px">${esc(CONFIG.proyecto.nombre)}</h1><p>${esc(CONFIG.proyecto.ubicacion)} · Entrega ${esc(CONFIG.proyecto.entrega)}<br>${esc(CONFIG.proyecto.descripcion)}</p>
-   <div class="stats"><div class="stat"><small>Disponibles</small><b class="num">${d.length} de ${n}</b></div><div class="stat"><small>Vendido</small><b class="num">${Math.round(U.filter(u => u.estado === 'vendido').length / n * 100)}%</b></div><div class="stat"><small>Desde</small><b class="num">${desde ? money(desde) : '—'}</b></div></div>`;
+   <div class="stats"><div class="stat"><small>Disponibles</small><b class="num">${d.length} de ${n}</b></div><div class="stat"><small>Vendido</small><b class="num">${Math.round(U.filter(u => u.estado === 'vendido').length / n * 100)}%</b></div><div class="stat"><small>Desde</small><b class="num">${desde ? money(desde) : '—'}</b></div></div>
+   <div style="margin-top:12px"><span class="live"><i></i>Disponibilidad en vivo</span></div>`;
   $('#floorList').innerHTML = `<h3>Elegí tu piso</h3>` + Array.from({ length: T.pisos }, (_, i) => T.pisos - i).map(p => {
     const D = del(p), nd = D.filter(u => u.estado === 'disponible').length;
-    return `<div class="frow" data-p="${p}"><b class="num">Piso ${String(p).padStart(2, '0')}</b><span style="display:flex;align-items:center;gap:10px"><span class="dots">${D.map(u => `<i style="background:${COL[u.estado]}"></i>`).join('')}</span><span class="num" style="color:var(--mu);font-size:12px;width:16px;text-align:right">${nd}</span></span></div>`; }).join('');
+    return `<div class="frow${matchPiso(p) ? ' match' : ''}" data-p="${p}"><b class="num">Piso ${String(p).padStart(2, '0')}</b><span style="display:flex;align-items:center;gap:10px"><span class="dots">${D.map(u => `<i class="${UI.fx.includes(u.id) ? 'fx' : ''}" style="background:${COL[u.estado]}"></i>`).join('')}</span><span class="num" style="color:var(--mu);font-size:12px;width:16px;text-align:right">${nd}</span></span></div>`; }).join('');
   $$('#floors .fl, #floorList .frow').forEach(el => {
     el.onmouseenter = e => hiFloor(+el.dataset.p, e); el.onmouseleave = () => hiFloor(null);
     el.onclick = () => irPiso(+el.dataset.p, true);
@@ -348,7 +461,7 @@ function tipAt(e) { const t = $('#floorTip'); t.style.left = Math.min(innerWidth
 function fitTorre() { const mob = innerWidth / innerHeight < .9; $('#torreSvg').setAttribute('viewBox', mob ? `${T.xL - 40} -70 ${T.xR - T.xL + 80} 1800` : '0 0 2688 1520'); }
 
 // ---------- 2. PLANTA ----------
-function irPiso(p, anim) { const go = () => { UI.piso = Math.max(1, Math.min(T.pisos, p)); UI.sel = null; hiFloor(null); setView('planta'); renderPlanta(); };
+function irPiso(p, anim, cb) { const go = () => { UI.piso = Math.max(1, Math.min(T.pisos, p)); UI.sel = null; hiFloor(null); setView('planta'); renderPlanta(); if (cb) cb(); };
   if (anim && UI.view === 'torre') { const kt = T.pisos - p; const [x, y] = ptOnSvg('#torreSvg', (T.xC + T.xR) / 2, (yL(kt) + yR(kt + 1)) / 2); transicion('torre>planta', '#vTorre', x, y, go); } else go(); }
 function renderPlanta() {
   const p = UI.piso, D = del(p);
@@ -376,7 +489,7 @@ function renderListaPiso(D) {
   $('#bVista2').onclick = e => abrirVista(e.clientX, e.clientY);
   $$('#sideBody .ucard').forEach(c => c.onclick = () => selUnidad(c.dataset.id));
 }
-function selUnidad(id) { UI.sel = UI.sel === id ? null : id; renderPlanta(); $('#sideBody').scrollTop = 0; }
+function selUnidad(id) { UI.sel = UI.sel === id ? null : id; if (UI.sel) { DB.vistas[id] = (DB.vistas[id] || 0) + 1; save(); } renderPlanta(); $('#sideBody').scrollTop = 0; }
 function pmt(i, n, pv) { return i === 0 ? pv / n : pv * i / (1 - Math.pow(1 + i, -n)); }
 function cotizar(u) { const c = UI.cot, P = u.precio, ant = P * c.anticipo / 100, cuo = P * c.cuotasPct / 100, cuota = c.cuotas > 0 ? cuo / c.cuotas : 0, saldo = P - ant - cuo;
   return { P, ant, cuo, cuota, saldo, fin: pmt(c.tasaAnual / 1200, c.anios * 12, Math.max(0, saldo)), c }; }
@@ -402,13 +515,16 @@ function renderFicha(u) {
    <div id="qOut">${qOut(q)}</div>
    <div class="adm"><div class="sec">Administrador</div><div class="f2"><div><label>Estado</label><select id="aE">${['disponible', 'reservado', 'vendido'].map(s => `<option ${s === u.estado ? 'selected' : ''}>${s}</option>`).join('')}</select></div><div><label>Precio</label><input type="number" id="aP" value="${u.precio}"></div></div><button class="btn g" id="aSave">Guardar cambios</button></div>
    <div style="height:14px"></div>
-   <a class="btn p no-print" target="_blank" rel="noopener" href="${waLink(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`)}">Consultar por WhatsApp</a>
-   <div class="btns no-print"><button class="btn g" id="bPdf">Cotización PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
+   ${u.estado === 'vendido' ? '' : `<button class="btn p no-print" id="bLead">Me interesa este depto</button>`}
+   <div class="btns3 no-print"><button class="btn g${UI.cmp.includes(u.id) ? ' on' : ''}" id="bCmp">${UI.cmp.includes(u.id) ? 'En comparación ✓' : 'Comparar'}</button><button class="btn g" id="bShare">Compartir link</button>
+    <button class="btn g" id="bPdf">Cotización PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
   $('#bLista').onclick = () => selUnidad(u.id);
   $$('#sideBody .amb button').forEach(b => b.onclick = () => { const u = DB.unidades.find(x => x.id === UI.sel); const pin = u && CONFIG.planta.unidades[u.letra].pins[b.dataset.k]; const [x, y] = pin ? ptOnSvg('#plantaSvg', pin[0], pin[1]) : [innerWidth / 2, innerHeight / 2]; entrarAmb(b.dataset.k, x, y); });
   $$('#sideBody [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? Math.max(0, v) : 0; $('#qOut').innerHTML = qOut(cotizar(u)); });
   $('#bVista').onclick = e => abrirVista(e.clientX, e.clientY);
   $('#bPdf').onclick = () => pdfCot(u); $('#bPrint').onclick = () => print();
+  if ($('#bLead')) $('#bLead').onclick = () => abrirLead(u);
+  $('#bCmp').onclick = () => toggleCmp(u.id); $('#bShare').onclick = () => compartir(u);
   if ($('#aSave')) $('#aSave').onclick = () => { u.estado = $('#aE').value; const pr = parseFloat($('#aP').value); if (pr > 0) u.precio = pr; DB.actualizado = new Date().toISOString(); save(); renderTorre(); renderPlanta(); toast(`Depto ${u.id} actualizado`); };
 }
 $('#fUp').onclick = () => irPiso(UI.piso + 1); $('#fDn').onclick = () => irPiso(UI.piso - 1);
@@ -471,7 +587,7 @@ function ptOnSvg(svgSel, x, y) { const svg = $(svgSel), pt = svg.createSVGPoint(
 // ---------- navegación ----------
 function setView(v) {
   UI.view = v; $$('.view').forEach(x => x.classList.remove('on')); $({ torre: '#vTorre', planta: '#vPlanta', amb: '#vAmb' }[v]).classList.add('on');
-  $('#bBack').style.visibility = v === 'torre' ? 'hidden' : 'visible';
+  $('#bBack').style.visibility = v === 'torre' ? 'hidden' : 'visible'; if (typeof badgeFiltro === 'function') badgeFiltro();
   $('#bBackLbl').textContent = v === 'planta' ? 'Torre' : UI.ambModo === 'a' ? 'Volver' : 'Planta';
 }
 $('#bBack').onclick = () => { if (UI.view === 'planta') { setView('torre'); renderTorre(); } else setView(UI.ambModo === 'a' ? (UI.prevView || 'torre') : 'planta'); };
@@ -490,6 +606,8 @@ $$('#menu [data-a]').forEach(b => b.onclick = () => {
     const ws = XLSX.utils.json_to_sheet(DB.unidades.map(u => ({ Unidad: u.id, Piso: u.piso, Tipologia: u.tipo, Dormitorios: u.dorm, Banos: u.banos, m2: u.m2, Balcon_m2: u.balcon, Orientacion: u.orient, Precio: u.precio, Precio_m2: Math.round(u.precio / u.m2), Estado: u.estado })));
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Unidades'); XLSX.writeFile(wb, `${KEY}.xlsx`); toast('Excel descargado'); }
   if (a === 'amen') abrirAmb('a', 'a0');
+  if (a === 'panel') abrirPanel();
+  if (a === 'buscar') abrirBuscar();
   if (a === 'json') { dl(new Blob([JSON.stringify(DB, null, 1)], { type: 'application/json' }), `${KEY}.json`); toast('Datos exportados'); }
   if (a === 'imp') $('#fileIn').click();
   if (a === 'admin') { if (!CONFIG.admin) return toast('El modo administrador no está habilitado');
@@ -519,12 +637,141 @@ async function sync() {
   const url = CONFIG.planilla.url || (() => { try { return localStorage.getItem(KEY + '.sheet') } catch (e) { return '' } })(); if (!url) return;
   try { const rows = parseCSV(await (await fetch(url, { cache: 'no-store' })).text()); let n = 0;
     rows.forEach(r => { const u = DB.unidades.find(x => x.id === r.id); if (!u) return;
-      if (['disponible', 'reservado', 'vendido'].includes(r.estado) && u.estado !== r.estado) { u.estado = r.estado; n++; }
+      if (['disponible', 'reservado', 'vendido'].includes(r.estado) && u.estado !== r.estado) { u.estado = r.estado; n++; marcarFx(u.id); }
       if (r.precio > 0 && u.precio !== r.precio) { u.precio = r.precio; n++; } });
     if (n) { save(); refrescar(); toast(`Planilla en vivo: ${n} cambios`); }
   } catch (e) { toast('No se pudo leer la planilla'); }
 }
 function refrescar() { renderTorre(); if (UI.view === 'planta') renderPlanta(); }
+
+
+// ---------- 4. BUSCADOR ----------
+const pisoDe = id => DB.unidades.find(u => u.id === id)?.piso;
+const precios = () => DB.unidades.map(u => u.precio);
+function filtrar(f) { return DB.unidades.filter(u => u.estado === 'disponible' && (!f.dorm || u.dorm === f.dorm) && u.precio <= f.max && u.piso >= f.piso); }
+function matchPiso(p) { return UI.filtro ? filtrar(UI.filtro).some(u => u.piso === p) : false; }
+const FB = { dorm: 0, max: 0, piso: 1, ord: 'precio' };
+function abrirBuscar() {
+  const P = precios(), lo = Math.floor(Math.min(...P) / 5000) * 5000, hi = Math.ceil(Math.max(...P) / 5000) * 5000;
+  if (!FB.max) FB.max = hi;
+  const ds = [...new Set(DB.unidades.map(u => u.dorm))].sort();
+  $('#fDorm').innerHTML = [0, ...ds].map(d => `<button class="chip${FB.dorm === d ? ' on' : ''}" data-d="${d}">${d ? d + (d === 1 ? ' dorm.' : ' dorm.') : 'Todos'}</button>`).join('');
+  Object.assign($('#fMax'), { min: lo, max: hi, step: 1000, value: FB.max });
+  $('#fPiso').innerHTML = Array.from({ length: T.pisos }, (_, i) => `<option value="${i + 1}" ${FB.piso === i + 1 ? 'selected' : ''}>Piso ${i + 1}${i ? ' o más alto' : ' (todos)'}</option>`).join('');
+  $('#fOrd').value = FB.ord;
+  $$('#fDorm .chip').forEach(c => c.onclick = () => { FB.dorm = +c.dataset.d; $$('#fDorm .chip').forEach(x => x.classList.toggle('on', x === c)); pintarBusqueda(); });
+  $('#fMax').oninput = e => { FB.max = +e.target.value; pintarBusqueda(); };
+  $('#fPiso').onchange = e => { FB.piso = +e.target.value; pintarBusqueda(); };
+  $('#fOrd').onchange = e => { FB.ord = e.target.value; pintarBusqueda(); };
+  pintarBusqueda(); $('#mBuscar').classList.add('on');
+}
+function pintarBusqueda() {
+  $('#fMaxV').textContent = money(FB.max);
+  const S = { precio: (a, b) => a.precio - b.precio, m2p: (a, b) => a.precio / a.m2 - b.precio / b.m2, m2: (a, b) => b.m2 - a.m2, piso: (a, b) => b.piso - a.piso }[FB.ord];
+  const R = filtrar(FB).sort(S); $('#fCount').textContent = R.length;
+  $('#fRes').innerHTML = R.length ? R.map(u => `<button class="rcard" data-id="${u.id}"><div class="t"><b>Depto ${u.id}</b><span class="st disponible">Piso ${u.piso}</span></div><small>${u.tipo} · ${u.m2} m² + ${u.balcon} m² balcón · ${esc(u.orient)}</small><div class="pr num">${money(u.precio)}</div><small class="num">${money(u.precio / u.m2)} / m² · cuota de obra ${money(cotizar(u).cuota)}/mes</small></button>`).join('')
+    : `<div class="empty" style="grid-column:1/-1">No hay departamentos disponibles con esos filtros. Probá subir el precio máximo o elegir otro piso.</div>`;
+  $$('#fRes .rcard').forEach(c => c.onclick = () => { const u = DB.unidades.find(x => x.id === c.dataset.id); cerrarModales(); UI.filtro = { ...FB }; badgeFiltro(); irPiso(u.piso, UI.view === 'torre', () => selUnidad(u.id)); });
+}
+function badgeFiltro() { const f = UI.filtro, n = f ? filtrar(f).length : 0; $('#fBadge').classList.toggle('on', !!f && UI.view === 'torre');
+  if (f) $('#fBadgeT').textContent = `${n} depto${n === 1 ? '' : 's'} ${f.dorm ? 'de ' + f.dorm + ' dorm. ' : ''}hasta ${money(f.max)}`; }
+$('#fTorre').onclick = () => { UI.filtro = { ...FB }; cerrarModales(); if (UI.view !== 'torre') setView('torre'); renderTorre(); badgeFiltro(); toast('Los pisos con opciones quedan resaltados'); };
+$('#fBadgeX').onclick = () => { UI.filtro = null; renderTorre(); badgeFiltro(); };
+$('#bBuscar').onclick = abrirBuscar;
+
+// ---------- 5. COMPARADOR ----------
+function toggleCmp(id) { const i = UI.cmp.indexOf(id);
+  if (i >= 0) UI.cmp.splice(i, 1); else { if (UI.cmp.length >= CONFIG.comparar.max) return toast(`Podés comparar hasta ${CONFIG.comparar.max} departamentos`); UI.cmp.push(id); toast(`Depto ${id} agregado a la comparación`); }
+  pintarCmpBar(); if (UI.view === 'planta') renderPlanta(); }
+function pintarCmpBar() { const n = UI.cmp.length; $('#cmpBar').classList.toggle('on', n > 0); $('#cmpT').textContent = n === 1 ? '1 depto elegido · sumá otro' : `${n} deptos elegidos`; $('#cmpGo').disabled = n < 2; $('#cmpGo').style.opacity = n < 2 ? .5 : 1; }
+$('#cmpClr').onclick = () => { UI.cmp = []; pintarCmpBar(); if (UI.view === 'planta') renderPlanta(); };
+$('#cmpGo').onclick = () => { if (UI.cmp.length >= 2) abrirComp(); };
+function abrirComp() {
+  const U = UI.cmp.map(id => DB.unidades.find(u => u.id === id)).filter(Boolean);
+  // [etiqueta, valor numérico, formato, mejor = 'min' | 'max' | null]
+  const F = [['Tipología', u => u.tipo, null], ['Piso', u => u.piso, 'max'], ['Superficie cubierta', u => u.m2, 'max', v => v + ' m²'], ['Balcón', u => u.balcon, 'max', v => v + ' m²'],
+    ['Orientación', u => u.orient, null], ['Precio', u => u.precio, 'min', money], ['Precio por m²', u => u.precio / u.m2, 'min', money], ['Cuota de obra', u => cotizar(u).cuota, 'min', v => money(v) + '/mes'],
+    ['Saldo a la entrega', u => Math.max(0, cotizar(u).saldo), 'min', money], ['Vistas en el showroom', u => DB.vistas[u.id] || 0, null], ['Estado', u => u.estado, null, v => `<span class="st ${v}">${v}</span>`]];
+  $('#compBody').innerHTML = `<table class="ct"><thead><tr><th></th>${U.map(u => `<th>Depto ${u.id}</th>`).join('')}</tr></thead><tbody>${F.map(([l, g, b, fmt]) => {
+    const V = U.map(g), best = b && new Set(V).size > 1 ? (b === 'min' ? Math.min(...V) : Math.max(...V)) : null;
+    return `<tr><th>${l}</th>${V.map(v => `<td class="num${best !== null && v === best ? ' best' : ''}">${fmt ? fmt(v) : esc(v)}</td>`).join('')}</tr>`; }).join('')}
+   <tr><th></th>${U.map(u => `<td><button class="tbtn g" data-ver="${u.id}">Ver ficha</button></td>`).join('')}</tr></tbody></table>`;
+  $$('#compBody [data-ver]').forEach(b => b.onclick = () => { const u = DB.unidades.find(x => x.id === b.dataset.ver); cerrarModales(); irPiso(u.piso, false, () => selUnidad(u.id)); });
+  $('#mComp').classList.add('on');
+}
+
+// ---------- 6. COMPARTIR UNIDAD (link directo) ----------
+function linkUnidad(u) { return location.href.split('#')[0] + '#u=' + u.id; }
+async function compartir(u) { const url = linkUnidad(u), txt = `Mirá el Depto ${u.id} de ${CONFIG.proyecto.nombre}: ${u.tipo}, ${u.m2} m², piso ${u.piso}.`;
+  if (navigator.share && matchMedia('(pointer:coarse)').matches) { try { await navigator.share({ title: CONFIG.proyecto.nombre, text: txt, url }); return; } catch (e) {} }
+  try { await navigator.clipboard.writeText(url); toast(`Link del Depto ${u.id} copiado`); } catch (e) { prompt('Copiá el link', url); } }
+function abrirDesdeLink() { const m = location.hash.match(/u=([\w-]+)/); const u = m && DB.unidades.find(x => x.id === m[1]); if (u) irPiso(u.piso, false, () => selUnidad(u.id)); }
+addEventListener('hashchange', abrirDesdeLink);
+
+// ---------- 7. LEADS ----------
+let leadU = null;
+function abrirLead(u) { leadU = u; $('#lForm').classList.remove('done'); $('#lTit').textContent = `Me interesa el Depto ${u.id}`; $('#lSub').textContent = `${u.tipo} · ${u.m2} m² · piso ${u.piso} · ${money(u.precio)}`; $('#lOkU').textContent = 'Depto ' + u.id;
+  $('#lWa').href = waLink(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`); $('#mLead').classList.add('on'); setTimeout(() => $('#lNom').focus(), 50); }
+$$('#lCuando .chip').forEach(c => c.onclick = () => $$('#lCuando .chip').forEach(x => x.classList.toggle('on', x === c)));
+$('#lForm').onsubmit = e => { e.preventDefault(); const nombre = $('#lNom').value.trim(), tel = $('#lTel').value.trim(); if (!nombre || !tel) return;
+  DB.leads.push({ fecha: new Date().toISOString(), nombre, tel, unidad: leadU.id, origen: 'Showroom', temp: $('#lCuando .chip.on').dataset.v, nuevo: true }); save();
+  $('#lForm').classList.add('done'); $('#lNom').value = $('#lTel').value = ''; toast('Consulta enviada al equipo de ventas'); };
+
+// ---------- 8. PANEL DE VENTAS ----------
+let pChart = null, pSort = { k: 'fecha', d: -1 };
+function abrirPanel() {
+  if (CONFIG.panel.pedirPin && !UI.admin) { const p = prompt('PIN de administrador'); if (p !== CONFIG.pin) { if (p !== null) toast('PIN incorrecto'); return; } UI.admin = true; document.body.classList.add('admin'); }
+  pintarPanel(); $('#mPanel').classList.add('on');
+}
+function pintarPanel() {
+  const U = DB.unidades, n = U.length, V = U.filter(u => u.estado === 'vendido'), R = U.filter(u => u.estado === 'reservado'), D = U.filter(u => u.estado === 'disponible');
+  const sum = A => A.reduce((s, u) => s + u.precio, 0), L = DB.leads, hace7 = Date.now() - 7 * 864e5;
+  const l7 = L.filter(l => +new Date(l.fecha) >= hace7).length, l14 = L.filter(l => +new Date(l.fecha) >= hace7 - 7 * 864e5 && +new Date(l.fecha) < hace7).length;
+  const var7 = l14 ? Math.round((l7 - l14) / l14 * 100) : 0, calientes = L.filter(l => l.temp === 'caliente' && +new Date(l.fecha) >= hace7).length;
+  $('#pKpis').innerHTML = [
+    ['Vendido', `${Math.round(V.length / n * 100)}%`, `${V.length} de ${n} unidades · ${R.length} reservadas`],
+    ['Facturación asegurada', money(sum(V) + sum(R)), `vendidas + reservadas`],
+    ['Stock disponible', money(sum(D)), `${D.length} unidades a precio de lista`],
+    ['Consultas 7 días', `${l7}`, `${var7 >= 0 ? '▲' : '▼'} ${Math.abs(var7)}% vs. semana anterior · ${calientes} quieren reservar`]
+  ].map(([a, b, c]) => `<div class="kpi"><small>${a}</small><b class="num">${b}</b><em>${c}</em></div>`).join('');
+  // consultas por día (14 días)
+  const dias = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 13 + i); return d; });
+  const cnt = dias.map(d => L.filter(l => { const f = new Date(l.fecha); f.setHours(0, 0, 0, 0); return +f === +d; }).length);
+  $('#pTot').textContent = `${cnt.reduce((a, b) => a + b, 0)} en 14 días`;
+  if (window.Chart) { if (pChart) pChart.destroy(); const ac = CONFIG.colorAcento;
+    pChart = new Chart($('#pChart'), { type: 'bar', data: { labels: dias.map(d => d.toLocaleDateString(CONFIG.locale, { day: '2-digit', month: '2-digit' })), datasets: [{ data: cnt, backgroundColor: cnt.map((_, i) => i === 13 ? ac : ac + '66'), borderRadius: 6, maxBarThickness: 26 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: { duration: 700 }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.raw} consulta${c.raw === 1 ? '' : 's'}` } } },
+        scales: { x: { grid: { display: false }, ticks: { color: 'rgba(244,241,236,.55)', font: { size: 10 } } }, y: { beginAtZero: true, ticks: { precision: 0, color: 'rgba(244,241,236,.55)' }, grid: { color: 'rgba(255,255,255,.06)' } } } } }); }
+  // top mirados
+  const top = U.filter(u => u.estado !== 'vendido').sort((a, b) => (DB.vistas[b.id] || 0) - (DB.vistas[a.id] || 0)).slice(0, 5), mx = DB.vistas[top[0].id] || 1;
+  $('#pTop').innerHTML = top.map(u => { const lc = L.filter(l => l.unidad === u.id).length;
+    return `<div class="r"><b>Depto ${u.id}</b><div><small style="color:var(--mu)">${u.tipo} · ${DB.vistas[u.id]} vistas</small><div class="bar"><i style="width:${(DB.vistas[u.id] || 0) / mx * 100}%"></i></div></div><span class="num" style="color:var(--mu);font-size:12px">${lc} cons.</span><span class="st ${u.estado}" style="text-align:center">${u.estado}</span></div>`; }).join('');
+  // interés por tipología
+  const tp = LET.map(k => { const us = U.filter(u => u.letra === k), v = us.reduce((s, u) => s + (DB.vistas[u.id] || 0), 0), c = L.filter(l => us.some(u => u.id === l.unidad)).length, d = us.filter(u => u.estado === 'disponible').length; return { k, t: CONFIG.tipologias[k], v, c, d }; });
+  const tv = tp.reduce((s, x) => s + x.v, 0) || 1;
+  $('#pTipo').innerHTML = tp.sort((a, b) => b.v - a.v).map(x => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Tipo ${x.k} · ${x.t.tipo}</b><span class="num" style="color:var(--mu)">${Math.round(x.v / tv * 100)}% · ${x.c} cons. · quedan ${x.d}</span></div><div class="bar"><i style="width:${x.v / tv * 100}%"></i></div></div>`).join('')
+    + `<p style="font-size:12px;color:var(--mu);line-height:1.5">Pista: si una tipología concentra el interés y quedan pocas, es la candidata a subir de precio.</p>`;
+  pintarLeads();
+}
+function pintarLeads() {
+  const q = ($('#pQ').value || '').toLowerCase(), k = pSort.k;
+  const R = DB.leads.filter(l => !q || `${l.nombre} ${l.unidad} ${l.origen} ${l.temp}`.toLowerCase().includes(q)).sort((a, b) => (a[k] > b[k] ? 1 : a[k] < b[k] ? -1 : 0) * pSort.d).slice(0, 60);
+  const T2 = { caliente: 'Quiere reservar', tibio: 'Este año', frio: 'Mirando' };
+  $('#pLeads').innerHTML = R.length ? R.map(l => `<tr class="${l.nuevo ? 'new' : ''}"><td class="num">${new Date(l.fecha).toLocaleDateString(CONFIG.locale, { day: '2-digit', month: '2-digit' })} ${new Date(l.fecha).toLocaleTimeString(CONFIG.locale, { hour: '2-digit', minute: '2-digit' })}</td><td>${esc(l.nombre)}</td><td class="num">${esc(l.unidad)}</td><td>${esc(l.origen)}</td><td><span class="etq ${l.temp}">${T2[l.temp] || l.temp}</span></td></tr>`).join('')
+    : `<tr><td colspan="5" style="color:var(--mu);text-align:center;padding:18px">Sin consultas con esa búsqueda</td></tr>`;
+  DB.leads.forEach(l => delete l.nuevo);
+}
+$('#pQ').oninput = pintarLeads;
+$$('#mPanel .lt th').forEach(th => th.onclick = () => { pSort = { k: th.dataset.s, d: pSort.k === th.dataset.s ? -pSort.d : 1 }; pintarLeads(); });
+$('#pXls').onclick = () => { if (!window.XLSX) return toast('Cargando Excel, probá en un segundo');
+  const ws = XLSX.utils.json_to_sheet(DB.leads.map(l => ({ Fecha: new Date(l.fecha).toLocaleString(CONFIG.locale), Nombre: l.nombre, Telefono: l.tel, Unidad: l.unidad, Origen: l.origen, Interes: l.temp })));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Consultas'); XLSX.writeFile(wb, `${KEY}-consultas.xlsx`); toast('Consultas exportadas a Excel'); };
+
+// ---------- modales y efectos ----------
+function cerrarModales() { $$('.modal').forEach(m => m.classList.remove('on')); }
+$$('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-close]')) m.classList.remove('on'); }));
+addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModales(); });
+function marcarFx(id) { UI.fx.push(id); setTimeout(() => { UI.fx = UI.fx.filter(x => x !== id); }, 3200); }
 
 // ---------- arranque ----------
 fitTorre(); renderTorre();
@@ -533,13 +780,14 @@ const hideLoader = () => { const l = $('#loader'); if (l) { l.style.opacity = 0;
 pre.forEach(s => { const i = new Image(); i.onload = i.onerror = () => { $('#ldBar').style.width = (++ok / pre.length * 100) + '%'; if (ok === pre.length) setTimeout(hideLoader, 250); }; i.src = s; });
 setTimeout(hideLoader, 6000);
 setTimeout(() => [...Object.values(CONFIG.ambientes), ...CONFIG.amenities].forEach(a => { const i = new Image(); i.src = a.img; }), 1500);
+abrirDesdeLink(); pintarCmpBar();
 sync(); setInterval(sync, Math.max(15, CONFIG.planilla.cadaSeg) * 1000);
 function entrarAmb(k, x, y) { transicion(['planta>' + ORDEN[0], ...ruta(ORDEN[0], k)], '#vPlanta', x, y, () => abrirAmb('u', k)); }
 function irAmb(modo, k) { if (k === UI.amb) return; transicion(modo === 'u' ? ruta(UI.amb, k) : [], '#vAmb', innerWidth / 2, innerHeight / 2, () => abrirAmb(modo, k)); }
 function abrirVista(x, y) { const i = CONFIG.vistas.findIndex(v => UI.piso <= v.hasta); transicion([], '#vPlanta', x, y, () => abrirAmb('v', 'v' + Math.max(0, i))); }
 $('#aPrev').onclick = e => { e.stopPropagation(); const i = ORDEN.indexOf(UI.amb); if (i > 0) irAmb('u', ORDEN[i - 1]); };
 $('#aNext').onclick = e => { e.stopPropagation(); const i = ORDEN.indexOf(UI.amb); if (i >= 0 && i < ORDEN.length - 1) irAmb('u', ORDEN[i + 1]); };
-window.__sr = { entrarAmb, transicion, DB, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
+window.__sr = { abrirBuscar, abrirComp, toggleCmp, abrirPanel, pintarPanel, abrirLead, marcarFx, refrescar, cerrarModales, get DB() { return DB; }, UI, entrarAmb, transicion, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
 </script>
 </body>
 </html>
