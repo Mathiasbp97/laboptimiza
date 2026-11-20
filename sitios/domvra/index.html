@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DOMVRA · Showrooms 3D para desarrollos inmobiliarios</title>
+<meta name="description" content="Vendé tu desarrollo antes de construirlo. Showrooms 3D que tu comprador recorre desde el celular: elige el piso, entra al departamento y ve precios en vivo. Desde USD 500.">
+<meta name="theme-color" content="#202522">
+<meta property="og:title" content="DOMVRA · Vendé tu desarrollo antes de construirlo">
+<meta property="og:description" content="Showrooms 3D para desarrolladoras: el comprador elige el piso, recorre el departamento y ve precios en vivo desde el celular.">
+<meta property="og:image" content="img/og.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+:root{
+  --carbon:#202522;--carbon2:#171b19;--carbon3:#2a302c;
+  --piedra:#D8C7A3;--marfil:#F3EFE6;--gris:#77766F;--gris2:#a9a79e;
+  --verde:#5B7B5A;--terra:#B4553E;
+  --line:rgba(243,239,230,.10);--line2:rgba(216,199,163,.28);
+  --r:18px;--max:1200px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--carbon);color:var(--marfil);font-family:Jost,system-ui,sans-serif;font-weight:300;font-size:17px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,.serif{font-family:Marcellus,Georgia,serif;font-weight:400;letter-spacing:.01em;line-height:1.12}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.kicker{font-size:12.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--piedra);font-weight:500;display:inline-flex;align-items:center;gap:12px}
+.kicker:before{content:"";width:28px;height:1px;background:var(--piedra);opacity:.7}
+section{position:relative}
+.sec{padding:120px 0}
+.sec-head{max-width:760px;margin-bottom:56px}
+.sec-head h2{font-size:clamp(32px,4.4vw,52px);margin-top:18px}
+.sec-head p{color:var(--gris2);margin-top:18px;font-size:18px;max-width:620px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 26px;border-radius:999px;font-weight:500;font-size:15.5px;letter-spacing:.02em;transition:transform .2s var(--ease),background .2s,color .2s,border-color .2s,box-shadow .2s;white-space:nowrap;cursor:pointer;border:1px solid transparent}
+.btn svg{width:18px;height:18px;flex:none}
+.btn-p{background:var(--piedra);color:var(--carbon)}
+.btn-p:hover{background:#e6d8b8;transform:translateY(-2px);box-shadow:0 12px 30px -10px rgba(216,199,163,.5)}
+.btn-g{border-color:var(--line2);color:var(--marfil)}
+.btn-g:hover{border-color:var(--piedra);color:var(--piedra);transform:translateY(-2px)}
+
+/* nav */
+nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .3s,border-color .3s,backdrop-filter .3s;border-bottom:1px solid transparent}
+nav.s{background:rgba(23,27,25,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px}
+.logo svg{height:30px;width:auto}
+.nav-l{display:flex;gap:34px;font-size:14.5px;color:var(--gris2)}
+.nav-l a:hover{color:var(--marfil)}
+.nav-cta{padding:11px 20px;font-size:14.5px}
+@media(max-width:900px){.nav-l{display:none}.logo svg{height:24px}.nav-cta{padding:10px 16px;font-size:13.5px}}
+
+/* hero */
+.hero{min-height:100svh;display:flex;align-items:center;padding:120px 0 70px;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:0;background:
+ radial-gradient(900px 520px at 78% 38%,rgba(216,199,163,.13),transparent 60%),
+ radial-gradient(700px 500px at 10% 100%,rgba(91,123,90,.12),transparent 60%);pointer-events:none}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse at 70% 40%,#000 0%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at 70% 40%,#000 0%,transparent 70%);opacity:.45;pointer-events:none}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:56px;align-items:center;position:relative}
+.hero h1{font-size:clamp(42px,5.6vw,76px);margin:22px 0 24px}
+.hero h1 em{font-style:normal;color:var(--piedra)}
+.hero .lead{font-size:19px;color:var(--gris2);max-width:520px}
+.hero .ctas{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px}
+.hero .facts{display:flex;gap:34px;margin-top:46px;padding-top:28px;border-top:1px solid var(--line);flex-wrap:wrap}
+.fact b{display:block;font-family:Marcellus,serif;font-weight:400;font-size:30px;color:var(--marfil);line-height:1}
+.fact span{font-size:13px;color:var(--gris);letter-spacing:.04em}
+
+/* device */
+.device{position:relative;border-radius:16px;background:#0e110f;border:1px solid rgba(243,239,230,.14);box-shadow:0 60px 120px -40px rgba(0,0,0,.75),0 0 0 6px rgba(243,239,230,.03);overflow:hidden;aspect-ratio:16/10}
+.device .bar{position:absolute;inset:0 0 auto;height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#151916;border-bottom:1px solid var(--line);z-index:2}
+.device .bar i{width:10px;height:10px;border-radius:50%;background:#3a403c}
+.device .bar span{margin-left:14px;font-size:12px;color:var(--gris);background:#0e110f;padding:3px 14px;border-radius:6px;flex:1;max-width:340px}
+.device .screen{position:absolute;inset:34px 0 0}
+.device .screen img,.device iframe{width:100%;height:100%;object-fit:cover;border:0}
+.play{position:absolute;inset:34px 0 0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:28px;background:linear-gradient(transparent 55%,rgba(14,17,15,.72));cursor:pointer;z-index:3;transition:background .3s}
+.play:hover{background:linear-gradient(transparent 45%,rgba(14,17,15,.82))}
+.play .btn{box-shadow:0 18px 40px -12px rgba(0,0,0,.6)}
+.pulse{width:9px;height:9px;border-radius:50%;background:#5fbf7a;box-shadow:0 0 0 0 rgba(95,191,122,.6);animation:pl 1.8s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 10px rgba(95,191,122,0)}100%{box-shadow:0 0 0 0 rgba(95,191,122,0)}}
+.hero-dev{transform:perspective(1600px) rotateY(-9deg) rotateX(3deg);transition:transform .8s var(--ease)}
+.hero-dev:hover{transform:perspective(1600px) rotateY(-3deg) rotateX(1deg)}
+.float-card{position:absolute;background:rgba(32,37,34,.92);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;font-size:13px;box-shadow:0 20px 40px -14px rgba(0,0,0,.6);z-index:4}
+.float-card b{display:block;font-family:Marcellus,serif;font-weight:400;font-size:20px}
+.fc1{left:-26px;bottom:44px;animation:fl 6s ease-in-out infinite}
+.fc2{right:-18px;top:62px;animation:fl 7s ease-in-out infinite reverse}
+.fc1 small,.fc2 small{color:var(--gris2)}
+@keyframes fl{50%{transform:translateY(-10px)}}
+@media(max-width:980px){
+ .hero .wrap{grid-template-columns:1fr;gap:44px}
+ .hero-dev{transform:none}
+ .fc1{left:8px;bottom:-22px}.fc2{right:8px;top:-22px}
+ .hero{padding-top:110px}
+}
+
+/* marquee */
+.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;overflow:hidden;background:var(--carbon2)}
+.strip .t{display:flex;gap:56px;width:max-content;animation:mq 38s linear infinite;color:var(--gris2);font-size:14px;letter-spacing:.16em;text-transform:uppercase}
+.strip .t span{display:flex;align-items:center;gap:56px}
+.strip .t span:after{content:"";width:6px;height:6px;background:var(--piedra);transform:rotate(45deg);opacity:.6}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* problem */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.vs .c{border:1px solid var(--line);border-radius:var(--r);padding:38px;background:var(--carbon2)}
+.vs .c.on{border-color:var(--line2);background:linear-gradient(160deg,rgba(216,199,163,.08),rgba(216,199,163,.015))}
+.vs h3{font-size:26px;margin-bottom:22px}
+.vs ul{list-style:none;display:grid;gap:14px}
+.vs li{display:flex;gap:12px;color:var(--gris2)}
+.vs li svg{width:20px;height:20px;flex:none;margin-top:3px}
+.vs .c.on li{color:var(--marfil)}
+.tag{display:inline-block;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;padding:6px 12px;border-radius:99px;border:1px solid var(--line);color:var(--gris);margin-bottom:18px}
+.c.on .tag{border-color:var(--line2);color:var(--piedra)}
+@media(max-width:820px){.vs{grid-template-columns:1fr}.vs .c{padding:28px}}
+
+/* features */
+.feat{display:grid;grid-template-columns:repeat(12,1fr);gap:22px}
+.fcard{grid-column:span 4;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--carbon2);transition:transform .35s var(--ease),border-color .35s;display:flex;flex-direction:column}
+.fcard:hover{transform:translateY(-6px);border-color:var(--line2)}
+.fcard.w{grid-column:span 6}
+.fcard .im{aspect-ratio:16/10;overflow:hidden;position:relative;background:#111}
+.fcard .im img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.fcard:hover .im img{transform:scale(1.05)}
+.fcard .tx{padding:24px 26px 28px}
+.fcard .n{font-size:12px;letter-spacing:.22em;color:var(--piedra)}
+.fcard h3{font-size:22px;margin:8px 0 8px}
+.fcard p{color:var(--gris2);font-size:15.5px}
+@media(max-width:980px){.fcard,.fcard.w{grid-column:span 6}}
+@media(max-width:640px){.fcard,.fcard.w{grid-column:span 12}}
+
+/* demo */
+.demo{background:var(--carbon2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.demo .device{aspect-ratio:16/9;max-width:1080px;margin:0 auto}
+.demo .note{text-align:center;color:var(--gris);font-size:14px;margin-top:20px}
+.demo .note a{color:var(--piedra);border-bottom:1px solid var(--line2)}
+@media(max-width:700px){.demo .device{aspect-ratio:9/14}}
+
+/* render gallery */
+.gal{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}
+.gal figure{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:9/14;background:#111;border:1px solid var(--line)}
+.gal img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
+.gal figure:hover img{transform:scale(1.06)}
+.gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:60px 22px 20px;background:linear-gradient(transparent,rgba(14,17,15,.85));font-size:14px;color:var(--marfil)}
+.gal figcaption b{display:block;font-family:Marcellus,serif;font-weight:400;font-size:21px}
+.gal figcaption small{color:var(--gris2)}
+@media(max-width:820px){.gal{grid-template-columns:1fr 1fr}.gal figure:last-child{grid-column:span 2;aspect-ratio:16/11}}
+@media(max-width:520px){.gal{grid-template-columns:1fr}.gal figure:last-child{grid-column:auto;aspect-ratio:9/12}.gal figure{aspect-ratio:9/12}}
+
+/* case */
+.case{display:grid;grid-template-columns:1.2fr 1fr;border:1px solid var(--line2);border-radius:24px;overflow:hidden;background:var(--carbon2)}
+.case .im{position:relative;min-height:440px}
+.case .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.case .tx{padding:56px 50px;display:flex;flex-direction:column;justify-content:center}
+.case h3{font-size:clamp(30px,3.4vw,42px);margin:16px 0 16px}
+.case p{color:var(--gris2)}
+.case ul{list-style:none;margin:24px 0 32px;display:grid;gap:10px}
+.case li{display:flex;gap:10px;font-size:15.5px}
+.case li:before{content:"";width:6px;height:6px;margin-top:10px;background:var(--piedra);transform:rotate(45deg);flex:none}
+@media(max-width:900px){.case{grid-template-columns:1fr}.case .im{min-height:280px}.case .tx{padding:34px 28px}}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:s;border-top:1px solid var(--line)}
+.step{padding:36px 28px 10px 0;position:relative}
+.step:before{counter-increment:s;content:"0" counter(s);font-family:Marcellus,serif;font-size:15px;color:var(--piedra);letter-spacing:.1em}
+.step:after{content:"";position:absolute;top:-4px;left:0;width:7px;height:7px;background:var(--piedra);transform:rotate(45deg)}
+.step h3{font-size:22px;margin:14px 0 10px}
+.step p{color:var(--gris2);font-size:15.5px}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr;row-gap:20px}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}}
+
+/* plans */
+.plans{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.plan{border:1px solid var(--line);border-radius:var(--r);padding:32px 26px;background:var(--carbon2);display:flex;flex-direction:column;transition:transform .35s var(--ease),border-color .35s}
+.plan:hover{transform:translateY(-6px);border-color:var(--line2)}
+.plan.hi{border-color:var(--piedra);background:linear-gradient(170deg,rgba(216,199,163,.12),rgba(216,199,163,.02));position:relative}
+.plan.hi .badge{position:absolute;top:-12px;left:26px;background:var(--piedra);color:var(--carbon);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;padding:5px 12px;border-radius:99px}
+.plan h3{font-size:25px}
+.plan .d{color:var(--gris2);font-size:14.5px;margin:8px 0 22px;min-height:44px}
+.plan .from{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gris)}
+.plan .pr{font-family:Marcellus,serif;font-size:40px;white-space:nowrap;line-height:1.05;margin:4px 0 2px}
+.plan .pr small{font-size:16px;font-family:Jost,sans-serif;color:var(--gris2)}
+.plan .old{font-size:13.5px;color:var(--gris)}.plan .old s{color:var(--gris)}
+.plan .time{display:inline-flex;gap:8px;align-items:center;margin:18px 0 20px;font-size:13.5px;color:var(--piedra)}
+.plan .time svg{width:16px;height:16px}
+.plan ul{list-style:none;display:grid;gap:10px;font-size:14.5px;color:var(--gris2);margin-bottom:28px}
+.plan li{display:flex;gap:10px}
+.plan li svg{width:16px;height:16px;flex:none;margin-top:4px;color:var(--piedra)}
+.plan .btn{margin-top:auto;justify-content:center}
+.plans-note{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:center;color:var(--gris);font-size:14px;margin-top:30px}
+.plans-note span{display:flex;gap:8px;align-items:center}
+.plans-note svg{width:16px;height:16px;color:var(--piedra)}
+.launch{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 34px;width:max-content;max-width:100%;border:1px solid var(--line2);border-radius:99px;padding:9px 18px;font-size:14px;color:var(--piedra);text-align:center}
+@media(max-width:1060px){.plans{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.plans{grid-template-columns:1fr}.plan .d{min-height:0}}
+
+/* faq */
+.faq{max-width:860px;margin:0 auto}
+.q{border-bottom:1px solid var(--line)}
+.q button{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;width:100%;padding:24px 0;font-family:Marcellus,serif;font-size:21px;box-sizing:border-box}
+.q button:focus-visible{outline:2px solid var(--piedra);outline-offset:4px}
+.q button i{width:30px;height:30px;border:1px solid var(--line2);border-radius:50%;flex:none;position:relative;transition:transform .3s,background .3s}
+.q button i:before,.q button i:after{content:"";position:absolute;left:50%;top:50%;width:11px;height:1px;background:var(--piedra);transform:translate(-50%,-50%)}
+.q button i:after{transform:translate(-50%,-50%) rotate(90deg);transition:transform .3s}
+.q.o button i{background:rgba(216,199,163,.12)}
+.q.o button i:after{transform:translate(-50%,-50%) rotate(0)}
+.q .a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.q.o .a{grid-template-rows:1fr}
+.q .a>div{overflow:hidden;color:var(--gris2)}
+.q .a p{padding:0 50px 26px 0}
+
+/* final */
+.final{text-align:center;padding:140px 0;overflow:hidden}
+.final:before{content:"";position:absolute;inset:0;background:radial-gradient(700px 360px at 50% 50%,rgba(216,199,163,.14),transparent 70%)}
+.final .iso{width:70px;margin:0 auto 30px;opacity:.95}
+.final h2{font-size:clamp(36px,5.4vw,68px);max-width:880px;margin:0 auto}
+.final p{color:var(--gris2);font-size:19px;max-width:560px;margin:22px auto 40px}
+.final .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+footer{border-top:1px solid var(--line);padding:40px 0;color:var(--gris);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer .logo svg{height:30px}
+footer nav{all:unset;display:flex;gap:26px;flex-wrap:wrap}
+footer a:hover{color:var(--marfil)}
+
+/* floating wa */
+.wa{position:fixed;right:20px;bottom:20px;z-index:60;width:60px;height:60px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 14px 30px -8px rgba(0,0,0,.6);transition:transform .25s var(--ease),opacity .3s;opacity:0;transform:scale(.6);pointer-events:none}
+.wa.v{opacity:1;transform:scale(1);pointer-events:auto}
+.wa:hover{transform:scale(1.08)}
+.wa svg{width:30px;height:30px;color:#fff}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+@media(max-width:640px){.sec{padding:84px 0}.sec-head{margin-bottom:40px}body{font-size:16px}}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="wrap">
+    <a href="#top" class="logo" aria-label="DOMVRA inicio"><svg role="img" aria-label="DOMVRA" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841 196" ><path transform="translate(54.32 44) scale(0.86)" fill="#D8C7A3" fill-rule="evenodd" d="M0 112V50A50 50 0 0 1 100 50V112Z M30 112V58A28 28 0 0 1 86 58V112Z M-12 120H112V126H-12Z"/><path transform="translate(200.64 133.189765625) scale(1)" fill="#F3EFE6" d="M17.67578125 -65.8203125Q17.578125 -60.3515625 17.48046875 -55.224609375Q17.431640625 -53.02734375 17.4072265625 -50.732421875Q17.3828125 -48.4375 17.3583984375 -46.2158203125Q17.333984375 -43.994140625 17.3095703125 -41.9677734375Q17.28515625 -39.94140625 17.28515625 -38.37890625Q17.28515625 -35.107421875 17.333984375 -30.46875Q17.3828125 -25.830078125 17.4560546875 -20.947265625Q17.529296875 -16.064453125 17.67578125 -11.572265625Q17.822265625 -7.080078125 18.017578125 -4.1015625Q18.701171875 -4.00390625 19.8486328125 -3.8818359375Q20.99609375 -3.759765625 22.265625 -3.6865234375Q23.53515625 -3.61328125 24.755859375 -3.564453125Q25.9765625 -3.515625 26.806640625 -3.515625Q30.224609375 -3.515625 33.8134765625 -3.9794921875Q37.40234375 -4.443359375 40.7470703125 -5.712890625Q44.091796875 -6.982421875 47.0458984375 -9.2041015625Q50.0 -11.42578125 52.2216796875 -14.94140625Q54.443359375 -18.45703125 55.712890625 -23.4130859375Q56.982421875 -28.369140625 56.982421875 -35.107421875Q56.982421875 -42.578125 55.17578125 -48.4130859375Q53.369140625 -54.248046875 49.8779296875 -58.251953125Q46.38671875 -62.255859375 41.2353515625 -64.3310546875Q36.083984375 -66.40625 29.39453125 -66.40625Q28.076171875 -66.40625 26.416015625 -66.3330078125Q24.755859375 -66.259765625 23.1201171875 -66.1865234375Q21.484375 -66.11328125 20.0439453125 -65.9912109375Q18.603515625 -65.869140625 17.67578125 -65.8203125ZM6.982421875 -70.21484375Q8.10546875 -70.166015625 9.08203125 -70.1171875Q9.912109375 -70.068359375 10.791015625 -70.0439453125Q11.669921875 -70.01953125 12.20703125 -70.01953125Q13.134765625 -70.01953125 15.3076171875 -70.1171875Q17.48046875 -70.21484375 20.263671875 -70.3125Q23.046875 -70.41015625 26.0498046875 -70.5078125Q29.052734375 -70.60546875 31.689453125 -70.60546875Q38.76953125 -70.60546875 45.166015625 -68.84765625Q51.5625 -67.08984375 56.396484375 -63.0859375Q61.23046875 -59.08203125 64.0625 -52.587890625Q66.89453125 -46.09375 66.89453125 -36.62109375Q66.89453125 -29.833984375 65.4052734375 -24.4140625Q63.916015625 -18.994140625 61.23046875 -14.84375Q58.544921875 -10.693359375 54.8095703125 -7.7392578125Q51.07421875 -4.78515625 46.5576171875 -2.880859375Q42.041015625 -0.9765625 36.9140625 -0.09765625Q31.787109375 0.78125 26.318359375 0.78125Q24.365234375 0.78125 21.6064453125 0.6591796875Q18.84765625 0.537109375 16.064453125 0.390625Q13.28125 0.244140625 10.8154296875 0.1220703125Q8.349609375 0.0 6.982421875 0.0V-0.1953125Q7.275390625 -1.220703125 7.5439453125 -2.734375Q7.8125 -4.248046875 8.0078125 -6.494140625Q8.203125 -8.740234375 8.30078125 -11.8408203125Q8.3984375 -14.94140625 8.3984375 -19.091796875V-50.87890625Q8.3984375 -55.029296875 8.30078125 -58.1787109375Q8.203125 -61.328125 8.0078125 -63.5986328125Q7.8125 -65.869140625 7.5439453125 -67.431640625Q7.275390625 -68.994140625 6.982421875 -70.01953125Z M140.302734375 -71.19140625Q148.45703125 -71.19140625 155.3662109375 -68.5302734375Q162.275390625 -65.869140625 167.3046875 -61.0595703125Q172.333984375 -56.25 175.166015625 -49.51171875Q177.998046875 -42.7734375 177.998046875 -34.619140625Q177.998046875 -29.98046875 176.923828125 -25.48828125Q175.849609375 -20.99609375 173.7744140625 -16.9921875Q171.69921875 -12.98828125 168.671875 -9.5947265625Q165.64453125 -6.201171875 161.7626953125 -3.7353515625Q157.880859375 -1.26953125 153.193359375 0.1220703125Q148.505859375 1.513671875 143.0859375 1.513671875Q134.931640625 1.513671875 128.0224609375 -1.0986328125Q121.11328125 -3.7109375 116.083984375 -8.49609375Q111.0546875 -13.28125 108.22265625 -19.9951171875Q105.390625 -26.708984375 105.390625 -34.912109375Q105.390625 -39.55078125 106.46484375 -44.04296875Q107.5390625 -48.53515625 109.6142578125 -52.587890625Q111.689453125 -56.640625 114.6923828125 -60.0341796875Q117.6953125 -63.427734375 121.5771484375 -65.91796875Q125.458984375 -68.408203125 130.1708984375 -69.7998046875Q134.8828125 -71.19140625 140.302734375 -71.19140625ZM143.0859375 -2.880859375Q148.505859375 -2.880859375 152.998046875 -4.833984375Q157.490234375 -6.787109375 160.7373046875 -10.498046875Q163.984375 -14.208984375 165.791015625 -19.5556640625Q167.59765625 -24.90234375 167.59765625 -31.689453125Q167.59765625 -39.208984375 165.8642578125 -45.6298828125Q164.130859375 -52.05078125 160.712890625 -56.7626953125Q157.294921875 -61.474609375 152.1923828125 -64.1357421875Q147.08984375 -66.796875 140.302734375 -66.796875Q134.8828125 -66.796875 130.390625 -64.8681640625Q125.8984375 -62.939453125 122.6513671875 -59.27734375Q119.404296875 -55.615234375 117.59765625 -50.29296875Q115.791015625 -44.970703125 115.791015625 -38.18359375Q115.791015625 -30.712890625 117.5 -24.2431640625Q119.208984375 -17.7734375 122.626953125 -13.037109375Q126.044921875 -8.30078125 131.171875 -5.5908203125Q136.298828125 -2.880859375 143.0859375 -2.880859375Z M215.517578125 -0.1953125Q216.0546875 -0.9765625 216.73828125 -2.5146484375Q217.421875 -4.052734375 217.8125 -6.396484375Q218.349609375 -9.814453125 219.0087890625 -14.0869140625Q219.66796875 -18.359375 220.3759765625 -23.046875Q221.083984375 -27.734375 221.7919921875 -32.6416015625Q222.5 -37.548828125 223.1591796875 -42.3095703125Q223.818359375 -47.0703125 224.4287109375 -51.4892578125Q225.0390625 -55.908203125 225.52734375 -59.5703125Q226.015625 -63.232421875 226.3330078125 -65.9423828125Q226.650390625 -68.65234375 226.796875 -70.01953125H232.998046875L263.7109375 -12.59765625L294.1796875 -70.01953125H298.818359375L306.826171875 -12.01171875Q307.16796875 -9.27734375 307.55859375 -7.32421875Q307.94921875 -5.37109375 308.33984375 -3.9794921875Q308.73046875 -2.587890625 309.0966796875 -1.6845703125Q309.462890625 -0.78125 309.8046875 -0.1953125V0.0H297.5V-0.1953125Q297.744140625 -0.732421875 297.9638671875 -1.953125Q298.18359375 -3.173828125 298.18359375 -4.8828125Q298.18359375 -5.517578125 298.134765625 -6.1767578125Q298.0859375 -6.8359375 297.98828125 -7.6171875L291.787109375 -54.39453125L262.978515625 -0.1953125L259.609375 -0.5859375L230.60546875 -54.8828125Q228.896484375 -43.310546875 227.626953125 -33.49609375Q227.08984375 -29.296875 226.552734375 -25.1220703125Q226.015625 -20.947265625 225.6005859375 -17.333984375Q225.185546875 -13.720703125 224.94140625 -10.9619140625Q224.697265625 -8.203125 224.697265625 -6.884765625Q224.697265625 -5.224609375 224.794921875 -3.955078125Q224.892578125 -2.685546875 224.990234375 -1.806640625Q225.13671875 -0.78125 225.283203125 0.0H215.517578125Z M355.185546875 -70.01953125V-69.82421875Q355.087890625 -69.580078125 355.0390625 -69.091796875Q354.990234375 -68.603515625 354.990234375 -68.212890625Q354.990234375 -66.69921875 355.4052734375 -64.8681640625Q355.8203125 -63.037109375 356.9921875 -60.302734375L378.623046875 -11.5234375L399.521484375 -59.912109375Q400.25390625 -61.71875 401.083984375 -63.8671875Q401.9140625 -66.015625 401.9140625 -68.212890625Q401.9140625 -68.798828125 401.81640625 -69.2138671875Q401.71875 -69.62890625 401.62109375 -69.82421875V-70.01953125H411.630859375V-69.82421875Q410.703125 -68.896484375 409.384765625 -66.50390625Q408.06640625 -64.111328125 406.50390625 -60.595703125L378.525390625 1.513671875H374.619140625L348.10546875 -58.203125Q347.177734375 -60.302734375 346.1767578125 -62.255859375Q345.17578125 -64.208984375 344.296875 -65.7958984375Q343.41796875 -67.3828125 342.734375 -68.45703125Q342.05078125 -69.53125 341.806640625 -69.82421875V-70.01953125Z M456.9140625 -19.091796875Q456.9140625 -14.94140625 457.0361328125 -11.8408203125Q457.158203125 -8.740234375 457.3291015625 -6.494140625Q457.5 -4.248046875 457.7685546875 -2.734375Q458.037109375 -1.220703125 458.330078125 -0.1953125V0.0H446.611328125V-0.1953125Q446.904296875 -1.220703125 447.1728515625 -2.734375Q447.44140625 -4.248046875 447.6123046875 -6.494140625Q447.783203125 -8.740234375 447.9052734375 -11.81640625Q448.02734375 -14.892578125 448.02734375 -19.091796875V-50.87890625Q448.02734375 -55.029296875 447.9052734375 -58.1298828125Q447.783203125 -61.23046875 447.6123046875 -63.4765625Q447.44140625 -65.72265625 447.1728515625 -67.2607421875Q446.904296875 -68.798828125 446.611328125 -69.82421875V-70.01953125L448.662109375 -69.82421875Q449.58984375 -69.7265625 450.7373046875 -69.7021484375Q451.884765625 -69.677734375 453.10546875 -69.677734375Q455.009765625 -69.677734375 458.2568359375 -70.1416015625Q461.50390625 -70.60546875 466.533203125 -70.60546875Q471.220703125 -70.60546875 475.2001953125 -69.3359375Q479.1796875 -68.06640625 482.109375 -65.625Q485.0390625 -63.18359375 486.6748046875 -59.6435546875Q488.310546875 -56.103515625 488.310546875 -51.611328125Q488.310546875 -48.095703125 487.4072265625 -45.0927734375Q486.50390625 -42.08984375 484.8681640625 -39.6484375Q483.232421875 -37.20703125 480.9375 -35.3271484375Q478.642578125 -33.447265625 475.810546875 -32.177734375L492.94921875 -8.10546875Q494.21875 -6.298828125 495.3173828125 -4.98046875Q496.416015625 -3.662109375 497.4169921875 -2.7099609375Q498.41796875 -1.7578125 499.345703125 -1.1474609375Q500.2734375 -0.537109375 501.25 -0.1953125V0.0H487.138671875Q486.9921875 -0.927734375 486.1865234375 -2.4658203125Q485.380859375 -4.00390625 484.306640625 -5.517578125L467.021484375 -29.8828125Q465.8984375 -29.78515625 464.775390625 -29.7119140625Q463.65234375 -29.638671875 462.48046875 -29.638671875Q461.11328125 -29.638671875 459.7216796875 -29.736328125Q458.330078125 -29.833984375 456.9140625 -30.078125ZM456.9140625 -33.88671875Q458.232421875 -33.59375 459.599609375 -33.4716796875Q460.966796875 -33.349609375 462.236328125 -33.349609375Q465.8984375 -33.349609375 468.92578125 -34.4482421875Q471.953125 -35.546875 474.0771484375 -37.79296875Q476.201171875 -40.0390625 477.373046875 -43.3837890625Q478.544921875 -46.728515625 478.544921875 -51.220703125Q478.544921875 -54.8828125 477.71484375 -57.861328125Q476.884765625 -60.83984375 475.2490234375 -62.9150390625Q473.61328125 -64.990234375 471.123046875 -66.1376953125Q468.6328125 -67.28515625 465.3125 -67.28515625Q461.943359375 -67.28515625 459.94140625 -66.943359375Q457.939453125 -66.6015625 456.9140625 -66.2109375Z M584.130859375 0.0V-0.1953125Q584.228515625 -0.439453125 584.27734375 -0.927734375Q584.326171875 -1.416015625 584.326171875 -1.806640625Q584.326171875 -3.3203125 583.9111328125 -5.1513671875Q583.49609375 -6.982421875 582.32421875 -9.716796875L576.416015625 -22.998046875Q573.681640625 -23.095703125 569.140625 -23.095703125Q564.599609375 -23.095703125 559.326171875 -23.095703125Q555.46875 -23.095703125 551.8798828125 -23.095703125Q548.291015625 -23.095703125 545.41015625 -22.998046875L539.794921875 -10.107421875Q539.0625 -8.30078125 538.232421875 -6.15234375Q537.40234375 -4.00390625 537.40234375 -1.806640625Q537.40234375 -1.171875 537.5 -0.7568359375Q537.59765625 -0.341796875 537.6953125 -0.1953125V0.0H527.734375V-0.1953125Q528.61328125 -1.123046875 529.931640625 -3.4912109375Q531.25 -5.859375 532.8125 -9.423828125L560.791015625 -71.484375H564.697265625L591.2109375 -11.81640625Q592.138671875 -9.716796875 593.1396484375 -7.7392578125Q594.140625 -5.76171875 595.01953125 -4.19921875Q595.8984375 -2.63671875 596.58203125 -1.5625Q597.265625 -0.48828125 597.509765625 -0.1953125V0.0ZM552.490234375 -27.294921875Q555.322265625 -27.294921875 558.30078125 -27.3193359375Q561.279296875 -27.34375 564.1357421875 -27.3681640625Q566.9921875 -27.392578125 569.62890625 -27.4169921875Q572.265625 -27.44140625 574.4140625 -27.490234375L560.693359375 -58.49609375L547.216796875 -27.294921875Z"/></svg></a>
+    <div class="nav-l">
+      <a href="#funciones">Funciones</a>
+      <a href="#demo">Demo</a>
+      <a href="#proceso">Proceso</a>
+      <a href="#planes">Planes</a>
+      <a href="#faq">Preguntas</a>
+    </div>
+    <a class="btn btn-p nav-cta" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Tengo%20un%20desarrollo%20y%20me%20interesa%20un%20showroom%203D." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>Hablemos</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="grid-bg"></div>
+  <div class="wrap">
+    <div>
+      <span class="kicker rv">Showrooms 3D para desarrollos inmobiliarios</span>
+      <h1 class="rv d1">Vendé tu desarrollo <em>antes de construirlo.</em></h1>
+      <p class="lead rv d2">Un link que tu comprador abre desde el celular: elige el piso sobre el edificio, entra al departamento y lo recorre como si ya existiera. Con precios y disponibilidad en vivo.</p>
+      <div class="ctas rv d3">
+        <a class="btn btn-p" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Tengo%20un%20desarrollo%20y%20me%20interesa%20un%20showroom%203D." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>Quiero un showroom</a>
+        <a class="btn btn-g" href="#demo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 5v14l11-7z"/></svg>Recorrer la demo</a>
+      </div>
+      <div class="facts rv d3">
+        <div class="fact"><b class="num">7 días</b><span>entrega desde</span></div>
+        <div class="fact"><b>0 apps</b><span>abre en cualquier celular</span></div>
+        <div class="fact"><b class="num">24/7</b><span>tu sala de ventas abierta</span></div>
+      </div>
+    </div>
+    <div class="rv d2" style="position:relative">
+      <div class="device hero-dev">
+        <div class="bar"><i></i><i></i><i></i><span>showroom de tu proyecto</span></div>
+        <div class="screen"><img src="img/t1-torre.webp" alt="Showroom 3D: torre con selección de pisos y disponibilidad en vivo" fetchpriority="high"></div>
+      </div>
+      <div class="float-card fc1"><small>Disponibilidad en vivo</small><b class="num">18 de 40</b><small style="display:flex;gap:6px;align-items:center;margin-top:4px"><span class="pulse"></span>sincronizado con tu planilla</small></div>
+      <div class="float-card fc2"><small>Nueva consulta</small><b>Depto 901</b><small>"Quiero reservar"</small></div>
+    </div>
+  </div>
+</section>
+
+<div class="strip" aria-hidden="true"><div class="t">
+  <span>Elegí tu piso</span><span>Recorrido 3D</span><span>Precios en vivo</span><span>Cotizador de cuotas</span><span>Comparador</span><span>Consultas con nombre</span><span>Panel de ventas</span><span>Link por unidad</span>
+  <span>Elegí tu piso</span><span>Recorrido 3D</span><span>Precios en vivo</span><span>Cotizador de cuotas</span><span>Comparador</span><span>Consultas con nombre</span><span>Panel de ventas</span><span>Link por unidad</span>
+</div></div>
+
+<!-- PROBLEMA -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">El problema</span>
+      <h2>Un plano no enamora. Un recorrido, sí.</h2>
+      <p>En preventa vendés algo que todavía no existe. Si el comprador no lo puede imaginar, no compra… o compra en otro lado.</p>
+    </div>
+    <div class="vs">
+      <div class="c rv">
+        <span class="tag">Hoy</span>
+        <h3>PDFs, renders sueltos y audios</h3>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#77766F" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>Lista de precios en PDF que queda vieja en una semana.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#77766F" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>Renders bonitos, pero nadie entiende dónde queda cada ambiente.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#77766F" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>"¿Qué piso me conviene?" se responde por WhatsApp, uno por uno.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#77766F" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".5"/><path d="M9 9l6 6M15 9l-6 6"/></svg>No sabés qué unidades interesan ni a quién llamar primero.</li>
+        </ul>
+      </div>
+      <div class="c on rv d1">
+        <span class="tag">Con DOMVRA</span>
+        <h3>Una sala de ventas en un link</h3>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#D8C7A3" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".4"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>El comprador elige piso y unidad sobre el edificio real.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#D8C7A3" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".4"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>Recorre el departamento ambiente por ambiente, desde el celular.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#D8C7A3" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".4"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>Ve precio, disponibilidad y cuotas actualizados al instante.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#D8C7A3" stroke-width="1.8"><circle cx="12" cy="12" r="10" stroke-opacity=".4"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>Vos recibís consultas con nombre, teléfono y la unidad que le interesa.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNCIONES -->
+<section class="sec" id="funciones" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">Funciones</span>
+      <h2>No es solo lindo. Está hecho para vender.</h2>
+      <p>Cada función responde una pregunta que hoy te hacen por WhatsApp, y te devuelve datos para cerrar más rápido.</p>
+    </div>
+    <div class="feat">
+      <article class="fcard w rv"><div class="im"><img loading="lazy" src="img/t1-torre.webp" alt="Torre con selector de pisos"></div><div class="tx"><span class="n">01</span><h3>Elegí tu piso sobre el edificio</h3><p>La torre con cada piso marcado por disponibilidad. Un toque y entrás a la planta.</p></div></article>
+      <article class="fcard w rv d1"><div class="im"><img loading="lazy" src="img/f-r10-25.webp" alt="Planta 3D del piso con departamentos"></div><div class="tx"><span class="n">02</span><h3>Planta 3D y recorrido por ambientes</h3><p>Cada departamento en 3D, con fotos de cada ambiente y la vista real desde ese piso.</p></div></article>
+      <article class="fcard rv"><div class="im"><img loading="lazy" src="img/f-r11-34.webp" alt="Simulador de cuotas"></div><div class="tx"><span class="n">03</span><h3>Cotizador de cuotas</h3><p>Anticipo, cuotas de obra y saldo. El comprador se cotiza solo y descarga su PDF.</p></div></article>
+      <article class="fcard rv d1"><div class="im"><img loading="lazy" src="img/t2-buscar.webp" alt="Buscador de departamentos con filtros"></div><div class="tx"><span class="n">04</span><h3>Buscador inteligente</h3><p>Filtra por dormitorios, precio y piso. Solo ve lo que de verdad le sirve.</p></div></article>
+      <article class="fcard rv d2"><div class="im"><img loading="lazy" src="img/t5-comp.webp" alt="Comparador de unidades"></div><div class="tx"><span class="n">05</span><h3>Comparador de unidades</h3><p>Dos o tres deptos lado a lado, con la mejor opción de cada fila resaltada.</p></div></article>
+      <article class="fcard w rv"><div class="im"><img loading="lazy" src="img/t6-lead.webp" alt="Formulario de consulta por unidad"></div><div class="tx"><span class="n">06</span><h3>Consultas que llegan con nombre y unidad</h3><p>"Me interesa el 901" con nombre, teléfono y cuándo quiere comprar. Directo a tu equipo o a WhatsApp.</p></div></article>
+      <article class="fcard w rv d1"><div class="im"><img loading="lazy" src="img/t8-panel.webp" alt="Panel de ventas"></div><div class="tx"><span class="n">07</span><h3>Panel de ventas en vivo</h3><p>Qué se mira, qué se consulta y cuánto vendiste. Datos para saber a quién llamar primero y qué precio ajustar.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="sec demo" id="demo">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center">
+      <span class="kicker">Demo en vivo</span>
+      <h2>Probalo vos mismo.</h2>
+      <p style="margin-left:auto;margin-right:auto">Este es un proyecto demostrativo, Torre Aurora. Tocá un piso, entrá a un departamento, cotizalo. Así lo ven tus compradores.</p>
+    </div>
+    <div class="device rv" id="demoDev">
+      <div class="bar"><i></i><i></i><i></i><span>showroom3d-demo.pages.dev</span></div>
+      <div class="screen" id="demoScreen"><img loading="lazy" src="img/t1-torre.webp" alt="Vista previa de la demo"></div>
+      <div class="play" id="demoPlay" role="button" tabindex="0" aria-label="Cargar la demo interactiva"><span class="btn btn-p"><span class="pulse"></span>Tocá para recorrer la demo</span></div>
+    </div>
+    <p class="note rv">¿Mejor en pantalla completa? <a href="https://showroom3d-demo.pages.dev" target="_blank" rel="noopener">Abrir la demo en otra pestaña ↗</a></p>
+  </div>
+</section>
+
+<!-- RENDERS -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">Visualización</span>
+      <h2>Ambientes que el comprador ya se imagina habitando.</h2>
+      <p>Si solo tenés planos, creamos los renders fotorrealistas. Y si querés, el mismo departamento en distintos estilos para cada perfil de comprador.</p>
+    </div>
+    <div class="gal">
+      <figure class="rv"><img loading="lazy" src="img/moderno.webp" alt="Render de living comedor estilo contemporáneo"><figcaption><b>Contemporáneo</b><small>Living y comedor · estilo A</small></figcaption></figure>
+      <figure class="rv d1"><img loading="lazy" src="img/calido.webp" alt="Render de living comedor estilo cálido"><figcaption><b>Cálido</b><small>Living y comedor · estilo B</small></figcaption></figure>
+      <figure class="rv d2"><img loading="lazy" src="img/balcon.webp" alt="Render de balcón al atardecer"><figcaption><b>La vista desde tu piso</b><small>Balcón al atardecer</small></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- CASO -->
+<section class="sec" style="padding-top:0">
+  <div class="wrap">
+    <div class="case rv">
+      <div class="im"><img loading="lazy" src="img/livo-fachada.webp" alt="Fachada del proyecto LIVO Botánico"></div>
+      <div class="tx">
+        <span class="kicker">Caso real</span>
+        <h3>LIVO Botánico</h3>
+        <p>Desarrollo en preventa en Asunción. Showroom online con selección de unidades, recorrido de ambientes y cotizador, listo para compartir por WhatsApp e Instagram.</p>
+        <ul><li>Unidades y precios siempre actualizados</li><li>Un link por departamento para enviar a cada interesado</li><li>Funciona en celular, tablet y en la sala de ventas</li></ul>
+        <div><a class="btn btn-g" href="https://livo3d.pages.dev" target="_blank" rel="noopener">Ver el showroom de LIVO ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section class="sec" id="proceso" style="padding-top:20px">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">Proceso</span>
+      <h2>De tus planos a tu link, sin vueltas.</h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><h3>Nos pasás el material</h3><p>Planos, renders o el modelo (Revit, SketchUp). Si no tenés renders, los hacemos.</p></div>
+      <div class="step rv d1"><h3>Armamos el showroom</h3><p>Torre, plantas, recorridos, precios y cotizador con la identidad de tu proyecto.</p></div>
+      <div class="step rv d2"><h3>Revisás y ajustamos</h3><p>Dos rondas de correcciones incluidas para que quede exactamente como querés.</p></div>
+      <div class="step rv d3"><h3>Publicás y vendés</h3><p>Un link para tu web, redes, WhatsApp, anuncios y un QR para la sala de ventas.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANES -->
+<section class="sec" id="planes" style="padding-top:40px">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center">
+      <span class="kicker">Planes</span>
+      <h2>Según lo que tu proyecto necesita.</h2>
+      <p style="margin-left:auto;margin-right:auto">Precios de referencia. Cada desarrollo es distinto: te pasamos una propuesta cerrada en 24 horas.</p>
+    </div>
+    <div class="launch rv">Precio de lanzamiento para los primeros 3 desarrollos</div>
+    <div class="plans">
+      <div class="plan rv">
+        <h3>Estático</h3><p class="d">Recorrido con tus renders y planos.</p>
+        <span class="from">Desde</span><div class="pr num">USD 500</div><span class="old">+ IVA · <s class="num">USD 800</s> precio de lista</span>
+        <span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>7 días</span>
+        <ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Torre y selección de pisos</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Plantas y recorrido por ambientes</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Ficha por unidad y link para compartir</li></ul>
+        <a class="btn btn-g" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Me%20interesa%20el%20plan%20Est%C3%A1tico%20para%20mi%20desarrollo." target="_blank" rel="noopener">Consultar</a>
+      </div>
+      <div class="plan hi rv d1">
+        <span class="badge">Más elegido</span>
+        <h3>En vivo</h3><p class="d">Precios, reservas y ventas actualizados desde tu planilla.</p>
+        <span class="from">Desde</span><div class="pr num">USD 1.000</div><span class="old">+ IVA · <s class="num">USD 1.500</s> precio de lista</span>
+        <span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>10 días</span>
+        <ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Todo lo del plan Estático</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Disponibilidad y precios en vivo</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Cotizador de cuotas y PDF</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Consultas y panel de ventas</li></ul>
+        <a class="btn btn-p" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Me%20interesa%20el%20plan%20En%20vivo%20para%20mi%20desarrollo." target="_blank" rel="noopener">Consultar</a>
+      </div>
+      <div class="plan rv d2">
+        <h3>Cinemático</h3><p class="d">Transiciones en video entre pisos y ambientes.</p>
+        <span class="from">Desde</span><div class="pr num">USD 1.800</div><span class="old">+ IVA · <s class="num">USD 2.500</s> precio de lista</span>
+        <span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>15 días</span>
+        <ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Todo lo del plan En vivo</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Videos de transición cinematográficos</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Experiencia de recorrido continuo</li></ul>
+        <a class="btn btn-g" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Me%20interesa%20el%20plan%20Cinem%C3%A1tico%20para%20mi%20desarrollo." target="_blank" rel="noopener">Consultar</a>
+      </div>
+      <div class="plan rv d3">
+        <h3>Desde cero</h3><p class="d">Solo tenés planos: creamos todo el 3D y los renders.</p>
+        <span class="from">Desde</span><div class="pr num">USD 3.500</div><span class="old">+ IVA · <s class="num">USD 4.500</s> precio de lista</span>
+        <span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>1 mes</span>
+        <ul><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Modelado 3D y renders fotorrealistas</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>1 torre, hasta 4 tipologías</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Showroom completo listo para vender</li></ul>
+        <a class="btn btn-g" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Tengo%20los%20planos%20y%20me%20interesa%20el%20plan%20Desde%20cero." target="_blank" rel="noopener">Consultar</a>
+      </div>
+    </div>
+    <div class="plans-note rv">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>50% al inicio y 50% a la entrega</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>2 rondas de correcciones incluidas</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Plazos desde que recibimos el material completo</span>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq" style="padding-top:40px">
+  <div class="wrap">
+    <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center"><span class="kicker">Preguntas</span><h2>Lo que nos suelen preguntar.</h2></div>
+    <div class="faq">
+      <div class="q rv"><button aria-expanded="false">¿Necesito tener renders?<i></i></button><div class="a"><div><p>No. Si ya los tenés, los usamos (plan Estático en adelante). Si solo tenés planos o el modelo en Revit o SketchUp, el plan Desde cero incluye el modelado 3D y los renders fotorrealistas.</p></div></div></div>
+      <div class="q rv"><button aria-expanded="false">¿El comprador tiene que descargar algo?<i></i></button><div class="a"><div><p>Nada. Es un link que se abre en cualquier celular, tablet o computadora. Lo podés mandar por WhatsApp, ponerlo en tu Instagram, en tus anuncios o en un QR en la sala de ventas.</p></div></div></div>
+      <div class="q rv"><button aria-expanded="false">¿Cómo se actualizan precios y disponibilidad?<i></i></button><div class="a"><div><p>En el plan En vivo el showroom lee tu planilla: cambiás un precio o marcás una unidad como vendida y se actualiza solo, sin pedirnos nada.</p></div></div></div>
+      <div class="q rv"><button aria-expanded="false">¿Puede ir con el nombre y dominio de mi proyecto?<i></i></button><div class="a"><div><p>Sí. El showroom lleva la identidad de tu desarrollo (logo, colores, tipografía) y se puede publicar en tu propio dominio o subdominio.</p></div></div></div>
+      <div class="q rv"><button aria-expanded="false">¿Cómo es el pago?<i></i></button><div class="a"><div><p>En dólares por transferencia, más IVA: 50% al inicio y 50% a la entrega. El plan En vivo puede tener una mensualidad para mantener la sincronización y los cambios.</p></div></div></div>
+      <div class="q rv"><button aria-expanded="false">¿Cuánto tarda?<i></i></button><div class="a"><div><p>Desde 7 días para el plan Estático, 10 para En vivo, 15 para Cinemático y alrededor de un mes Desde cero. Los plazos corren desde que tenemos el material completo.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+  <div class="wrap" style="position:relative">
+    <svg class="iso rv" viewBox="-14 0 128 128" aria-hidden="true"><path fill="#D8C7A3" fill-rule="evenodd" d="M0 112V50A50 50 0 0 1 100 50V112Z M30 112V58A28 28 0 0 1 86 58V112Z M-12 120H112V126H-12Z"/></svg>
+    <h2 class="rv d1">¿Tenés un desarrollo que merezca un showroom así?</h2>
+    <p class="rv d2">Contanos de tu proyecto y en 24 horas te mandamos una propuesta con plazo y precio cerrado.</p>
+    <div class="ctas rv d3">
+      <a class="btn btn-p" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Tengo%20un%20desarrollo%20y%20me%20interesa%20un%20showroom%203D." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>Escribinos por WhatsApp</a>
+      <a class="btn btn-g" href="https://www.instagram.com/domvra97/" target="_blank" rel="noopener">Ver Instagram</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="#top" class="logo" aria-label="DOMVRA"><svg role="img" aria-label="DOMVRA" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841 196" ><path transform="translate(54.32 44) scale(0.86)" fill="#D8C7A3" fill-rule="evenodd" d="M0 112V50A50 50 0 0 1 100 50V112Z M30 112V58A28 28 0 0 1 86 58V112Z M-12 120H112V126H-12Z"/><path transform="translate(200.64 133.189765625) scale(1)" fill="#F3EFE6" d="M17.67578125 -65.8203125Q17.578125 -60.3515625 17.48046875 -55.224609375Q17.431640625 -53.02734375 17.4072265625 -50.732421875Q17.3828125 -48.4375 17.3583984375 -46.2158203125Q17.333984375 -43.994140625 17.3095703125 -41.9677734375Q17.28515625 -39.94140625 17.28515625 -38.37890625Q17.28515625 -35.107421875 17.333984375 -30.46875Q17.3828125 -25.830078125 17.4560546875 -20.947265625Q17.529296875 -16.064453125 17.67578125 -11.572265625Q17.822265625 -7.080078125 18.017578125 -4.1015625Q18.701171875 -4.00390625 19.8486328125 -3.8818359375Q20.99609375 -3.759765625 22.265625 -3.6865234375Q23.53515625 -3.61328125 24.755859375 -3.564453125Q25.9765625 -3.515625 26.806640625 -3.515625Q30.224609375 -3.515625 33.8134765625 -3.9794921875Q37.40234375 -4.443359375 40.7470703125 -5.712890625Q44.091796875 -6.982421875 47.0458984375 -9.2041015625Q50.0 -11.42578125 52.2216796875 -14.94140625Q54.443359375 -18.45703125 55.712890625 -23.4130859375Q56.982421875 -28.369140625 56.982421875 -35.107421875Q56.982421875 -42.578125 55.17578125 -48.4130859375Q53.369140625 -54.248046875 49.8779296875 -58.251953125Q46.38671875 -62.255859375 41.2353515625 -64.3310546875Q36.083984375 -66.40625 29.39453125 -66.40625Q28.076171875 -66.40625 26.416015625 -66.3330078125Q24.755859375 -66.259765625 23.1201171875 -66.1865234375Q21.484375 -66.11328125 20.0439453125 -65.9912109375Q18.603515625 -65.869140625 17.67578125 -65.8203125ZM6.982421875 -70.21484375Q8.10546875 -70.166015625 9.08203125 -70.1171875Q9.912109375 -70.068359375 10.791015625 -70.0439453125Q11.669921875 -70.01953125 12.20703125 -70.01953125Q13.134765625 -70.01953125 15.3076171875 -70.1171875Q17.48046875 -70.21484375 20.263671875 -70.3125Q23.046875 -70.41015625 26.0498046875 -70.5078125Q29.052734375 -70.60546875 31.689453125 -70.60546875Q38.76953125 -70.60546875 45.166015625 -68.84765625Q51.5625 -67.08984375 56.396484375 -63.0859375Q61.23046875 -59.08203125 64.0625 -52.587890625Q66.89453125 -46.09375 66.89453125 -36.62109375Q66.89453125 -29.833984375 65.4052734375 -24.4140625Q63.916015625 -18.994140625 61.23046875 -14.84375Q58.544921875 -10.693359375 54.8095703125 -7.7392578125Q51.07421875 -4.78515625 46.5576171875 -2.880859375Q42.041015625 -0.9765625 36.9140625 -0.09765625Q31.787109375 0.78125 26.318359375 0.78125Q24.365234375 0.78125 21.6064453125 0.6591796875Q18.84765625 0.537109375 16.064453125 0.390625Q13.28125 0.244140625 10.8154296875 0.1220703125Q8.349609375 0.0 6.982421875 0.0V-0.1953125Q7.275390625 -1.220703125 7.5439453125 -2.734375Q7.8125 -4.248046875 8.0078125 -6.494140625Q8.203125 -8.740234375 8.30078125 -11.8408203125Q8.3984375 -14.94140625 8.3984375 -19.091796875V-50.87890625Q8.3984375 -55.029296875 8.30078125 -58.1787109375Q8.203125 -61.328125 8.0078125 -63.5986328125Q7.8125 -65.869140625 7.5439453125 -67.431640625Q7.275390625 -68.994140625 6.982421875 -70.01953125Z M140.302734375 -71.19140625Q148.45703125 -71.19140625 155.3662109375 -68.5302734375Q162.275390625 -65.869140625 167.3046875 -61.0595703125Q172.333984375 -56.25 175.166015625 -49.51171875Q177.998046875 -42.7734375 177.998046875 -34.619140625Q177.998046875 -29.98046875 176.923828125 -25.48828125Q175.849609375 -20.99609375 173.7744140625 -16.9921875Q171.69921875 -12.98828125 168.671875 -9.5947265625Q165.64453125 -6.201171875 161.7626953125 -3.7353515625Q157.880859375 -1.26953125 153.193359375 0.1220703125Q148.505859375 1.513671875 143.0859375 1.513671875Q134.931640625 1.513671875 128.0224609375 -1.0986328125Q121.11328125 -3.7109375 116.083984375 -8.49609375Q111.0546875 -13.28125 108.22265625 -19.9951171875Q105.390625 -26.708984375 105.390625 -34.912109375Q105.390625 -39.55078125 106.46484375 -44.04296875Q107.5390625 -48.53515625 109.6142578125 -52.587890625Q111.689453125 -56.640625 114.6923828125 -60.0341796875Q117.6953125 -63.427734375 121.5771484375 -65.91796875Q125.458984375 -68.408203125 130.1708984375 -69.7998046875Q134.8828125 -71.19140625 140.302734375 -71.19140625ZM143.0859375 -2.880859375Q148.505859375 -2.880859375 152.998046875 -4.833984375Q157.490234375 -6.787109375 160.7373046875 -10.498046875Q163.984375 -14.208984375 165.791015625 -19.5556640625Q167.59765625 -24.90234375 167.59765625 -31.689453125Q167.59765625 -39.208984375 165.8642578125 -45.6298828125Q164.130859375 -52.05078125 160.712890625 -56.7626953125Q157.294921875 -61.474609375 152.1923828125 -64.1357421875Q147.08984375 -66.796875 140.302734375 -66.796875Q134.8828125 -66.796875 130.390625 -64.8681640625Q125.8984375 -62.939453125 122.6513671875 -59.27734375Q119.404296875 -55.615234375 117.59765625 -50.29296875Q115.791015625 -44.970703125 115.791015625 -38.18359375Q115.791015625 -30.712890625 117.5 -24.2431640625Q119.208984375 -17.7734375 122.626953125 -13.037109375Q126.044921875 -8.30078125 131.171875 -5.5908203125Q136.298828125 -2.880859375 143.0859375 -2.880859375Z M215.517578125 -0.1953125Q216.0546875 -0.9765625 216.73828125 -2.5146484375Q217.421875 -4.052734375 217.8125 -6.396484375Q218.349609375 -9.814453125 219.0087890625 -14.0869140625Q219.66796875 -18.359375 220.3759765625 -23.046875Q221.083984375 -27.734375 221.7919921875 -32.6416015625Q222.5 -37.548828125 223.1591796875 -42.3095703125Q223.818359375 -47.0703125 224.4287109375 -51.4892578125Q225.0390625 -55.908203125 225.52734375 -59.5703125Q226.015625 -63.232421875 226.3330078125 -65.9423828125Q226.650390625 -68.65234375 226.796875 -70.01953125H232.998046875L263.7109375 -12.59765625L294.1796875 -70.01953125H298.818359375L306.826171875 -12.01171875Q307.16796875 -9.27734375 307.55859375 -7.32421875Q307.94921875 -5.37109375 308.33984375 -3.9794921875Q308.73046875 -2.587890625 309.0966796875 -1.6845703125Q309.462890625 -0.78125 309.8046875 -0.1953125V0.0H297.5V-0.1953125Q297.744140625 -0.732421875 297.9638671875 -1.953125Q298.18359375 -3.173828125 298.18359375 -4.8828125Q298.18359375 -5.517578125 298.134765625 -6.1767578125Q298.0859375 -6.8359375 297.98828125 -7.6171875L291.787109375 -54.39453125L262.978515625 -0.1953125L259.609375 -0.5859375L230.60546875 -54.8828125Q228.896484375 -43.310546875 227.626953125 -33.49609375Q227.08984375 -29.296875 226.552734375 -25.1220703125Q226.015625 -20.947265625 225.6005859375 -17.333984375Q225.185546875 -13.720703125 224.94140625 -10.9619140625Q224.697265625 -8.203125 224.697265625 -6.884765625Q224.697265625 -5.224609375 224.794921875 -3.955078125Q224.892578125 -2.685546875 224.990234375 -1.806640625Q225.13671875 -0.78125 225.283203125 0.0H215.517578125Z M355.185546875 -70.01953125V-69.82421875Q355.087890625 -69.580078125 355.0390625 -69.091796875Q354.990234375 -68.603515625 354.990234375 -68.212890625Q354.990234375 -66.69921875 355.4052734375 -64.8681640625Q355.8203125 -63.037109375 356.9921875 -60.302734375L378.623046875 -11.5234375L399.521484375 -59.912109375Q400.25390625 -61.71875 401.083984375 -63.8671875Q401.9140625 -66.015625 401.9140625 -68.212890625Q401.9140625 -68.798828125 401.81640625 -69.2138671875Q401.71875 -69.62890625 401.62109375 -69.82421875V-70.01953125H411.630859375V-69.82421875Q410.703125 -68.896484375 409.384765625 -66.50390625Q408.06640625 -64.111328125 406.50390625 -60.595703125L378.525390625 1.513671875H374.619140625L348.10546875 -58.203125Q347.177734375 -60.302734375 346.1767578125 -62.255859375Q345.17578125 -64.208984375 344.296875 -65.7958984375Q343.41796875 -67.3828125 342.734375 -68.45703125Q342.05078125 -69.53125 341.806640625 -69.82421875V-70.01953125Z M456.9140625 -19.091796875Q456.9140625 -14.94140625 457.0361328125 -11.8408203125Q457.158203125 -8.740234375 457.3291015625 -6.494140625Q457.5 -4.248046875 457.7685546875 -2.734375Q458.037109375 -1.220703125 458.330078125 -0.1953125V0.0H446.611328125V-0.1953125Q446.904296875 -1.220703125 447.1728515625 -2.734375Q447.44140625 -4.248046875 447.6123046875 -6.494140625Q447.783203125 -8.740234375 447.9052734375 -11.81640625Q448.02734375 -14.892578125 448.02734375 -19.091796875V-50.87890625Q448.02734375 -55.029296875 447.9052734375 -58.1298828125Q447.783203125 -61.23046875 447.6123046875 -63.4765625Q447.44140625 -65.72265625 447.1728515625 -67.2607421875Q446.904296875 -68.798828125 446.611328125 -69.82421875V-70.01953125L448.662109375 -69.82421875Q449.58984375 -69.7265625 450.7373046875 -69.7021484375Q451.884765625 -69.677734375 453.10546875 -69.677734375Q455.009765625 -69.677734375 458.2568359375 -70.1416015625Q461.50390625 -70.60546875 466.533203125 -70.60546875Q471.220703125 -70.60546875 475.2001953125 -69.3359375Q479.1796875 -68.06640625 482.109375 -65.625Q485.0390625 -63.18359375 486.6748046875 -59.6435546875Q488.310546875 -56.103515625 488.310546875 -51.611328125Q488.310546875 -48.095703125 487.4072265625 -45.0927734375Q486.50390625 -42.08984375 484.8681640625 -39.6484375Q483.232421875 -37.20703125 480.9375 -35.3271484375Q478.642578125 -33.447265625 475.810546875 -32.177734375L492.94921875 -8.10546875Q494.21875 -6.298828125 495.3173828125 -4.98046875Q496.416015625 -3.662109375 497.4169921875 -2.7099609375Q498.41796875 -1.7578125 499.345703125 -1.1474609375Q500.2734375 -0.537109375 501.25 -0.1953125V0.0H487.138671875Q486.9921875 -0.927734375 486.1865234375 -2.4658203125Q485.380859375 -4.00390625 484.306640625 -5.517578125L467.021484375 -29.8828125Q465.8984375 -29.78515625 464.775390625 -29.7119140625Q463.65234375 -29.638671875 462.48046875 -29.638671875Q461.11328125 -29.638671875 459.7216796875 -29.736328125Q458.330078125 -29.833984375 456.9140625 -30.078125ZM456.9140625 -33.88671875Q458.232421875 -33.59375 459.599609375 -33.4716796875Q460.966796875 -33.349609375 462.236328125 -33.349609375Q465.8984375 -33.349609375 468.92578125 -34.4482421875Q471.953125 -35.546875 474.0771484375 -37.79296875Q476.201171875 -40.0390625 477.373046875 -43.3837890625Q478.544921875 -46.728515625 478.544921875 -51.220703125Q478.544921875 -54.8828125 477.71484375 -57.861328125Q476.884765625 -60.83984375 475.2490234375 -62.9150390625Q473.61328125 -64.990234375 471.123046875 -66.1376953125Q468.6328125 -67.28515625 465.3125 -67.28515625Q461.943359375 -67.28515625 459.94140625 -66.943359375Q457.939453125 -66.6015625 456.9140625 -66.2109375Z M584.130859375 0.0V-0.1953125Q584.228515625 -0.439453125 584.27734375 -0.927734375Q584.326171875 -1.416015625 584.326171875 -1.806640625Q584.326171875 -3.3203125 583.9111328125 -5.1513671875Q583.49609375 -6.982421875 582.32421875 -9.716796875L576.416015625 -22.998046875Q573.681640625 -23.095703125 569.140625 -23.095703125Q564.599609375 -23.095703125 559.326171875 -23.095703125Q555.46875 -23.095703125 551.8798828125 -23.095703125Q548.291015625 -23.095703125 545.41015625 -22.998046875L539.794921875 -10.107421875Q539.0625 -8.30078125 538.232421875 -6.15234375Q537.40234375 -4.00390625 537.40234375 -1.806640625Q537.40234375 -1.171875 537.5 -0.7568359375Q537.59765625 -0.341796875 537.6953125 -0.1953125V0.0H527.734375V-0.1953125Q528.61328125 -1.123046875 529.931640625 -3.4912109375Q531.25 -5.859375 532.8125 -9.423828125L560.791015625 -71.484375H564.697265625L591.2109375 -11.81640625Q592.138671875 -9.716796875 593.1396484375 -7.7392578125Q594.140625 -5.76171875 595.01953125 -4.19921875Q595.8984375 -2.63671875 596.58203125 -1.5625Q597.265625 -0.48828125 597.509765625 -0.1953125V0.0ZM552.490234375 -27.294921875Q555.322265625 -27.294921875 558.30078125 -27.3193359375Q561.279296875 -27.34375 564.1357421875 -27.3681640625Q566.9921875 -27.392578125 569.62890625 -27.4169921875Q572.265625 -27.44140625 574.4140625 -27.490234375L560.693359375 -58.49609375L547.216796875 -27.294921875Z"/></svg></a>
+    <nav><a href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Tengo%20un%20desarrollo%20y%20me%20interesa%20un%20showroom%203D." target="_blank" rel="noopener">WhatsApp +595 981 301 718</a><a href="https://www.instagram.com/domvra97/" target="_blank" rel="noopener">Instagram</a><a href="#planes">Planes</a></nav>
+    <span>© <span id="yr">2026</span> DOMVRA · Asunción, Paraguay</span>
+  </div>
+</footer>
+
+<a class="wa" id="wa" href="https://wa.me/595981301718?text=Hola%20DOMVRA%20%F0%9F%91%8B%20Tengo%20un%20desarrollo%20y%20me%20interesa%20un%20showroom%203D." target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg></a>
+
+<script>
+(function(){
+  var nav=document.getElementById('nav'),wa=document.getElementById('wa');
+  function onS(){var y=scrollY;nav.classList.toggle('s',y>20);wa.classList.toggle('v',y>window.innerHeight*.7)}
+  addEventListener('scroll',onS,{passive:true});onS();
+  // reveal
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+  // faq
+  document.querySelectorAll('.q button').forEach(function(b){b.addEventListener('click',function(){var q=b.parentNode,o=q.classList.toggle('o');b.setAttribute('aria-expanded',o)})});
+  // demo
+  var play=document.getElementById('demoPlay'),scr=document.getElementById('demoScreen');
+  function load(){if(!play)return;var f=document.createElement('iframe');f.src='https://showroom3d-demo.pages.dev';f.title='Demo interactiva del showroom 3D';f.allow='fullscreen';f.loading='eager';scr.innerHTML='';scr.appendChild(f);play.remove();play=null}
+  play.addEventListener('click',load);play.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();load()}});
+  document.getElementById('yr').textContent=new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
