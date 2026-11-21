@@ -764,22 +764,23 @@ addEventListener('resize', ajustarTorre); ajustarTorre();
 })();
 </script>
 <style>:root{--kta-mb:90px;--kta-ml:10px}body:not(.vT) #ktaSello,body.xpOn #ktaSello{opacity:0;pointer-events:none}</style>
-<!-- Sello KTA Visual: marca de agua del proveedor del showroom. Posición por variables CSS (--kta-r/--kta-b/--kta-l y versión móvil --kta-mr/--kta-mb/--kta-ml). -->
+<!-- Sello KTA Visual: marca de agua del proveedor del showroom. Posición por variables CSS (--kta-t/--kta-r/--kta-b/--kta-l y versión móvil --kta-mt/--kta-mr/--kta-mb/--kta-ml). -->
 <a id="ktaSello" href="https://ktavisual.pages.dev/?ref=vidalta" target="_blank" rel="noopener" aria-label="Showroom hecho por KTA Visual">
   <svg viewBox="-12 0 124 130" aria-hidden="true"><path fill="#D8C7A3" fill-rule="evenodd" d="M0 112V50A50 50 0 0 1 100 50V112Z M30 112V58A28 28 0 0 1 86 58V112Z M-12 120H112V126H-12Z"/></svg>
   <span><small>Showroom por</small><b>KTA <i>VISUAL</i></b></span>
 </a>
 <style>
-#ktaSello{position:fixed;z-index:55;right:var(--kta-r,18px);bottom:var(--kta-b,18px);left:var(--kta-l,auto);display:flex;align-items:center;gap:8px;padding:7px 12px 7px 10px;border-radius:999px;background:rgba(18,20,19,.55);border:1px solid rgba(216,199,163,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F3EFE6;text-decoration:none;font:500 10.5px/1.05 'Marcellus','Cormorant Garamond',Georgia,serif;letter-spacing:.26em;opacity:.78;transition:opacity .18s,border-color .18s}
+#ktaSello{position:fixed;z-index:55;top:var(--kta-t,auto);right:var(--kta-r,18px);bottom:var(--kta-b,18px);left:var(--kta-l,auto);display:flex;align-items:center;gap:8px;padding:7px 12px 7px 10px;border-radius:999px;background:rgba(18,20,19,.55);border:1px solid rgba(216,199,163,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F3EFE6;text-decoration:none;font:500 10.5px/1.05 'Marcellus','Cormorant Garamond',Georgia,serif;letter-spacing:.26em;opacity:.78;transition:opacity .18s,border-color .18s}
 #ktaSello:hover{opacity:1;border-color:rgba(216,199,163,.5)}
 #ktaSello svg{width:15px;height:16px;flex:none}
 #ktaSello span{display:flex;flex-direction:column;white-space:nowrap}
 #ktaSello small{font:500 7.5px/1 Inter,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,239,230,.55);margin-bottom:3px}
 #ktaSello b{font-weight:500}
 #ktaSello i{font-style:normal;color:#D8C7A3}
-@media (max-width:860px){#ktaSello{right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
+@media (max-width:860px){#ktaSello{top:var(--kta-mt,auto);right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
 @media print{#ktaSello{position:static;opacity:1;background:none;color:#202522}}
 </style>
+
 
 </body>
 </html>
