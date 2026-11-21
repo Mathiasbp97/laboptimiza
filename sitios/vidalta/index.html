@@ -425,22 +425,23 @@ const CONFIG = {
       // Videos de transición (camino hacia adelante). "plano>0" = entrar desde la planta al primer ambiente.
       transiciones: { "plano>0": "vid/d-entrada.mp4", "0>1": "vid/d-living-comedor.mp4", "1>2": "vid/d-comedor-dorm2.mp4", "2>3": "vid/d-dorm2-ppal.mp4" } },
     E: { n: "Tipología E", dorm: 3, banos: 3, serv: true, plano: "img/tipo-e.webp", fotos: ["img/living-3d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "3 dormitorios, 3 baños y área de servicio, en los pisos altos. Living-comedor amplio y doble balcón con parrilla." } },
-  amenities: [ { n: "Piscina en azotea", img: "img/piscina.webp" }, { n: "Azotea completa", img: "img/azotea.webp" }, { n: "Gimnasio", img: "img/gimnasio.webp" },
-    { n: "Salón de eventos y quincho", img: "img/sum.webp" }, { n: "Piscina, gimnasio y coworking", img: "img/azotea-2.webp" }, { n: "Lobby", img: "img/lobby.webp" } ],
+  amenities: [ { n: "Piscina en azotea", img: "img/am-piscina.webp" }, { n: "Azotea completa", img: "img/am-azotea-planta.webp" }, { n: "Gimnasio", img: "img/am-gimnasio.webp" },
+    { n: "Salón de eventos", img: "img/am-sum.webp" }, { n: "Quincho", img: "img/am-quincho-1.webp" }, { n: "Lobby", img: "img/am-lobby.webp" } ],
   // Puntos interactivos sobre la fachada (coordenadas 1600×900) → abren el visor de espacios
   hotspots: [ { n: "Amenities en azotea", x: 560, y: 322, ir: "piscina" }, { n: "Lobby e ingreso", x: 790, y: 722, ir: "lobby" } ],
   // Espacios del visor inmersivo. t: "360" (panorama cúbico en pano/<id>-f|r|b|l|u|d.jpg) o "img"
+  // g: grupo del visor — "amen" (amenities y áreas comunes), "deptos" (interiores 360°), "entorno" (fachada y barrio). Cada grupo se navega por separado.
   espacios: [
-    { k: "piscina", n: "Piscina en azotea", items: [ { t: "360", p: "piscina", n: "Piscina · 360°" }, { t: "img", src: "img/am-piscina.webp", n: "Solárium y piscina" }, { t: "img", src: "img/piscina.webp", n: "Piscina al atardecer" } ] },
-    { k: "gimnasio", n: "Gimnasio", items: [ { t: "img", src: "img/am-gimnasio.webp", n: "Gimnasio equipado" }, { t: "img", src: "img/gimnasio.webp", n: "Gimnasio con vista" } ] },
-    { k: "sum", n: "Salón de eventos", items: [ { t: "360", p: "sum", yaw: 15, n: "Salón de eventos · 360°" }, { t: "img", src: "img/am-sum.webp", n: "Salón de eventos y cocina" } ] },
-    { k: "quincho", n: "Quincho", items: [ 1, 2, 3, 4 ].map(i => ({ t: "img", src: `img/am-quincho-${i}.webp`, n: "Quincho con parrilla" })) },
-    { k: "azotea", n: "Azotea completa", items: [ { t: "img", src: "img/am-azotea-3d.webp", n: "Piscina, gimnasio y coworking" }, { t: "img", src: "img/am-azotea-planta.webp", n: "Planta de azotea" }, { t: "img", src: "img/azotea.webp", n: "Azotea" }, { t: "img", src: "img/azotea-2.webp", n: "Azotea" } ] },
-    { k: "lobby", n: "Lobby e ingreso", items: [ { t: "360", p: "ingreso", yaw: -55, n: "Ingreso · 360°" }, { t: "img", src: "img/am-lobby.webp", n: "Lobby" }, { t: "img", src: "img/lobby.webp", n: "Lobby" } ] },
-    { k: "deptos", n: "Departamentos 360°", items: [ { t: "360", p: "d2cocina", n: "Depto 2 dorm. · Living-comedor" }, { t: "360", p: "d2ppal", yaw: -80, n: "Depto 2 dorm. · Dormitorio principal" },
+    { k: "piscina", g: "amen", n: "Piscina", items: [ { t: "360", p: "piscina", n: "Piscina en azotea · 360°" }, { t: "img", src: "img/am-piscina.webp", n: "Solárium y piscina" } ] },
+    { k: "azotea", g: "amen", n: "Azotea completa", items: [ { t: "img", src: "img/am-azotea-planta.webp", n: "Azotea completa: piscina, gimnasio, coworking y quinchos" } ] },
+    { k: "gimnasio", g: "amen", n: "Gimnasio", items: [ { t: "img", src: "img/am-gimnasio.webp", n: "Gimnasio equipado con vista" } ] },
+    { k: "sum", g: "amen", n: "Salón de eventos", items: [ { t: "360", p: "sum", yaw: 15, n: "Salón de eventos · 360°" }, { t: "img", src: "img/am-sum.webp", n: "Salón de eventos y cocina" } ] },
+    { k: "quincho", g: "amen", n: "Quincho", items: [ 1, 2, 3, 4 ].map(i => ({ t: "img", src: `img/am-quincho-${i}.webp`, n: "Quincho con parrilla" })) },
+    { k: "lobby", g: "amen", n: "Lobby e ingreso", items: [ { t: "360", p: "ingreso", yaw: -55, n: "Ingreso · 360°" }, { t: "img", src: "img/am-lobby.webp", n: "Lobby" } ] },
+    { k: "deptos", g: "deptos", n: "Departamentos 360°", items: [ { t: "360", p: "d2cocina", n: "Depto 2 dorm. · Living-comedor" }, { t: "360", p: "d2ppal", yaw: -80, n: "Depto 2 dorm. · Dormitorio principal" },
       { t: "360", p: "d3cocina", n: "Depto 3 dorm. · Living-comedor" }, { t: "360", p: "d3ppal", yaw: -60, n: "Depto 3 dorm. · Dormitorio principal" }, { t: "360", p: "d3sec", n: "Depto 3 dorm. · Dormitorio secundario" } ] },
-    { k: "fachada", n: "Fachada", items: [ { t: "img", src: "img/torre.webp", n: "Fachada sobre Tte. Porfirio Saldívar" }, { t: "img", src: "img/am-fachada.webp", n: "Vista peatonal" } ] },
-    { k: "barrio", n: "Vista aérea", items: [ { t: "360", p: "aerea", yaw: -30, n: "Bella Vista · 360° aéreo" }, { t: "img", src: "img/aerea.webp", n: "Vista aérea" } ] } ],
+    { k: "barrio", g: "entorno", n: "Vista aérea", items: [ { t: "360", p: "aerea", yaw: -30, n: "Bella Vista · 360° aéreo" }, { t: "img", src: "img/aerea.webp", n: "Vista aérea" } ] },
+    { k: "fachada", g: "entorno", n: "Fachada", items: [ { t: "img", src: "img/am-fachada.webp", n: "Vista peatonal" } ] } ],
   cotizador: { anticipo: 30, saldo: 40 },
   refrescoSeg: 60
 };
@@ -644,7 +645,7 @@ function trans(src, alEmpezar, alTerminar, destino) {
 
 /* ---------- visor de espacios: 360° (Pannellum, cubos) + renders ---------- */
 const XP = { e: 0, i: 0, viewer: null };
-function xpTodos() { return CONFIG.espacios; }
+function xpGrupo() { const g = CONFIG.espacios[XP.e].g; return CONFIG.espacios.map((x, j) => [x, j]).filter(([x]) => x.g === g); }
 function abrirXP(k, idx) {
   let e = CONFIG.espacios.findIndex(x => x.k === k); if (e < 0) e = 0;
   XP.e = e; XP.i = idx || 0; $('#xp').classList.add('on'); $('#xp').setAttribute('aria-hidden', 'false');
@@ -654,9 +655,11 @@ function abrirXP(k, idx) {
 function cerrarXP() { $('#xp').classList.remove('on'); $('#xp').setAttribute('aria-hidden', 'true'); if (XP.viewer) { try { XP.viewer.destroy(); } catch (e) {} XP.viewer = null; } $('#xpPano').innerHTML = ''; $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === 'torre')); }
 function pintarXP() {
   const E = CONFIG.espacios[XP.e];
-  $('#xpChips').innerHTML = CONFIG.espacios.map((x, j) => `<button data-j="${j}" class="${j === XP.e ? 'on' : ''}">${esc(x.n)}</button>`).join('');
+  const G = xpGrupo(); $('#xpChips').style.display = G.length > 1 ? '' : 'none';
+  $('#xpChips').innerHTML = G.map(([x, j]) => `<button data-j="${j}" class="${j === XP.e ? 'on' : ''}">${esc(x.n)}</button>`).join('');
   $$('#xpChips button').forEach(b => b.onclick = () => { XP.e = +b.dataset.j; XP.i = 0; pintarXP(); xpMostrar(); });
   const on = $('#xpChips button.on'); on && on.scrollIntoView({ block: 'nearest', inline: 'center' });
+  $('#xpThumbs').style.display = E.items.length > 1 ? '' : 'none';
   $('#xpThumbs').innerHTML = E.items.map((it, j) => `<button data-j="${j}" class="${j === XP.i ? 'on' : ''}" style="background-image:url(${it.t === '360' ? `pano/${it.p}-f.jpg` : it.src})" aria-label="${esc(it.n)}">${it.t === '360' ? '<i>360°</i>' : ''}</button>`).join('');
   $$('#xpThumbs button').forEach(b => b.onclick = () => { XP.i = +b.dataset.j; xpMostrar(); });
 }
@@ -665,7 +668,7 @@ function xpMostrar() {
   $$('#xpThumbs button').forEach(b => b.classList.toggle('on', +b.dataset.j === XP.i));
   $('#xpMap').style.display = E.k === 'barrio' ? '' : 'none';
   $('#xpK').textContent = E.n + (E.items.length > 1 ? ` · ${XP.i + 1} de ${E.items.length}` : ''); $('#xpT').textContent = it.n;
-  $('#xpPrev').style.visibility = $('#xpNext').style.visibility = (E.items.length > 1 || CONFIG.espacios.length > 1) ? 'visible' : 'hidden';
+  $('#xpPrev').style.visibility = $('#xpNext').style.visibility = (E.items.length > 1 || xpGrupo().length > 1) ? 'visible' : 'hidden';
   if (it.t === '360') {
     $('#xpImg').classList.add('off'); $('#xpPano').classList.remove('off');
     const caras = ['f', 'r', 'b', 'l', 'u', 'd'].map(f => `pano/${it.p}-${f}.jpg`);
@@ -681,9 +684,9 @@ function xpMostrar() {
   }
 }
 function xpPaso(d) {
-  const E = CONFIG.espacios[XP.e]; let i = XP.i + d;
-  if (i >= E.items.length) { XP.e = (XP.e + 1) % CONFIG.espacios.length; XP.i = 0; pintarXP(); }
-  else if (i < 0) { XP.e = (XP.e - 1 + CONFIG.espacios.length) % CONFIG.espacios.length; XP.i = CONFIG.espacios[XP.e].items.length - 1; pintarXP(); }
+  const E = CONFIG.espacios[XP.e], G = xpGrupo().map(([, j]) => j), p = G.indexOf(XP.e); let i = XP.i + d;
+  if (i >= E.items.length) { XP.e = G[(p + 1) % G.length]; XP.i = 0; pintarXP(); }
+  else if (i < 0) { XP.e = G[(p - 1 + G.length) % G.length]; XP.i = CONFIG.espacios[XP.e].items.length - 1; pintarXP(); }
   else XP.i = i;
   xpMostrar();
 }
