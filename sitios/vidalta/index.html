@@ -211,8 +211,12 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 #rec .ra.drag{cursor:grabbing}
 #rec .ra img{position:absolute;top:0;left:0;height:100%;width:auto;max-width:none;min-width:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;opacity:0;transition:opacity .7s var(--ease);will-change:transform,opacity}
 #rec .ra img.on{opacity:1}
+#raV{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s;pointer-events:none;z-index:1}
+#raV.on{opacity:1}
+#rec.vid .rnav,#rec.vid .rthumbs,#rec.vid .rhint{opacity:.35;pointer-events:none}
 #rec .ra:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(0,0,0,.55),transparent 22%,transparent 68%,rgba(0,0,0,.65))}
 .rtop{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;z-index:3}
+.rtop{text-shadow:0 1px 12px rgba(0,0,0,.55)}
 .rtop small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);font-weight:700}
 .rtop b{display:block;font-size:26px;font-weight:600;line-height:1.2}
 .ract{display:flex;gap:8px}
@@ -304,7 +308,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 
 <section id="rec" aria-hidden="true">
   <div class="rp" id="recPlano"><div class="rpwrap" id="rpWrap"><img id="rpImg" alt="Planta del departamento"><svg id="rpSvg" viewBox="0 0 1800 1268" preserveAspectRatio="xMidYMid meet"></svg></div></div>
-  <div class="ra" id="recAmb"><img id="raA" alt="" draggable="false"><img id="raB" alt="" draggable="false"></div>
+  <div class="ra" id="recAmb"><img id="raA" alt="" draggable="false"><img id="raB" alt="" draggable="false"><video id="raV" muted playsinline preload="auto"></video></div>
   <div class="rtop"><div><small id="rSub"></small><b id="rTit"></b></div>
     <div class="ract"><button class="btn btn-g glass" id="rPlanoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 12v9"/></svg><span>Ver planta</span></button>
     <button class="x glass" id="rX" aria-label="Cerrar recorrido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div></div>
@@ -352,7 +356,10 @@ const CONFIG = {
     D: { n: "Tipología D", dorm: 2, banos: 2, serv: true, plano: "img/tipo-d.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios, 2 baños y área de servicio. Unidades de esquina con doble orientación y balcón con parrilla.",
       // Recorrido: pines en px del plano (1800×1268), en el orden del camino real
       recorrido: [ { n: "Living", img: "img/living-3d.webp", pin: [745, 520] }, { n: "Comedor y cocina", img: "img/living-2d.webp", pin: [700, 890] },
-        { n: "Dormitorio 2", img: "img/dorm-2.webp", pin: [1160, 560] }, { n: "Dormitorio principal", img: "img/dorm-ppal.webp", pin: [1510, 520] } ] },
+        { n: "Dormitorio 2", img: "img/dorm-2.webp", pin: [1160, 560] }, { n: "Dormitorio principal", img: "img/dorm-ppal.webp", pin: [1510, 520] },
+        { n: "Baño en suite", img: "img/bano.webp", pin: [1450, 1030] }, { n: "Balcón con parrilla", img: "img/balcon.webp", pin: [560, 200] } ],
+      // Videos de transición (camino hacia adelante). "plano>0" = entrar desde la planta al primer ambiente.
+      transiciones: { "plano>0": "vid/d-entrada.mp4", "0>1": "vid/d-living-comedor.mp4", "1>2": "vid/d-comedor-dorm2.mp4", "2>3": "vid/d-dorm2-ppal.mp4" } },
     E: { n: "Tipología E", dorm: 3, banos: 3, serv: true, plano: "img/tipo-e.webp", fotos: ["img/living-3d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "3 dormitorios, 3 baños y área de servicio, en los pisos altos. Living-comedor amplio y doble balcón con parrilla." } },
   amenities: [ { n: "Piscina en azotea", img: "img/piscina.webp" }, { n: "Azotea completa", img: "img/azotea.webp" }, { n: "Gimnasio", img: "img/gimnasio.webp" },
     { n: "Salón de eventos y quincho", img: "img/sum.webp" }, { n: "Piscina, gimnasio y coworking", img: "img/azotea-2.webp" }, { n: "Lobby", img: "img/lobby.webp" } ],
@@ -494,6 +501,7 @@ function abrirRec(u) {
   $('#rThumbs').innerHTML = REC.L.map((a, i) => `<button data-i="${i}" style="background-image:url(${a.img})"><span>${i + 1}. ${esc(a.n)}</span></button>`).join('');
   $$('#rThumbs button').forEach(b => b.onclick = () => REC.amb < 0 ? entrarAmb(+b.dataset.i) : recIr(+b.dataset.i));
   REC.L.forEach(a => { const i = new Image(); i.src = a.img; });
+  REC.T = t.transiciones || {}; REC.cache = REC.cache || {}; Object.values(REC.T).forEach(src => { if (!REC.cache[src]) { const v = document.createElement('video'); v.muted = true; v.preload = 'auto'; v.src = src; REC.cache[src] = v; } });
   $('#raA').classList.remove('on'); $('#raB').classList.remove('on');
   recPlano(true);
   $('#rec').classList.add('on'); $('#rec').setAttribute('aria-hidden', 'false');
@@ -511,33 +519,51 @@ function recPlano(inicial) {
 }
 function entrarAmb(i) {
   const [x, y] = REC.L[i].pin, w = $('#rpWrap');
+  if (REC.T['plano>' + i] && !RM) { $('#recAmb').classList.add('act'); trans(REC.T['plano>' + i], () => { $('#recPlano').classList.add('off'); }, () => recIr(i, true, true), i); return; }
   if (!RM) { w.style.transformOrigin = `${x / 18}% ${y / 12.68}%`; w.style.transform = 'scale(3.2)'; w.style.opacity = '0'; }
   setTimeout(() => { $('#recPlano').classList.add('off'); w.style.transition = 'none'; w.style.transform = ''; w.style.opacity = ''; w.style.transformOrigin = ''; void w.offsetWidth; w.style.transition = ''; }, RM ? 0 : 650);
   setTimeout(() => recIr(i, true), RM ? 0 : 300);
 }
-function recIr(i, desdePlano) {
+function recIr(i, desdePlano, sinZoom) {
   if (i < 0 || i >= REC.L.length) { if (i >= REC.L.length) { toast('Fin del recorrido'); recPlano(); } return; }
+  if (REC.vid) return;
+  const edge = REC.amb + '>' + i;
+  if (!desdePlano && !sinZoom && REC.amb >= 0 && REC.T[edge] && !RM) { trans(REC.T[edge], null, () => recIr(i, false, true), i); return; }
   const a = REC.L[i]; REC.amb = i; REC.capa ^= 1; $('#recAmb').classList.add('act');
   const img = REC.capa ? $('#raB') : $('#raA'), vieja = REC.capa ? $('#raA') : $('#raB');
-  const mostrar = () => { REC.img = img; ajustarPan(true); img.style.transition = 'none'; img.style.transform = `translate3d(${REC.x}px,0,0) scale(1.14)`; void img.offsetWidth;
-    img.style.transition = 'opacity .8s var(--ease), transform 1.6s var(--ease)'; img.classList.add('on'); vieja.classList.remove('on'); REC.esc = 1.04; colocar();
+  const mostrar = () => { REC.img = img; ajustarPan(true); img.style.transition = 'none'; img.style.transform = `translate3d(${REC.x}px,0,0) scale(${sinZoom ? 1.04 : 1.14})`; void img.offsetWidth;
+    img.style.transition = (sinZoom ? 'opacity 0s' : 'opacity .8s var(--ease)') + ', transform 1.6s var(--ease)'; img.classList.add('on'); vieja.classList.remove('on'); REC.esc = 1.04; colocar();
     setTimeout(() => { img.style.transition = 'opacity .8s var(--ease)'; }, 1600); };
-  if (img.getAttribute('src') === a.img && img.complete) mostrar(); else { img.onload = mostrar; img.src = a.img; }
+  const listo = () => { mostrar(); if (REC.vidEl) { const v = REC.vidEl; REC.vidEl = null; setTimeout(() => { v.classList.remove('on'); $('#rec').classList.remove('vid'); }, 60); } };
+  if (img.getAttribute('src') === a.img && img.complete) listo(); else { img.onload = listo; img.src = a.img; }
   $('#rSub').textContent = `Departamento ${REC.u.id} · Ambiente ${i + 1} de ${REC.L.length}`; $('#rTit').textContent = a.n;
   $('#rPlanoBtn').style.display = ''; $('#rPrev').disabled = i === 0; $('#rCount').textContent = `${i + 1} / ${REC.L.length}`;
   $('#rNextLbl').textContent = i < REC.L.length - 1 ? REC.L[i + 1].n : 'Volver a la planta';
   $$('#rThumbs button').forEach(b => b.classList.toggle('on', +b.dataset.i === i));
   if (desdePlano && !REC.vioHint) { REC.vioHint = true; $('#rHint').textContent = 'Arrastrá para mirar el ambiente'; $('#rHint').classList.remove('off'); setTimeout(() => $('#rHint').classList.add('off'), 2600); }
 }
+
+function trans(src, alEmpezar, alTerminar, destino) {
+  const v = $('#raV'); REC.vid = true; let fin = false;
+  const terminar = () => { if (fin) return; fin = true; clearTimeout(REC.tv); v.onended = v.onerror = null; REC.vid = false; REC.vidEl = v; alTerminar(); };
+  v.src = src; v.currentTime = 0;
+  $('#rec').classList.add('vid');
+  if (destino != null) { $('#rTit').textContent = REC.L[destino].n; $('#rSub').textContent = `Departamento ${REC.u.id} · camino al ambiente ${destino + 1}`; }
+  v.onended = terminar; v.onerror = terminar;
+  v.onclick = terminar; REC.saltar = terminar;
+  const p = v.play(); if (p && p.catch) p.catch(terminar);
+  v.onplaying = () => { v.classList.add('on'); if (alEmpezar) alEmpezar(); v.onplaying = null; };
+  REC.tv = setTimeout(terminar, 9000);
+}
 function ajustarPan(centrar) { const img = REC.img; if (!img) return; const w = innerHeight * img.naturalWidth / img.naturalHeight, ww = Math.max(w, innerWidth);
   REC.min = Math.min(0, innerWidth - ww * 1.04); if (centrar) { REC.x = REC.min / 2; REC.v = -0.3; } }
 function colocar() { if (!REC.img) return; REC.x = Math.max(REC.min, Math.min(0, REC.x)); REC.img.style.transform = `translate3d(${REC.x}px,0,0) scale(${REC.esc || 1.04})`; }
-function cerrarRec() { REC.on = false; REC.img = null; $('#rec').classList.remove('on'); $('#rec').setAttribute('aria-hidden', 'true'); }
+function cerrarRec() { if (REC.vid) { REC.vid = false; clearTimeout(REC.tv); $('#raV').pause(); $('#raV').classList.remove('on'); $('#rec').classList.remove('vid'); } REC.on = false; REC.img = null; $('#rec').classList.remove('on'); $('#rec').setAttribute('aria-hidden', 'true'); }
 $('#rX').onclick = cerrarRec; $('#rPlanoBtn').onclick = () => recPlano();
 $('#rPrev').onclick = () => REC.amb > 0 && recIr(REC.amb - 1);
 $('#rNext').onclick = () => REC.amb < 0 ? entrarAmb(0) : recIr(REC.amb + 1);
 const RA = $('#recAmb');
-RA.addEventListener('pointerdown', e => { if (REC.amb < 0) return; REC.drag = true; REC.movido = false; REC.lx = e.clientX; RA.classList.add('drag'); RA.setPointerCapture(e.pointerId); });
+RA.addEventListener('pointerdown', e => { if (REC.vid && REC.saltar) { REC.saltar(); return; } if (REC.amb < 0) return; REC.drag = true; REC.movido = false; REC.lx = e.clientX; RA.classList.add('drag'); RA.setPointerCapture(e.pointerId); });
 RA.addEventListener('pointermove', e => { if (!REC.drag) return; const dx = e.clientX - REC.lx; REC.lx = e.clientX; if (Math.abs(dx) > 1) REC.movido = true; REC.x += dx; REC.v = dx; colocar(); });
 const soltar = () => { REC.drag = false; RA.classList.remove('drag'); };
 RA.addEventListener('pointerup', soltar); RA.addEventListener('pointercancel', soltar);
