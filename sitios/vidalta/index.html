@@ -34,6 +34,7 @@ img{display:block;max-width:100%}
 header{position:fixed;inset:0 0 auto;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;background:linear-gradient(rgba(10,11,10,.7),transparent)}
 .logo{display:flex;align-items:center;gap:12px;color:#fff}
 .logo svg{height:20px;width:auto}
+.logo small .kcred{color:var(--tx2);text-decoration:none;opacity:.8;margin-left:6px;transition:color .15s}.logo small .kcred:hover{color:#D8C7A3}
 .logo small{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx2);border-left:1px solid var(--ln2);padding-left:12px}
 nav.tabs{display:flex;gap:4px;padding:4px;border-radius:999px}
 nav.tabs button{padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--tx2)}
@@ -292,7 +293,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 @media print{#rec{display:none}#xp{display:none}body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
 </style>
 </head>
-<body>
+<body class="vT">
 <div class="skel" id="skel"><svg role="img" aria-label="VIDALTA" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 255 722 84">
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 208.878906 321.613281 L 189.957031 263.339844 L 179.667969 263.339844 L 201.859375 331.617188 L 216.132812 331.617188 L 238.320312 263.339844 L 228.035156 263.339844 Z M 208.878906 321.613281 "/>
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 284.316406 331.621094 L 294.226562 331.621094 L 294.226562 263.34375 L 284.316406 263.34375 Z M 284.316406 331.621094 "/>
@@ -324,7 +325,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 321.828125 L 133.671875 322.734375 L 112.804688 322.734375 L 109.988281 320.800781 L 109.972656 320.789062 L 109.972656 305.601562 L 131.363281 320.242188 L 131.742188 320.503906 Z M 133.671875 321.828125 "/>
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 76.78125 322.734375 L 124.890625 322.734375 L 124.890625 272.222656 L 76.78125 272.222656 Z M 133.675781 331.515625 L 67.996094 331.515625 L 67.996094 263.441406 L 133.675781 263.441406 Z M 133.675781 331.515625 "/>
 </svg>
-<small>Showroom 3D</small></div>
+<small>Showroom 3D <a href="https://ktavisual.pages.dev/?ref=vidalta" target="_blank" rel="noopener" class="kcred">por KTA Visual</a></small></div>
   <nav class="tabs glass" id="tabs">
     <button data-go="torre" class="on">Edificio</button>
     <button data-go="amen">Amenities</button>
@@ -737,7 +738,7 @@ function ubicacion() { abrirModal(`<div class="mh"><h2>Ubicación</h2>${cerrarBt
   <p>Cocheras simples, dobles y con baulera disponibles.</p><div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-g" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Teniente+Porfirio+Saldivar+y+Fray+Luis+de+Leon+Asuncion">Abrir en Google Maps ↗</a></div></div></div>`); }
 
 /* ---------- navegación ---------- */
-function setView(v) { UI.view = v; $('#vTorre').classList.toggle('on', v === 'torre'); $('#vPlanta').classList.toggle('on', v === 'planta'); }
+function setView(v) { UI.view = v; document.body.classList.toggle('vT', v === 'torre'); $('#vTorre').classList.toggle('on', v === 'torre'); $('#vPlanta').classList.toggle('on', v === 'planta'); }
 function pintar() { pintarTorre(); if (UI.view === 'planta') pintarPlanta(); }
 $('#backT').onclick = () => { cerrarFicha(); volverTorre(); };
 $('#pUp').onclick = () => irPiso(UI.piso + 1); $('#pDn').onclick = () => irPiso(UI.piso - 1);
@@ -762,5 +763,23 @@ addEventListener('resize', ajustarTorre); ajustarTorre();
   setInterval(cargar, CONFIG.refrescoSeg * 1000);
 })();
 </script>
+<style>:root{--kta-mb:90px;--kta-ml:10px}body:not(.vT) #ktaSello,body.xpOn #ktaSello{opacity:0;pointer-events:none}</style>
+<!-- Sello KTA Visual: marca de agua del proveedor del showroom. Posición por variables CSS (--kta-r/--kta-b/--kta-l y versión móvil --kta-mr/--kta-mb/--kta-ml). -->
+<a id="ktaSello" href="https://ktavisual.pages.dev/?ref=vidalta" target="_blank" rel="noopener" aria-label="Showroom hecho por KTA Visual">
+  <svg viewBox="-12 0 124 130" aria-hidden="true"><path fill="#D8C7A3" fill-rule="evenodd" d="M0 112V50A50 50 0 0 1 100 50V112Z M30 112V58A28 28 0 0 1 86 58V112Z M-12 120H112V126H-12Z"/></svg>
+  <span><small>Showroom por</small><b>KTA <i>VISUAL</i></b></span>
+</a>
+<style>
+#ktaSello{position:fixed;z-index:55;right:var(--kta-r,18px);bottom:var(--kta-b,18px);left:var(--kta-l,auto);display:flex;align-items:center;gap:8px;padding:7px 12px 7px 10px;border-radius:999px;background:rgba(18,20,19,.55);border:1px solid rgba(216,199,163,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F3EFE6;text-decoration:none;font:500 10.5px/1.05 'Marcellus','Cormorant Garamond',Georgia,serif;letter-spacing:.26em;opacity:.78;transition:opacity .18s,border-color .18s}
+#ktaSello:hover{opacity:1;border-color:rgba(216,199,163,.5)}
+#ktaSello svg{width:15px;height:16px;flex:none}
+#ktaSello span{display:flex;flex-direction:column;white-space:nowrap}
+#ktaSello small{font:500 7.5px/1 Inter,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,239,230,.55);margin-bottom:3px}
+#ktaSello b{font-weight:500}
+#ktaSello i{font-style:normal;color:#D8C7A3}
+@media (max-width:860px){#ktaSello{right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
+@media print{#ktaSello{position:static;opacity:1;background:none;color:#202522}}
+</style>
+
 </body>
 </html>
