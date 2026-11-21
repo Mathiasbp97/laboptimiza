@@ -175,7 +175,65 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .skel.off{opacity:0;pointer-events:none}
 .skel svg{width:180px;color:#fff;opacity:.9;animation:fd 1.4s ease-in-out infinite alternate}
 @keyframes fd{to{opacity:.35}}
-@media print{body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
+
+/* transiciones cinemáticas */
+#mTorre{transition:transform .8s var(--ease)}
+#vPlanta.on .media{animation:pIn .75s var(--ease) both}
+@keyframes pIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#mTorre{transition:none}#vPlanta.on .media{animation:none}}
+.urow .rec{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--ac);border:1px solid rgba(200,121,65,.5);border-radius:999px;padding:1px 6px;vertical-align:1px}
+.u text.r{font-size:13px;font-weight:700;fill:#f0b487}
+
+/* botón recorrido en ficha */
+.recBtn{position:relative;display:block;width:100%;aspect-ratio:16/8;border-radius:14px;overflow:hidden;background-size:cover;background-position:center;margin:4px 0 6px;text-align:left}
+.recBtn:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(0,0,0,.78))}
+.recBtn .pl{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:var(--ac);display:grid;place-items:center;box-shadow:0 0 0 10px rgba(200,121,65,.25);transition:transform .2s var(--ease)}
+.recBtn:hover .pl{transform:translate(-50%,-50%) scale(1.08)}
+.recBtn .pl svg{width:22px;height:22px;margin-left:3px}
+.recBtn b,.recBtn small{position:absolute;left:16px;right:16px;z-index:1}
+.recBtn b{bottom:30px;font-size:17px}.recBtn small{bottom:12px;color:#d9d5cd;font-size:12px}
+
+/* recorrido */
+#rec{position:fixed;inset:0;z-index:75;background:#0c0d0c;opacity:0;pointer-events:none;transition:opacity .45s var(--ease);overflow:hidden}
+#rec.on{opacity:1;pointer-events:auto}
+#rec .rp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:96px 24px 120px;background:radial-gradient(1000px 600px at 50% 50%,#262a27,#0f1110);transition:opacity .5s var(--ease)}
+#rec .rp.off{opacity:0;pointer-events:none}
+.rpwrap{position:relative;width:min(100%,calc((100vh - 230px)*1.42));aspect-ratio:1800/1268;transition:transform .9s var(--ease),opacity .9s var(--ease)}
+.rpwrap img{width:100%;height:100%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.rpwrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pin{cursor:pointer}
+.pin .o{animation:pp 2s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pp{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+.pin .lb{transition:transform .2s var(--ease)}
+.pin:hover .lb{transform:translateY(-6px)}
+#rec .ra{position:absolute;inset:0;cursor:grab;touch-action:pan-y;pointer-events:none}
+#rec .ra.act{pointer-events:auto}
+#rec .ra.drag{cursor:grabbing}
+#rec .ra img{position:absolute;top:0;left:0;height:100%;width:auto;max-width:none;min-width:100%;object-fit:cover;user-select:none;-webkit-user-drag:none;opacity:0;transition:opacity .7s var(--ease);will-change:transform,opacity}
+#rec .ra img.on{opacity:1}
+#rec .ra:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(0,0,0,.55),transparent 22%,transparent 68%,rgba(0,0,0,.65))}
+.rtop{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;z-index:3}
+.rtop small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);font-weight:700}
+.rtop b{display:block;font-size:26px;font-weight:600;line-height:1.2}
+.ract{display:flex;gap:8px}
+.rnav{position:absolute;left:50%;bottom:104px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;z-index:3}
+.rnav button{height:40px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;white-space:nowrap}
+.rnav button:hover:not(:disabled){background:rgba(242,239,233,.1)}
+.rnav button:disabled{opacity:.3;cursor:default}
+.rnav svg{width:16px;height:16px}
+.rnav #rNext{background:var(--ac);color:#fff}
+.rnav #rNext:hover:not(:disabled){background:#d78a52}
+.rnav span{font-size:12.5px;color:var(--tx2);padding:0 6px;white-space:nowrap}
+.rthumbs{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:8px;z-index:3;max-width:calc(100% - 24px);overflow-x:auto;padding:2px}
+.rthumbs button{flex:none;width:112px;height:64px;border-radius:10px;background-size:cover;background-position:center;position:relative;overflow:hidden;border:2px solid transparent;transition:border-color .15s,transform .15s}
+.rthumbs button:hover{transform:translateY(-2px)}
+.rthumbs button.on{border-color:var(--ac)}
+.rthumbs button span{position:absolute;left:0;right:0;bottom:0;padding:12px 6px 4px;font-size:11px;font-weight:600;background:linear-gradient(transparent,rgba(0,0,0,.8));text-align:left}
+.rhint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 16px;border-radius:999px;font-size:13px;z-index:3;pointer-events:none;transition:opacity .6s}
+.rhint.off{opacity:0}
+.rfine{position:absolute;right:16px;bottom:96px;font-size:11px;color:rgba(255,255,255,.55);z-index:3}
+@media(max-width:860px){.rtop b{font-size:20px}.rtop .btn span{display:none}.rnav{bottom:96px;max-width:calc(100% - 24px)}.rnav #rPrev span{display:none}.rthumbs button{width:92px;height:56px}.rfine{display:none}#rec .rp{padding:84px 10px 110px}}
+@media print{#rec{display:none}body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
 </style>
 </head>
 <body>
@@ -243,6 +301,18 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 <aside id="drawer" aria-hidden="true"><div class="top"><div id="dTit"></div><button class="x" id="dX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
   <div class="body" id="dBody"></div><div class="foot" id="dFoot"></div></aside>
 
+
+<section id="rec" aria-hidden="true">
+  <div class="rp" id="recPlano"><div class="rpwrap" id="rpWrap"><img id="rpImg" alt="Planta del departamento"><svg id="rpSvg" viewBox="0 0 1800 1268" preserveAspectRatio="xMidYMid meet"></svg></div></div>
+  <div class="ra" id="recAmb"><img id="raA" alt="" draggable="false"><img id="raB" alt="" draggable="false"></div>
+  <div class="rtop"><div><small id="rSub"></small><b id="rTit"></b></div>
+    <div class="ract"><button class="btn btn-g glass" id="rPlanoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 12v9"/></svg><span>Ver planta</span></button>
+    <button class="x glass" id="rX" aria-label="Cerrar recorrido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div></div>
+  <div class="rnav glass" id="rNav"><button id="rPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg><span>Anterior</span></button><span id="rCount" class="num"></span><button id="rNext"><span id="rNextLbl"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button></div>
+  <div class="rthumbs" id="rThumbs"></div>
+  <div class="rhint glass" id="rHint"></div>
+  <div class="rfine">Imágenes ilustrativas</div>
+</section>
 <div id="modal"><div class="box" id="mBox"></div></div>
 <div id="lb"><button class="x" id="lbX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button><img id="lbImg" alt=""><p id="lbCap"></p></div>
 <div id="toast" class="glass"></div>
@@ -250,7 +320,8 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 <!-- CONTEXTO
   Showroom 3D white-label (versión Vidalta). Todo el branding y los datos del proyecto salen de CONFIG.
   Datos en vivo: GET /api/public (Cloudflare Pages Functions + D1). Si la API no responde, usa la foto de respaldo FALLBACK.
-  Vistas: Torre (render de fachada + polígonos por piso en coordenadas 1600×900) → Planta (plano 1334×454 con un rectángulo por unidad) → Ficha.
+  Vistas: Torre (render de fachada + polígonos por piso en coordenadas 1600×900) → (zoom al piso) → Planta (plano 1334×454 con un rectángulo por unidad) → Ficha → Recorrido.
+  Recorrido: tipologias[X].recorrido = [{n, img, pin:[x,y] en px del plano 1800×1268}] en orden del camino real. Se entra desde la planta del depto (zoom al pin) y se recorre arrastrando.
   Para otro proyecto: cambiar CONFIG (pisos, coordenadas de pisos en la fachada, rectángulos de planta por tipo de piso, tipologías, imágenes).
   Panel de administración: /admin.html (mismo backend, con login).
 -->
@@ -278,7 +349,10 @@ const CONFIG = {
     A: { n: "Tipología A", dorm: 1, banos: 1, serv: false, plano: "img/tipo-a.webp", fotos: ["img/living-2d.webp", "img/dorm-2.webp", "img/lobby.webp"], desc: "1 dormitorio con baño completo, living-comedor integrado a la cocina y balcón. Ideal para primera vivienda o inversión en renta." },
     B: { n: "Tipología B", dorm: 2, banos: 2, serv: false, plano: "img/tipo-b.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios y 2 baños, cocina integrada y balcón con parrilla." },
     C: { n: "Tipología C", dorm: 2, banos: 2, serv: false, plano: "img/tipo-c.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios en suite en disposición «mariposa», uno a cada lado del living, con balcón con parrilla." },
-    D: { n: "Tipología D", dorm: 2, banos: 2, serv: true, plano: "img/tipo-d.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios, 2 baños y área de servicio. Unidades de esquina con doble orientación y balcón con parrilla." },
+    D: { n: "Tipología D", dorm: 2, banos: 2, serv: true, plano: "img/tipo-d.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios, 2 baños y área de servicio. Unidades de esquina con doble orientación y balcón con parrilla.",
+      // Recorrido: pines en px del plano (1800×1268), en el orden del camino real
+      recorrido: [ { n: "Living", img: "img/living-3d.webp", pin: [745, 520] }, { n: "Comedor y cocina", img: "img/living-2d.webp", pin: [700, 890] },
+        { n: "Dormitorio 2", img: "img/dorm-2.webp", pin: [1160, 560] }, { n: "Dormitorio principal", img: "img/dorm-ppal.webp", pin: [1510, 520] } ] },
     E: { n: "Tipología E", dorm: 3, banos: 3, serv: true, plano: "img/tipo-e.webp", fotos: ["img/living-3d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "3 dormitorios, 3 baños y área de servicio, en los pisos altos. Living-comedor amplio y doble balcón con parrilla." } },
   amenities: [ { n: "Piscina en azotea", img: "img/piscina.webp" }, { n: "Azotea completa", img: "img/azotea.webp" }, { n: "Gimnasio", img: "img/gimnasio.webp" },
     { n: "Salón de eventos y quincho", img: "img/sum.webp" }, { n: "Piscina, gimnasio y coworking", img: "img/azotea-2.webp" }, { n: "Lobby", img: "img/lobby.webp" } ],
@@ -345,7 +419,25 @@ function ajustarTorre() { const m = $('#mTorre'), port = m.clientWidth / m.clien
   m.classList.toggle('fit', port); $('#svgTorre').setAttribute('preserveAspectRatio', port ? 'xMidYMid meet' : 'xMidYMid slice'); }
 
 /* ---------- planta ---------- */
-function irPiso(p) { UI.piso = Math.max(1, Math.min(CONFIG.pisos, p)); setView('planta'); pintarPlanta(); }
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function irPiso(p) {
+  p = Math.max(1, Math.min(CONFIG.pisos, p));
+  const desdeTorre = UI.view === 'torre', fl = $(`#svgTorre .fl[data-p="${p}"]`);
+  UI.piso = p; pintarPlanta();
+  if (!desdeTorre || RM || !fl) { setView('planta'); return; }
+  const m = $('#mTorre'), a = fl.getBoundingClientRect(), b = m.getBoundingClientRect();
+  m.style.transformOrigin = `${a.left + a.width / 2 - b.left}px ${a.top + a.height / 2 - b.top}px`;
+  m.style.transform = 'scale(2.4)';
+  setTimeout(() => setView('planta'), 330);
+  setTimeout(() => { m.style.transition = 'none'; m.style.transform = ''; void m.offsetWidth; m.style.transition = ''; }, 1000);
+}
+function volverTorre() {
+  if (UI.view !== 'planta') return;
+  const m = $('#mTorre'), fl = $(`#svgTorre .fl[data-p="${UI.piso}"]`);
+  if (!RM && fl) { const a = fl.getBoundingClientRect(), b = m.getBoundingClientRect();
+    m.style.transition = 'none'; m.style.transformOrigin = `${a.left + a.width / 2 - b.left}px ${a.top + a.height / 2 - b.top}px`; m.style.transform = 'scale(1.8)'; void m.offsetWidth; m.style.transition = ''; requestAnimationFrame(() => m.style.transform = ''); }
+  setView('torre');
+}
 function pintarPlanta() {
   const p = UI.piso, P = CONFIG.plantas[POS[p]];
   $('#pTit').textContent = `Piso ${p}`;
@@ -356,7 +448,7 @@ function pintarPlanta() {
       <text x="${x + w / 2}" y="${y + h / 2 - 2}" text-anchor="middle">${u.id}</text><text class="s" x="${x + w / 2}" y="${y + h / 2 + 22}" text-anchor="middle">${u.estado === 'libre' ? t.dorm + ' dorm · ' + u.m2 + ' m²' : EST[u.estado]}</text></g>`; }).join('');
   $$('#svgPlanta .u').forEach(g => g.onclick = () => abrirFicha(g.dataset.id));
   $('#pSide').innerHTML = `<div class="ph">Departamentos · piso ${p}</div>` + us.map(u => { const t = CONFIG.tipologias[u.tip];
-    return `<button class="urow ${u.estado}${UI.sel === u.id ? ' sel' : ''}" data-id="${u.id}"><span class="badge d-${u.estado}"></span><span><b>Depto ${u.id}</b><small>${t.n.replace('Tipología ', 'Tip. ')} · ${t.dorm} dorm · ${u.m2} m²</small></span><span class="pr num">${u.estado === 'libre' ? (u.precio ? money(u.precio).replace('USD ', '') : 'Consultar') : EST[u.estado]}</span></button>`; }).join('');
+    return `<button class="urow ${u.estado}${UI.sel === u.id ? ' sel' : ''}" data-id="${u.id}"><span class="badge d-${u.estado}"></span><span><b>Depto ${u.id}</b><small>${t.n.replace('Tipología ', 'Tip. ')} · ${t.dorm} dorm · ${u.m2} m²${t.recorrido ? '<i class="rec">RECORRIDO</i>' : ''}</small></span><span class="pr num">${u.estado === 'libre' ? (u.precio ? money(u.precio).replace('USD ', '') : 'Consultar') : EST[u.estado]}</span></button>`; }).join('');
   $$('#pSide .urow').forEach(b => b.onclick = () => abrirFicha(b.dataset.id));
   $('#pUp').disabled = p >= CONFIG.pisos; $('#pDn').disabled = p <= 1;
 }
@@ -373,6 +465,7 @@ function abrirFicha(id) {
   $('#dBody').innerHTML = `<span class="tag ${u.estado}">${EST[u.estado]}</span>
     ${libre && u.precio ? `<div class="price num">${money(u.precio)}<small>${money(pm2)}/m²</small></div>` : libre ? `<div class="price">Consultar precio</div>` : ''}
     <div class="specs"><div class="spec"><b class="num">${u.m2}</b><small>m² totales</small></div><div class="spec"><b>${t.dorm}</b><small>dormit.</small></div><div class="spec"><b>${t.banos}</b><small>baños</small></div><div class="spec"><b>${t.serv ? 'Sí' : '—'}</b><small>servicio</small></div></div>
+    ${t.recorrido ? `<button class="recBtn" id="dRec" style="background-image:url(${t.recorrido[0].img})"><span class="pl"><svg viewBox="0 0 24 24" fill="#fff"><path d="M7 4v16l13-8z"/></svg></span><b>Recorrer el departamento</b><small>${t.recorrido.length} ambientes · entrá desde la planta</small></button>` : ''}
     <div class="h3">${esc(t.n)}</div><p class="desc">${esc(t.desc)}</p>
     <div class="h3">Planta</div><div class="plano" data-zoom="${t.plano}" data-cap="${esc(t.n)} · ${u.m2} m²"><img src="${t.plano}" alt="Planta ${esc(t.n)}"></div>
     <div class="gal">${t.fotos.map(f => `<img src="${f}" alt="" loading="lazy" data-zoom="${f}" data-cap="Imagen ilustrativa">`).join('')}</div>
@@ -384,8 +477,73 @@ function abrirFicha(id) {
     try { if (navigator.share) await navigator.share({ title: `Vidalta · Depto ${id}`, url }); else { await navigator.clipboard.writeText(url); toast('Link copiado'); } } catch (e) {} };
   $$('#dBody [data-zoom]').forEach(e => e.onclick = () => zoom(e.dataset.zoom, e.dataset.cap));
   if (libre) bindCot(u);
+  if (t.recorrido) $('#dRec').onclick = () => { evento('recorrido', id); abrirRec(u); };
   $('#drawer').classList.add('on'); $('#drawer').setAttribute('aria-hidden', 'false');
 }
+
+/* ---------- recorrido del departamento ---------- */
+const REC = { on: false, u: null, L: [], amb: -1, capa: 0, x: 0, min: 0, v: -0.3, drag: false, lx: 0, movido: false };
+function abrirRec(u) {
+  const t = CONFIG.tipologias[u.tip]; REC.u = u; REC.L = t.recorrido; REC.on = true; REC.amb = -1;
+  $('#rpImg').src = t.plano;
+  const esc_ = Math.max(1, 900 / ($('#rpWrap').clientWidth || 900)), chico = esc_ > 1.6;
+  $('#rpSvg').innerHTML = REC.L.map((a, i) => { const [x, y] = a.pin, w = a.n.length * 17 + 56;
+    return `<g class="pin" data-i="${i}" transform="translate(${x} ${y}) scale(${esc_})"><rect x="${-w / 2}" y="-104" width="${w}" height="140" fill="transparent"/><circle class="o" r="30" fill="${CONFIG.colorAcento}"/><circle r="30" fill="${CONFIG.colorAcento}" stroke="#fff" stroke-width="6"/><text y="10" text-anchor="middle" font-size="28" font-weight="700" fill="#fff" font-family="Plus Jakarta Sans,system-ui">${i + 1}</text>
+      ${chico ? '' : `<g class="lb"><g transform="translate(0 -72)"><rect x="${-w / 2}" y="-32" width="${w}" height="56" rx="28" fill="rgba(12,13,12,.88)"/><text y="6" text-anchor="middle" font-size="28" font-weight="600" fill="#fff" font-family="Plus Jakarta Sans,system-ui">${esc(a.n)}</text></g></g>`}</g>`; }).join('');
+  $$('#rpSvg .pin').forEach(g => g.onclick = () => entrarAmb(+g.dataset.i));
+  $('#rThumbs').innerHTML = REC.L.map((a, i) => `<button data-i="${i}" style="background-image:url(${a.img})"><span>${i + 1}. ${esc(a.n)}</span></button>`).join('');
+  $$('#rThumbs button').forEach(b => b.onclick = () => REC.amb < 0 ? entrarAmb(+b.dataset.i) : recIr(+b.dataset.i));
+  REC.L.forEach(a => { const i = new Image(); i.src = a.img; });
+  $('#raA').classList.remove('on'); $('#raB').classList.remove('on');
+  recPlano(true);
+  $('#rec').classList.add('on'); $('#rec').setAttribute('aria-hidden', 'false');
+}
+function recPlano(inicial) {
+  REC.amb = -1; const u = REC.u, t = CONFIG.tipologias[u.tip];
+  $('#recPlano').classList.remove('off'); $('#rpWrap').style.transition = 'none'; $('#rpWrap').style.transform = inicial ? 'scale(.94)' : 'scale(1.06)'; $('#rpWrap').style.opacity = inicial ? '0' : '1';
+  void $('#rpWrap').offsetWidth; $('#rpWrap').style.transition = ''; requestAnimationFrame(() => { $('#rpWrap').style.transform = ''; $('#rpWrap').style.opacity = ''; });
+  $$('#recAmb img').forEach(i => i.classList.remove('on')); $('#recAmb').classList.remove('act');
+  $('#rSub').textContent = `Departamento ${u.id} · ${t.n}`; $('#rTit').textContent = 'Elegí un ambiente para entrar';
+  $('#rPlanoBtn').style.display = 'none'; $('#rPrev').disabled = true; $('#rCount').textContent = `${REC.L.length} ambientes`;
+  $('#rNextLbl').textContent = 'Empezar recorrido'; $('#rNext').disabled = false;
+  $$('#rThumbs button').forEach(b => b.classList.remove('on'));
+  $('#rHint').classList.add('off');
+}
+function entrarAmb(i) {
+  const [x, y] = REC.L[i].pin, w = $('#rpWrap');
+  if (!RM) { w.style.transformOrigin = `${x / 18}% ${y / 12.68}%`; w.style.transform = 'scale(3.2)'; w.style.opacity = '0'; }
+  setTimeout(() => { $('#recPlano').classList.add('off'); w.style.transition = 'none'; w.style.transform = ''; w.style.opacity = ''; w.style.transformOrigin = ''; void w.offsetWidth; w.style.transition = ''; }, RM ? 0 : 650);
+  setTimeout(() => recIr(i, true), RM ? 0 : 300);
+}
+function recIr(i, desdePlano) {
+  if (i < 0 || i >= REC.L.length) { if (i >= REC.L.length) { toast('Fin del recorrido'); recPlano(); } return; }
+  const a = REC.L[i]; REC.amb = i; REC.capa ^= 1; $('#recAmb').classList.add('act');
+  const img = REC.capa ? $('#raB') : $('#raA'), vieja = REC.capa ? $('#raA') : $('#raB');
+  const mostrar = () => { REC.img = img; ajustarPan(true); img.style.transition = 'none'; img.style.transform = `translate3d(${REC.x}px,0,0) scale(1.14)`; void img.offsetWidth;
+    img.style.transition = 'opacity .8s var(--ease), transform 1.6s var(--ease)'; img.classList.add('on'); vieja.classList.remove('on'); REC.esc = 1.04; colocar();
+    setTimeout(() => { img.style.transition = 'opacity .8s var(--ease)'; }, 1600); };
+  if (img.getAttribute('src') === a.img && img.complete) mostrar(); else { img.onload = mostrar; img.src = a.img; }
+  $('#rSub').textContent = `Departamento ${REC.u.id} · Ambiente ${i + 1} de ${REC.L.length}`; $('#rTit').textContent = a.n;
+  $('#rPlanoBtn').style.display = ''; $('#rPrev').disabled = i === 0; $('#rCount').textContent = `${i + 1} / ${REC.L.length}`;
+  $('#rNextLbl').textContent = i < REC.L.length - 1 ? REC.L[i + 1].n : 'Volver a la planta';
+  $$('#rThumbs button').forEach(b => b.classList.toggle('on', +b.dataset.i === i));
+  if (desdePlano && !REC.vioHint) { REC.vioHint = true; $('#rHint').textContent = 'Arrastrá para mirar el ambiente'; $('#rHint').classList.remove('off'); setTimeout(() => $('#rHint').classList.add('off'), 2600); }
+}
+function ajustarPan(centrar) { const img = REC.img; if (!img) return; const w = innerHeight * img.naturalWidth / img.naturalHeight, ww = Math.max(w, innerWidth);
+  REC.min = Math.min(0, innerWidth - ww * 1.04); if (centrar) { REC.x = REC.min / 2; REC.v = -0.3; } }
+function colocar() { if (!REC.img) return; REC.x = Math.max(REC.min, Math.min(0, REC.x)); REC.img.style.transform = `translate3d(${REC.x}px,0,0) scale(${REC.esc || 1.04})`; }
+function cerrarRec() { REC.on = false; REC.img = null; $('#rec').classList.remove('on'); $('#rec').setAttribute('aria-hidden', 'true'); }
+$('#rX').onclick = cerrarRec; $('#rPlanoBtn').onclick = () => recPlano();
+$('#rPrev').onclick = () => REC.amb > 0 && recIr(REC.amb - 1);
+$('#rNext').onclick = () => REC.amb < 0 ? entrarAmb(0) : recIr(REC.amb + 1);
+const RA = $('#recAmb');
+RA.addEventListener('pointerdown', e => { if (REC.amb < 0) return; REC.drag = true; REC.movido = false; REC.lx = e.clientX; RA.classList.add('drag'); RA.setPointerCapture(e.pointerId); });
+RA.addEventListener('pointermove', e => { if (!REC.drag) return; const dx = e.clientX - REC.lx; REC.lx = e.clientX; if (Math.abs(dx) > 1) REC.movido = true; REC.x += dx; REC.v = dx; colocar(); });
+const soltar = () => { REC.drag = false; RA.classList.remove('drag'); };
+RA.addEventListener('pointerup', soltar); RA.addEventListener('pointercancel', soltar);
+addEventListener('resize', () => { if (REC.on) { ajustarPan(false); colocar(); } });
+(function inercia() { if (REC.on && REC.amb >= 0 && !REC.drag && REC.img && !RM) { REC.x += REC.v; if (Math.abs(REC.v) > .35) REC.v *= .94; if (REC.x <= REC.min || REC.x >= 0) REC.v = -REC.v; colocar(); } requestAnimationFrame(inercia); })();
+
 function mesesHastaEntrega() { const e = new Date(CONFIG.proyecto.entrega), h = new Date(); return Math.max(1, (e.getFullYear() - h.getFullYear()) * 12 + e.getMonth() - h.getMonth() - 1); }
 function cotHTML(u) {
   if (!u.precio) return '';
@@ -419,14 +577,15 @@ function ubicacion() { abrirModal(`<div class="mh"><h2>Ubicación</h2>${cerrarBt
 /* ---------- navegación ---------- */
 function setView(v) { UI.view = v; $('#vTorre').classList.toggle('on', v === 'torre'); $('#vPlanta').classList.toggle('on', v === 'planta'); }
 function pintar() { pintarTorre(); if (UI.view === 'planta') pintarPlanta(); }
-$('#backT').onclick = () => { setView('torre'); cerrarFicha(); };
+$('#backT').onclick = () => { cerrarFicha(); volverTorre(); };
 $('#pUp').onclick = () => irPiso(UI.piso + 1); $('#pDn').onclick = () => irPiso(UI.piso - 1);
 $('#dX').onclick = cerrarFicha;
 $('#lbX').onclick = () => $('#lb').classList.remove('on'); $('#lb').onclick = e => { if (e.target.id === 'lb') $('#lb').classList.remove('on'); };
 $('#modal').onclick = e => { if (e.target.id === 'modal') cerrarModal(); };
 $$('#tabs button').forEach(b => b.onclick = () => { $$('#tabs button').forEach(x => x.classList.toggle('on', x === b)); const g = b.dataset.go;
   if (g === 'torre') { cerrarModal(); setView('torre'); } else if (g === 'amen') amenities(); else ubicacion(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('#lb').classList.contains('on')) $('#lb').classList.remove('on'); else if ($('#modal').classList.contains('on')) cerrarModal(); else if ($('#drawer').classList.contains('on')) cerrarFicha(); else if (UI.view === 'planta') setView('torre'); }
+document.addEventListener('keydown', e => { if (REC.on) { if (e.key === 'Escape') { e.stopImmediatePropagation(); REC.amb >= 0 ? recPlano() : cerrarRec(); } else if (e.key === 'ArrowRight') recIr(REC.amb + 1); else if (e.key === 'ArrowLeft' && REC.amb > 0) recIr(REC.amb - 1); return; }
+  if (e.key === 'Escape') { if ($('#lb').classList.contains('on')) $('#lb').classList.remove('on'); else if ($('#modal').classList.contains('on')) cerrarModal(); else if ($('#drawer').classList.contains('on')) cerrarFicha(); else if (UI.view === 'planta') volverTorre(); }
   if (UI.view === 'planta' && !$('#drawer').classList.contains('on')) { if (e.key === 'ArrowUp') irPiso(UI.piso + 1); if (e.key === 'ArrowDown') irPiso(UI.piso - 1); } });
 $('#waTop').href = wa('Hola 👋 Estoy viendo el showroom de Vidalta y quiero más información.');
 addEventListener('resize', ajustarTorre); ajustarTorre();
