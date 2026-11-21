@@ -153,6 +153,21 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between;height:7
 @media(max-width:520px){.gal{grid-template-columns:1fr}.gal figure:last-child{grid-column:auto;aspect-ratio:9/12}.gal figure{aspect-ratio:9/12}}
 
 /* case */
+.pj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:24px}
+.pj{display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:20px;overflow:hidden;background:var(--carbon2);color:inherit;text-decoration:none;transition:border-color .2s,transform .2s}
+.pj:hover{border-color:rgba(216,199,163,.45);transform:translateY(-3px)}
+.pj-im{position:relative;aspect-ratio:16/10;overflow:hidden}
+.pj-im img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.pj:hover .pj-im img{transform:scale(1.04)}
+.pj-tag{position:absolute;left:16px;top:16px;padding:6px 12px;border-radius:999px;background:rgba(18,20,19,.6);backdrop-filter:blur(8px);border:1px solid rgba(216,199,163,.25);font-size:12px;letter-spacing:.08em;color:var(--piedra)}
+.pj-tx{padding:28px 30px 30px;display:flex;flex-direction:column;gap:10px;flex:1}
+.pj-tx small{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gris2)}
+.pj-tx h3{font-size:clamp(26px,2.6vw,32px);margin:0}
+.pj-tx p{color:var(--gris2);font-size:15.5px}
+.pj-ch{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pj-ch span{font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line2);color:var(--marfil,#F3EFE6)}
+.pj-go{margin-top:auto;padding-top:14px;display:inline-flex;align-items:center;gap:8px;color:var(--piedra);font-size:15px}
+.pj-go svg{width:16px;height:16px}
 .case{display:grid;grid-template-columns:1.2fr 1fr;border:1px solid var(--line2);border-radius:24px;overflow:hidden;background:var(--carbon2)}
 .case .im{position:relative;min-height:440px}
 .case .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -250,6 +265,7 @@ footer a:hover{color:var(--marfil)}
     <div class="nav-l">
       <a href="#funciones">Funciones</a>
       <a href="#demo">Demo</a>
+      <a href="#proyectos">Proyectos</a>
       <a href="#proceso">Proceso</a>
       <a href="#planes">Planes</a>
       <a href="#faq">Preguntas</a>
@@ -378,21 +394,39 @@ footer a:hover{color:var(--marfil)}
   </div>
 </section>
 
-<!-- CASO -->
-<section class="sec" style="padding-top:0">
+<!-- PROYECTOS:INI (generado por /home/claude/ktavisual/proyectos.py — no editar a mano) -->
+<section class="sec" id="proyectos" style="padding-top:0">
   <div class="wrap">
-    <div class="case rv">
-      <div class="im"><img loading="lazy" src="img/livo-fachada.webp" alt="Fachada del proyecto LIVO Botánico"></div>
-      <div class="tx">
-        <span class="kicker">Caso real</span>
-        <h3>LIVO Botánico</h3>
-        <p>Desarrollo en preventa en Asunción. Showroom online con selección de unidades, recorrido de ambientes y cotizador, listo para compartir por WhatsApp e Instagram.</p>
-        <ul><li>Unidades y precios siempre actualizados</li><li>Un link por departamento para enviar a cada interesado</li><li>Funciona en celular, tablet y en la sala de ventas</li></ul>
-        <div><a class="btn btn-g" href="https://livo3d.pages.dev" target="_blank" rel="noopener">Ver el showroom de LIVO ↗</a></div>
-      </div>
+    <div class="sec-head rv">
+      <span class="kicker">Proyectos realizados</span>
+      <h2>Desarrollos que ya se venden con KTA Visual.</h2>
+      <p>Showrooms reales, en línea y funcionando. Entrá y recorrelos como lo haría un comprador.</p>
+    </div>
+    <div class="pj-grid">
+      <a class="pj rv" href="https://vidalta.pages.dev" target="_blank" rel="noopener">
+        <div class="pj-im"><img loading="lazy" src="img/vidalta.webp" alt="Showroom 3D de Vidalta Bellavista"><span class="pj-tag">Showroom en vivo</span></div>
+        <div class="pj-tx">
+          <small>Bella Vista · Asunción</small>
+          <h3>Vidalta Bellavista</h3>
+          <p>Fachada día y noche, plantas renderizadas con disponibilidad en vivo, recorrido por ambientes con transiciones, amenities en 360° y panel de ventas para el equipo comercial.</p>
+          <div class="pj-ch"><span>Disponibilidad en vivo</span><span>Recorrido 360°</span><span>Panel de ventas</span></div>
+          <span class="pj-go">Ver el showroom <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+        </div>
+      </a>
+      <a class="pj rv d1" href="https://livo3d.pages.dev" target="_blank" rel="noopener">
+        <div class="pj-im"><img loading="lazy" src="img/livo-fachada.webp" alt="Showroom 3D de LIVO Botánico"><span class="pj-tag">Showroom en vivo</span></div>
+        <div class="pj-tx">
+          <small>Asunción</small>
+          <h3>LIVO Botánico</h3>
+          <p>Selección de unidades sobre la fachada, recorrido de ambientes y cotizador, listo para compartir por WhatsApp e Instagram.</p>
+          <div class="pj-ch"><span>75 unidades</span><span>Cotizador</span><span>Link por departamento</span></div>
+          <span class="pj-go">Ver el showroom <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+        </div>
+      </a>
     </div>
   </div>
 </section>
+<!-- PROYECTOS:FIN -->
 
 <!-- PROCESO -->
 <section class="sec" id="proceso" style="padding-top:20px">
