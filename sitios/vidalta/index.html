@@ -139,7 +139,19 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .urow .pr{font-size:13px;font-weight:600;text-align:right}
 .urow.vendido{opacity:.55}
 .north{position:absolute;left:40px;bottom:30px;font-size:12px;color:var(--tx3);display:flex;gap:10px;align-items:center}
-@media(max-width:860px){#vPlanta .media{inset:120px 0 225px 0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}#mPlanta img,#mPlanta svg{position:absolute;left:0;top:50%;transform:translateY(-50%);width:980px;max-width:none;height:333px}#pHead{left:14px;top:74px}#pHead h2{font-size:20px}#pSide{top:auto;bottom:12px;left:12px;right:12px;width:auto;height:205px}.north{display:none}}
+@media(max-width:860px){
+  /* celular: la planta se gira 90° y entra ENTERA en pantalla; la lista es una hoja que se despliega */
+  #vPlanta .media{inset:118px 0 84px 0;overflow:hidden}
+  #mPlanta img,#mPlanta svg{position:absolute;max-width:none;transform:rotate(90deg);transform-origin:50% 50%}
+  #pHead{left:14px;top:74px}#pHead h2{font-size:20px}.north{display:none}
+  #pSide{top:auto;bottom:10px;left:10px;right:10px;width:auto;height:auto;max-height:64px;overflow:hidden;transition:max-height .28s var(--ease);padding:0}
+  #pSide.open{max-height:62vh;overflow:auto}
+  #pSide .ph{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;background:inherit;font-size:14px}
+  #pSide .ph:after{content:"";width:9px;height:9px;border-right:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(-45deg);margin-top:4px;transition:transform .2s}
+  #pSide.open .ph:after{transform:rotate(135deg);margin-top:-4px}
+  #pSide .urow{margin:0 8px 6px}
+  #svgPlanta .u text{font-size:46px}#svgPlanta .u text.s{font-size:25px}
+}
 
 /* drawer */
 #drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--bg2);border-left:1px solid var(--ln);z-index:60;transform:translateX(100%);transition:transform .4s var(--ease);display:flex;flex-direction:column}
@@ -530,6 +542,19 @@ function volverTorre() {
     m.style.transition = 'none'; m.style.transformOrigin = `${a.left + a.width / 2 - b.left}px ${a.top + a.height / 2 - b.top}px`; m.style.transform = 'scale(1.8)'; void m.offsetWidth; m.style.transition = ''; requestAnimationFrame(() => m.style.transform = ''); }
   setView('torre');
 }
+const esMovil = () => innerWidth <= 860;
+let MOV = esMovil();
+function lbl(cx, cy, a, b) {   // en celular la planta está girada 90°: las etiquetas se contra-giran para leerse derechas
+  if (!MOV) return `<text x="${cx}" y="${cy - 2}" text-anchor="middle">${a}</text><text class="s" x="${cx}" y="${cy + 22}" text-anchor="middle">${b}</text>`;
+  return `<g transform="rotate(-90 ${cx} ${cy})"><text x="${cx}" y="${cy + 4}" text-anchor="middle">${a}</text><text class="s" x="${cx}" y="${cy + 36}" text-anchor="middle">${b}</text></g>`;
+}
+function encajarPlanta() {   // celular: girar y escalar para que entre toda la planta
+  const m = $('#mPlanta'), im = $('#imgPlanta'), sv = $('#svgPlanta');
+  if (!esMovil()) { [im, sv].forEach(e => { e.style.width = e.style.height = e.style.left = e.style.top = ''; }); return; }
+  const W = m.clientWidth, H = m.clientHeight, s = Math.min((H - 8) / 1334, (W - 20) / 454), w = 1334 * s, h = 454 * s;
+  [im, sv].forEach(e => { e.style.width = w + 'px'; e.style.height = h + 'px'; e.style.left = (W - w) / 2 + 'px'; e.style.top = (H - h) / 2 + 'px'; });
+}
+addEventListener('resize', () => { const m = esMovil(); if (m !== MOV) { MOV = m; if (UI.view === 'planta') pintarPlanta(); } encajarPlanta(); });
 function pintarPlanta() {
   const p = UI.piso, P = CONFIG.plantas[POS[p]];
   $('#pTit').textContent = `Piso ${p}`;
@@ -537,13 +562,15 @@ function pintarPlanta() {
   const us = delPiso(p);
   $('#svgPlanta').innerHTML = us.map(u => { const r = P.u[u.pos]; if (!r) return ''; const [x, y, w, h] = r, t = CONFIG.tipologias[u.tip];
     return `<g class="u ${u.estado}${coincide(u) ? '' : ' off'}${UI.sel === u.id ? ' sel' : ''}" data-id="${u.id}"><rect x="${x + 4}" y="${y + 4}" width="${w - 8}" height="${h - 8}"/>
-      <text x="${x + w / 2}" y="${y + h / 2 - 2}" text-anchor="middle">${u.id}</text><text class="s" x="${x + w / 2}" y="${y + h / 2 + 22}" text-anchor="middle">${u.estado === 'libre' ? t.dorm + ' dorm · ' + u.m2 + ' m²' : EST[u.estado]}</text></g>`; }).join('');
+      ${lbl(x + w / 2, y + h / 2, u.id, u.estado === 'libre' ? (MOV ? t.dorm + 'd · ' + u.m2 + ' m²' : t.dorm + ' dorm · ' + u.m2 + ' m²') : EST[u.estado])}</g>`; }).join('');
   $$('#svgPlanta .u').forEach(g => g.onclick = () => abrirFicha(g.dataset.id));
-  $('#pSide').innerHTML = `<div class="ph">Departamentos · piso ${p}</div>` + us.map(u => { const t = CONFIG.tipologias[u.tip];
+  const nLib = us.filter(u => u.estado === 'libre').length;
+  $('#pSide').innerHTML = `<div class="ph">${MOV ? `${us.length} deptos · ${nLib} disponibles` : `Departamentos · piso ${p}`}</div>` + us.map(u => { const t = CONFIG.tipologias[u.tip];
     return `<button class="urow ${u.estado}${UI.sel === u.id ? ' sel' : ''}" data-id="${u.id}"><span class="badge d-${u.estado}"></span><span><b>Depto ${u.id}</b><small>${t.n.replace('Tipología ', 'Tip. ')} · ${t.dorm} dorm · ${u.m2} m²${t.recorrido ? '<i class="rec">RECORRIDO</i>' : ''}</small></span><span class="pr num">${u.estado === 'libre' ? (u.precio ? money(u.precio).replace('USD ', '') : 'Consultar') : EST[u.estado]}</span></button>`; }).join('');
   $$('#pSide .urow').forEach(b => b.onclick = () => abrirFicha(b.dataset.id));
   $('#pUp').disabled = p >= CONFIG.pisos; $('#pDn').disabled = p <= 1;
-  const mp = $('#mPlanta'); if (mp.scrollWidth > mp.clientWidth && !UI.sel) mp.scrollLeft = (mp.scrollWidth - mp.clientWidth) / 2;
+  $('#pSide .ph').onclick = () => MOV && $('#pSide').classList.toggle('open');
+  requestAnimationFrame(encajarPlanta);
 }
 
 /* ---------- ficha ---------- */
@@ -738,7 +765,7 @@ function ubicacion() { abrirModal(`<div class="mh"><h2>Ubicación</h2>${cerrarBt
   <p>Cocheras simples, dobles y con baulera disponibles.</p><div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-g" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Teniente+Porfirio+Saldivar+y+Fray+Luis+de+Leon+Asuncion">Abrir en Google Maps ↗</a></div></div></div>`); }
 
 /* ---------- navegación ---------- */
-function setView(v) { UI.view = v; document.body.classList.toggle('vT', v === 'torre'); $('#vTorre').classList.toggle('on', v === 'torre'); $('#vPlanta').classList.toggle('on', v === 'planta'); }
+function setView(v) { UI.view = v; if (v === 'planta') requestAnimationFrame(encajarPlanta); document.body.classList.toggle('vT', v === 'torre'); $('#vTorre').classList.toggle('on', v === 'torre'); $('#vPlanta').classList.toggle('on', v === 'planta'); }
 function pintar() { pintarTorre(); if (UI.view === 'planta') pintarPlanta(); }
 $('#backT').onclick = () => { cerrarFicha(); volverTorre(); };
 $('#pUp').onclick = () => irPiso(UI.piso + 1); $('#pDn').onclick = () => irPiso(UI.piso - 1);
