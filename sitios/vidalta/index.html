@@ -39,7 +39,7 @@ header{position:fixed;inset:0 0 auto;z-index:40;display:flex;align-items:center;
 nav.tabs{display:flex;gap:4px;padding:4px;border-radius:999px}
 nav.tabs button{padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--tx2)}
 nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:var(--tx)}
-@media(max-width:860px){.logo small{display:none}nav.tabs{display:none}header .btn span{display:none}header .btn{padding:10px}}
+@media(max-width:860px) and (orientation:portrait){.logo small{display:none}nav.tabs{display:none}header .btn span{display:none}header .btn{padding:10px}}
 
 /* stage */
 #stage{position:fixed;inset:0}
@@ -57,7 +57,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 #dn button{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--tx2)}
 #dn button.on{background:rgba(242,239,233,.14);color:var(--tx)}
 #dn svg{width:15px;height:15px}
-@media(max-width:860px){#dn{left:auto;right:10px;bottom:84px}#dn button{padding:6px 10px}}
+@media(max-width:860px) and (orientation:portrait){#dn{left:auto;right:10px;bottom:84px}#dn button{padding:6px 10px}}
 #mTorre.port{background:#151716}
 #mTorre.port:before{content:"";position:absolute;inset:-30px;background:url(img/torre-noche.webp) center/cover;filter:blur(24px) brightness(.5)}
 #mTorre.port img,#mTorre.port svg{position:absolute;max-width:none;width:190%;height:auto;aspect-ratio:16/9;left:-40%;top:47%;transform:translateY(-50%)}
@@ -106,7 +106,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .hs .lbl text{fill:#fff;font-size:15px;font-weight:600;font-family:"Plus Jakarta Sans",system-ui}
 .hs:hover .lbl rect{fill:var(--ac)}
 
-@media(max-width:860px){
+@media(max-width:860px) and (orientation:portrait){
  #filtros{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.qk{display:flex}
  #hero{top:66px;left:10px;right:10px;max-width:none;padding:10px 12px}#hero .l1 b{font-size:15px}.live{display:none}
  #floors{top:auto;bottom:12px;right:10px;left:10px;transform:none;width:auto;padding:6px}
@@ -139,7 +139,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .urow .pr{font-size:13px;font-weight:600;text-align:right}
 .urow.vendido{opacity:.55}
 .north{position:absolute;left:40px;bottom:30px;font-size:12px;color:var(--tx3);display:flex;gap:10px;align-items:center}
-@media(max-width:860px){
+@media(max-width:860px) and (orientation:portrait){
   /* celular: la planta se gira 90° y entra ENTERA en pantalla; la lista es una hoja que se despliega */
   #vPlanta .media{inset:118px 0 84px 0;overflow:hidden}
   #mPlanta img,#mPlanta svg{position:absolute;max-width:none;transform:rotate(90deg);transform-origin:50% 50%}
@@ -272,7 +272,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .rhint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 16px;border-radius:999px;font-size:13px;z-index:3;pointer-events:none;transition:opacity .6s}
 .rhint.off{opacity:0}
 .rfine{position:absolute;right:16px;bottom:96px;font-size:11px;color:rgba(255,255,255,.55);z-index:3}
-@media(max-width:860px){.rtop b{font-size:20px}.rtop .btn span{display:none}.rnav{bottom:96px;max-width:calc(100% - 24px)}.rnav #rPrev span{display:none}.rthumbs button{width:92px;height:56px}.rfine{display:none}#rec .rp{padding:84px 10px 110px}}
+@media(max-width:860px) and (orientation:portrait){.rtop b{font-size:20px}.rtop .btn span{display:none}.rnav{bottom:96px;max-width:calc(100% - 24px)}.rnav #rPrev span{display:none}.rthumbs button{width:92px;height:56px}.rfine{display:none}#rec .rp{padding:84px 10px 110px}}
 
 /* visor de espacios (amenities, lobby, 360) */
 #xp{position:fixed;inset:0;z-index:77;background:#0b0c0b;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
@@ -301,8 +301,28 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .xchips button{flex:none;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(18,20,19,.72);border:1px solid var(--ln2);backdrop-filter:blur(10px);white-space:nowrap}
 .xchips button.on{background:var(--ac);border-color:var(--ac);color:#fff}
 .b360{display:inline-flex;align-items:center;gap:6px}
-@media(max-width:860px){.xtop b{font-size:19px}.xnav{display:none}.xthumbs button{width:84px;height:52px}.xchips button{padding:7px 12px;font-size:12.5px}}
+@media(max-width:860px) and (orientation:portrait){.xtop b{font-size:19px}.xnav{display:none}.xthumbs button{width:84px;height:52px}.xchips button{padding:7px 12px;font-size:12.5px}}
 @media print{#rec{display:none}#xp{display:none}body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
+
+/* ===== celular acostado (pantalla baja y ancha): todo más compacto para que se vea el contenido ===== */
+@media (orientation:landscape) and (max-height:520px){
+  header{padding:8px 14px}.logo small{display:none}.logo svg{height:16px}
+  nav.tabs button{padding:6px 11px;font-size:12px}header .btn,header a.cta{padding:7px 12px;font-size:12.5px}
+  #hero{top:52px;left:12px;max-width:270px;padding:8px 10px}#hero .l1 b{font-size:14px}#hero .l1 span,.live{display:none}
+  #filtros{margin-top:6px}#filtros button{padding:4px 8px;font-size:11px}
+  #floors{top:54px;bottom:10px;transform:none;width:118px;padding:6px;overflow:auto}.frow{padding:4px 7px;font-size:12px}.legend{display:none}#floors .ph{display:none}
+  #dn{left:12px;bottom:10px}#dn button{padding:5px 10px;font-size:11.5px}.hint{display:none}
+  #pHead{top:52px;left:14px}#pHead h2{font-size:18px}#pSide{top:52px;bottom:10px;right:10px;width:210px;padding:8px}
+  .urow{padding:6px 8px;gap:8px}.urow b{font-size:12.5px}.urow small{font-size:10.5px}.urow .pr{font-size:12px}
+  #vPlanta .media{inset:96px 232px 12px 12px}.north{display:none}
+  #svgPlanta .u text{font-size:40px}#svgPlanta .u text.s{font-size:22px}
+  .xtop{padding:10px 14px}.xtop b{font-size:17px}.xtop small{font-size:10px}.xhint{top:58px;font-size:11.5px;padding:5px 11px}
+  .xbot{flex-direction:row;justify-content:center;padding:0 10px 10px;gap:8px}.xthumbs button{width:72px;height:44px}.xchips button{padding:6px 11px;font-size:12px}
+  #rec .rp{padding:52px 16px 110px}.rpwrap{width:min(100%,calc((100vh - 168px)*1.42))}
+  .rtop{padding:10px 14px}.rtop b{font-size:17px}.rtop small{font-size:10px}
+  .rnav{bottom:60px;padding:4px}.rnav button{height:32px;padding:0 11px;font-size:12px}
+  .rthumbs{bottom:8px!important}.rthumbs button{width:96px!important;height:44px!important;font-size:10.5px}
+}
 </style>
 </head>
 <body class="vT">
@@ -542,7 +562,7 @@ function volverTorre() {
     m.style.transition = 'none'; m.style.transformOrigin = `${a.left + a.width / 2 - b.left}px ${a.top + a.height / 2 - b.top}px`; m.style.transform = 'scale(1.8)'; void m.offsetWidth; m.style.transition = ''; requestAnimationFrame(() => m.style.transform = ''); }
   setView('torre');
 }
-const esMovil = () => innerWidth <= 860;
+const esMovil = () => innerWidth <= 860 && innerHeight >= innerWidth;
 let MOV = esMovil();
 function lbl(cx, cy, a, b) {   // en celular la planta está girada 90°: las etiquetas se contra-giran para leerse derechas
   if (!MOV) return `<text x="${cx}" y="${cy - 2}" text-anchor="middle">${a}</text><text class="s" x="${cx}" y="${cy + 22}" text-anchor="middle">${b}</text>`;
@@ -804,7 +824,7 @@ addEventListener('resize', ajustarTorre); ajustarTorre();
 #ktaSello small{font:500 7.5px/1 Inter,system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(243,239,230,.55);margin-bottom:3px}
 #ktaSello b{font-weight:500}
 #ktaSello i{font-style:normal;color:#D8C7A3}
-@media (max-width:860px){#ktaSello{top:var(--kta-mt,auto);right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
+@media (max-width:860px) and (orientation:portrait){#ktaSello{top:var(--kta-mt,auto);right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
 @media print{#ktaSello{position:static;opacity:1;background:none;color:#202522}}
 </style>
 

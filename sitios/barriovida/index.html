@@ -65,7 +65,7 @@ header>*{pointer-events:auto}
 #tip{position:fixed;pointer-events:none;z-index:30;padding:10px 12px;font-size:12.5px;opacity:0;transition:opacity .12s;min-width:170px}
 #tip b{font-size:14px}#tip .st{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 /* ficha */
-#ficha{position:fixed;top:0;right:0;bottom:0;width:min(430px,100%);z-index:40;background:var(--bg2);border-left:1px solid var(--ln);transform:translateX(102%);transition:transform .28s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
+#ficha{position:fixed;top:0;right:0;bottom:0;width:min(430px,100%);z-index:70;background:var(--bg2);border-left:1px solid var(--ln);transform:translateX(102%);transition:transform .28s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column}
 #ficha.on{transform:none}
 .fh{position:relative;height:210px;flex:none;background:#000 center/cover}
 .fh:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(22,34,32,1))}
@@ -105,7 +105,7 @@ input[type=range]{width:100%;accent-color:var(--ac2);margin:6px 0 4px}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 #hint{position:fixed;left:50%;top:84px;transform:translateX(-50%);padding:9px 14px;font-size:13px;z-index:14;transition:opacity .6s}
 #hint.off{opacity:0;pointer-events:none}
-@media (max-width:860px){
+@media (max-width:860px) and (orientation:portrait){
   #hero{left:10px;right:10px;top:auto;bottom:78px;width:auto;padding:12px 14px}
   #hero h1{font-size:17px}#hero p,.kpis{display:none}.fil{margin-top:8px}.lg{display:none}
   header{left:10px;right:10px;top:10px}.brand{padding:8px 12px}.brand small{display:none}.brand img{height:24px}
@@ -114,6 +114,15 @@ input[type=range]{width:100%;accent-color:var(--ac2);margin:6px 0 4px}
   #zoom{display:none}#hint{top:64px;font-size:12px;white-space:nowrap}
   #ficha{top:auto;height:86vh;width:100%;border-left:0;border-top:1px solid var(--ln);border-radius:20px 20px 0 0;transform:translateY(102%)}
   .fh{height:170px;border-radius:20px 20px 0 0}
+}
+
+@media (orientation:landscape) and (max-height:520px){
+  header{top:8px;left:10px;right:10px}.brand{padding:6px 10px}.brand img{height:22px}.brand small{display:none}header .btn{padding:8px 12px;font-size:12.5px}
+  #hero{top:56px;left:10px;width:250px;padding:10px 12px}#hero h1{font-size:15px}#hero p,.kpis,.lg{display:none}.fil{margin-top:6px}.chip{padding:5px 9px;font-size:11.5px}
+  #dock{bottom:8px;padding:4px}#dock button{padding:7px 11px;font-size:12px}#zoom{bottom:8px}#zoom button{width:32px;height:32px}
+  #hint{top:58px;font-size:12px}
+  #ficha{width:380px}.fh{height:120px}.fh .t h2{font-size:22px}.fb{padding:12px 16px 16px}
+  #galCap{left:12px;top:12px;padding:7px 11px}#galTabs{bottom:8px}#gal .nav{width:40px;height:40px}
 }
 @media print{#scene,header,#dock,#zoom,#hero,.vig{display:none}#ficha{position:static;transform:none;width:100%}}
 </style>
@@ -193,12 +202,12 @@ $('#hdrWa').href=wa(`Hola! Quiero información de ${CONFIG.marca}.`);
 
 /* ======================= pan / zoom ======================= */
 const W=2000,H=848,V={s:1,x:0,y:0,min:1};
-function fitMin(){const sw=innerWidth,sh=innerHeight;V.min=Math.min(sw/W,sh/H);if(sw<=860)V.min=Math.max(sh*0.72/H,sw/W);}
+function fitMin(){const sw=innerWidth,sh=innerHeight;V.min=Math.min(sw/W,sh/H);if(sw<=860&&sh>=sw)V.min=Math.max(sh*0.72/H,sw/W);}
 function clamp(){const sw=innerWidth,sh=innerHeight,w=W*V.s,h=H*V.s;
   V.x=w<=sw?(sw-w)/2:Math.min(0,Math.max(sw-w,V.x));V.y=h<=sh?(sh-h)/2:Math.min(0,Math.max(sh-h,V.y));}
 function apply(){clamp();$('#world').style.transform=`translate3d(${V.x}px,${V.y}px,0) scale(${V.s})`;}
 function zoomAt(f,cx,cy){const s=Math.min(V.min*4,Math.max(V.min,V.s*f));V.x=cx-(cx-V.x)*s/V.s;V.y=cy-(cy-V.y)*s/V.s;V.s=s;apply();}
-function reset(){fitMin();const sw=innerWidth,sh=innerHeight;V.s=sw>860?Math.max(V.min,sw/W):V.min;V.x=(sw-W*V.s)/2;V.y=(sh-H*V.s)/2;if(sw<=860){V.x=sw/2-1100*V.s;V.y=sh*0.08}apply();}
+function reset(){fitMin();const sw=innerWidth,sh=innerHeight;const mov=sw<=860&&sh>=sw;V.s=!mov?Math.max(V.min,sw/W):V.min;V.x=(sw-W*V.s)/2;V.y=(sh-H*V.s)/2;if(mov){V.x=sw/2-1100*V.s;V.y=sh*0.08}apply();}
 addEventListener('resize',()=>{const r=V.s/V.min;fitMin();V.s=V.min*r;apply()});
 (()=>{const sc=$('#scene');let p=new Map(),last=null,moved=0,d0=0,s0=1;
   sc.addEventListener('pointerdown',e=>{p.set(e.pointerId,e);sc.setPointerCapture(e.pointerId);moved=0;last={x:e.clientX,y:e.clientY};if(p.size===2){const[a,b]=[...p.values()];d0=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);s0=V.s}});
@@ -300,6 +309,6 @@ Showroom 3D de Barrio Vida Parque (barrio cerrado, 109 casas). Archivo único + 
 @media (max-width:760px){#ktaSello{top:var(--kta-mt,auto);right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
 @media print{#ktaSello{position:static;opacity:1;background:none;color:#202522}}
 </style>
-<style>@media(max-width:860px){#ktaSello{top:62px;bottom:auto;left:10px;right:auto}#hint{top:104px!important}}@media(min-width:861px){#ktaSello{bottom:22px;right:74px}}</style>
+<style>@media(max-width:860px) and (orientation:portrait){#ktaSello{top:62px;bottom:auto;left:10px;right:auto}#hint{top:104px!important}}@media(min-width:861px),(orientation:landscape){#ktaSello{bottom:12px;right:60px}}</style>
 </body>
 </html>
