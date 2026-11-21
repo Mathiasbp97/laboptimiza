@@ -12,6 +12,8 @@
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" defer></script>
 <style>
 :root{--bg:#121413;--bg2:#1a1d1b;--bg3:#232724;--tx:#f2efe9;--tx2:#b7b3aa;--tx3:#7f7c75;--ln:rgba(242,239,233,.1);--ln2:rgba(242,239,233,.18);
   --ac:#C87941;--ok:#3fb27f;--res:#e0a33b;--ven:#8a8781;--r:14px;--ease:cubic-bezier(.2,.7,.2,1)}
@@ -46,6 +48,10 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .media img{width:100%;height:100%;object-fit:cover}
 .media svg{position:absolute;inset:0;width:100%;height:100%}
 .media.fit img{object-fit:contain}
+/* vertical: la fachada ocupa el ancho (recorta los árboles laterales) y el fondo es la misma imagen difuminada */
+#mTorre.port{background:#151716}
+#mTorre.port:before{content:"";position:absolute;inset:-30px;background:url(img/torre.webp) center/cover;filter:blur(24px) brightness(.5)}
+#mTorre.port img,#mTorre.port svg{position:absolute;max-width:none;width:124%;height:auto;aspect-ratio:16/9;left:-12%;top:44%;transform:translateY(-50%)}
 #vTorre .media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,11,10,.55),transparent 35%,transparent 70%,rgba(10,11,10,.45));pointer-events:none}
 .fl{fill:rgba(255,255,255,0);stroke:transparent;stroke-width:2;cursor:pointer;transition:fill .2s,stroke .2s}
 .fl:hover,.fl.hl{fill:rgba(200,121,65,.28);stroke:var(--ac)}
@@ -53,41 +59,49 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .flLbl{font-size:15px;font-weight:700;fill:#fff;pointer-events:none;paint-order:stroke;stroke:rgba(0,0,0,.45);stroke-width:3px;opacity:0;transition:opacity .2s}
 .flLbl.on{opacity:1}
 
-/* hero card */
-#hero{position:absolute;left:20px;bottom:24px;width:min(380px,calc(100% - 40px));padding:20px;z-index:5}
-#hero .k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ac);font-weight:700}
-#hero h1{font-size:30px;font-weight:600;letter-spacing:.02em;margin:6px 0 6px}
-#hero p{color:var(--tx2);font-size:13.5px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
-.stat{background:rgba(242,239,233,.05);border:1px solid var(--ln);border-radius:10px;padding:9px 10px}
-.stat small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3)}
-.stat b{font-size:16px;font-weight:700}
-.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2);margin-top:12px}
-.live i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(63,178,127,.6);animation:pl 2s infinite}
+/* hero compacto: la fachada es la protagonista */
+#hero{position:absolute;left:20px;top:74px;max-width:330px;padding:12px 14px;z-index:5}
+#hero .k{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ac);font-weight:700}
+#hero .l1{display:flex;gap:14px;align-items:baseline;margin-top:4px;flex-wrap:wrap}
+#hero .l1 b{font-size:17px;font-weight:700}#hero .l1 span{font-size:12.5px;color:var(--tx2)}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--tx2);margin-top:6px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(63,178,127,.6);animation:pl 2s infinite}
 @keyframes pl{70%{box-shadow:0 0 0 8px rgba(63,178,127,0)}100%{box-shadow:0 0 0 0 rgba(63,178,127,0)}}
-.hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:12.5px;color:var(--tx2);padding:8px 14px;border-radius:999px;z-index:4;pointer-events:none}
+#filtros{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+#filtros::-webkit-scrollbar{display:none}
+.qk{display:none;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}.qk button{flex:none;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(200,121,65,.16);color:#f0b487;border:1px solid rgba(200,121,65,.4);white-space:nowrap}
+#filtros button{padding:5px 10px;border-radius:999px;font-size:12px;color:var(--tx2);white-space:nowrap;flex:none;border:1px solid var(--ln)}
+#filtros button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:12.5px;color:var(--tx2);padding:8px 14px;border-radius:999px;z-index:4;pointer-events:none;transition:opacity .6s}
+.hint.off{opacity:0}
 
-/* floor list */
-#floors{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:230px;padding:14px;z-index:5;max-height:calc(100% - 160px);overflow:auto}
-.ph{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);font-weight:700;margin-bottom:8px}
-.frow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 10px;border-radius:9px;font-size:13.5px;transition:background .15s}
-.frow:hover,.frow.hl{background:rgba(242,239,233,.08)}
+/* riel de pisos (angosto, a la derecha) */
+#floors{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:132px;padding:8px;z-index:5}
+.ph{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);font-weight:700;margin:2px 4px 6px}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;padding:7px 8px;border-radius:8px;font-size:13px;transition:background .15s}
+.frow:hover,.frow.hl{background:rgba(242,239,233,.1)}
 .frow b{font-weight:600}
-.dots{display:flex;gap:3px}
-.dots i{width:7px;height:7px;border-radius:50%}
+.frow .n{font-size:11px;font-weight:700;color:#6fd3a5;background:rgba(63,178,127,.14);border-radius:999px;padding:1px 7px;min-width:22px;text-align:center}
+.frow .n.z{color:var(--tx3);background:rgba(242,239,233,.06)}
+.legend{display:flex;flex-direction:column;gap:3px;font-size:10.5px;color:var(--tx2);margin-top:6px;padding:6px 4px 2px;border-top:1px solid var(--ln)}
+.legend span{display:inline-flex;align-items:center;gap:5px}.legend i{width:7px;height:7px;border-radius:50%}
 .d-libre{background:var(--ok)}.d-reservado{background:var(--res)}.d-vendido{background:var(--ven);opacity:.55}.d-bloqueado{background:var(--ven);opacity:.3}
-.frow .n{font-size:12px;color:var(--tx3);min-width:16px;text-align:right}
-.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--tx2);margin-top:10px;padding-top:10px;border-top:1px solid var(--ln)}
-.legend span{display:inline-flex;align-items:center;gap:5px}.legend i{width:8px;height:8px;border-radius:50%}
-@media(max-width:860px){#floors{top:auto;bottom:16px;right:12px;left:12px;transform:none;width:auto;max-height:none;padding:10px}
- #floors .frows{display:flex;gap:4px;overflow-x:auto}#floors .frow{flex-direction:column;min-width:62px;padding:8px 6px;gap:4px}#floors .legend,#floors .ph{display:none}
- #hero{bottom:auto;top:74px;left:12px;width:calc(100% - 24px);padding:14px}#hero h1{font-size:22px}#hero p{display:none}.hint{display:none}}
 
-/* filters */
-#filtros{position:absolute;left:50%;top:76px;transform:translateX(-50%);display:flex;gap:6px;padding:5px;border-radius:999px;z-index:6}
-#filtros button{padding:7px 13px;border-radius:999px;font-size:13px;color:var(--tx2);white-space:nowrap;flex:none}
-#filtros button.on{background:var(--ac);color:#fff}
-@media(max-width:860px){#filtros{top:auto;bottom:108px;max-width:calc(100% - 24px);overflow-x:auto}}
+/* hotspots sobre la fachada */
+.hs{cursor:pointer}
+.hs .o{fill:var(--ac);opacity:.5;transform-box:fill-box;transform-origin:center;animation:hsp 2.2s infinite}
+@keyframes hsp{0%{transform:scale(1);opacity:.55}100%{transform:scale(2.6);opacity:0}}
+.hs .c{fill:var(--ac);stroke:#fff;stroke-width:3}
+.hs .lbl rect{fill:rgba(12,13,12,.82)}
+.hs .lbl text{fill:#fff;font-size:15px;font-weight:600;font-family:"Plus Jakarta Sans",system-ui}
+.hs:hover .lbl rect{fill:var(--ac)}
+
+@media(max-width:860px){
+ #filtros{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.qk{display:flex}
+ #hero{top:66px;left:10px;right:10px;max-width:none;padding:10px 12px}#hero .l1 b{font-size:15px}.live{display:none}
+ #floors{top:auto;bottom:12px;right:10px;left:10px;transform:none;width:auto;padding:6px}
+ #floors .frows{display:flex;gap:4px;overflow-x:auto}#floors .frow{flex-direction:column;min-width:54px;padding:6px 4px;gap:3px;font-size:12px}#floors .legend,#floors .ph{display:none}
+ .hint{display:none}.hs .lbl text{font-size:22px}}
 
 /* planta */
 #vPlanta{background:radial-gradient(1200px 700px at 50% 45%,#202421,#101211)}
@@ -237,7 +251,36 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .rhint.off{opacity:0}
 .rfine{position:absolute;right:16px;bottom:96px;font-size:11px;color:rgba(255,255,255,.55);z-index:3}
 @media(max-width:860px){.rtop b{font-size:20px}.rtop .btn span{display:none}.rnav{bottom:96px;max-width:calc(100% - 24px)}.rnav #rPrev span{display:none}.rthumbs button{width:92px;height:56px}.rfine{display:none}#rec .rp{padding:84px 10px 110px}}
-@media print{#rec{display:none}body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
+
+/* visor de espacios (amenities, lobby, 360) */
+#xp{position:fixed;inset:0;z-index:77;background:#0b0c0b;opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+#xp.on{opacity:1;pointer-events:auto}
+#xpPano,#xpImg{position:absolute;inset:0;transition:opacity .45s}
+#xpPano.off,#xpImg.off{opacity:0;pointer-events:none}
+#xpPano .pnlm-load-box{background:rgba(12,13,12,.8)}
+#xpImg .bg{position:absolute;inset:-40px;background-size:cover;background-position:center;filter:blur(28px) brightness(.45);transform:scale(1.1)}
+#xpImg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .45s}
+#xpImg img.fade{opacity:0}
+#xp:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(0,0,0,.5),transparent 20%,transparent 66%,rgba(0,0,0,.72))}
+.xtop{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px;z-index:3;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+.xtop small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);font-weight:700}
+.xtop b{display:block;font-size:24px;font-weight:600}
+.xnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;z-index:3}
+.xnav svg{width:18px;height:18px}#xpPrev{left:16px}#xpNext{right:16px}
+.xnav:hover{border-color:var(--ac);color:var(--ac)}
+.xhint{position:absolute;left:50%;top:84px;transform:translateX(-50%);font-size:12.5px;padding:7px 14px;background:rgba(10,11,10,.72);border-radius:999px;z-index:3;pointer-events:none;transition:opacity .5s}
+.xhint.off{opacity:0}
+.xbot{position:absolute;left:0;right:0;bottom:0;padding:0 16px 16px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:10px}
+.xthumbs,.xchips{display:flex;gap:8px;max-width:100%;overflow-x:auto;scrollbar-width:none;padding:2px}
+.xthumbs::-webkit-scrollbar,.xchips::-webkit-scrollbar{display:none}
+.xthumbs button{flex:none;width:104px;height:62px;border-radius:9px;background-size:cover;background-position:center;border:2px solid transparent;position:relative;overflow:hidden;transition:border-color .15s,transform .15s}
+.xthumbs button:hover{transform:translateY(-2px)}.xthumbs button.on{border-color:var(--ac)}
+.xthumbs button i{position:absolute;right:5px;top:5px;font-style:normal;font-size:10px;font-weight:700;background:rgba(0,0,0,.65);padding:2px 6px;border-radius:999px}
+.xchips button{flex:none;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(18,20,19,.72);border:1px solid var(--ln2);backdrop-filter:blur(10px);white-space:nowrap}
+.xchips button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.b360{display:inline-flex;align-items:center;gap:6px}
+@media(max-width:860px){.xtop b{font-size:19px}.xnav{display:none}.xthumbs button{width:84px;height:52px}.xchips button{padding:7px 12px;font-size:12.5px}}
+@media print{#rec{display:none}#xp{display:none}body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
 </style>
 </head>
 <body>
@@ -276,7 +319,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
   <nav class="tabs glass" id="tabs">
     <button data-go="torre" class="on">Edificio</button>
     <button data-go="amen">Amenities</button>
-    <button data-go="ubi">Ubicación</button>
+    <button data-go="ubi">Ubicación 360°</button>
   </nav>
   <a class="btn btn-w" id="waTop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg><span>Consultar</span></a>
 </header>
@@ -286,10 +329,9 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
   <section class="view on" id="vTorre">
     <div class="media" id="mTorre"><img src="img/torre.webp" alt="Fachada de Vidalta"><svg id="svgTorre" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg></div>
     <div id="hero" class="glass"></div>
-    <div id="filtros" class="glass"></div>
-    <aside id="floors" class="glass"><div class="ph">Elegí tu piso</div><div class="frows" id="frows"></div>
-      <div class="legend"><span><i class="d-libre"></i>Disponible</span><span><i class="d-reservado"></i>Reservado</span><span><i class="d-vendido"></i>Vendido</span></div></aside>
-    <div class="hint glass">Tocá un piso para ver sus departamentos</div>
+        <aside id="floors" class="glass"><div class="ph">Pisos</div><div class="frows" id="frows"></div>
+      <div class="legend"><span><i class="d-libre"></i>Disponibles</span><span><i class="d-reservado"></i>Reservado</span><span><i class="d-vendido"></i>Vendido</span></div></aside>
+    <div class="hint glass" id="hint">Tocá un piso, o los puntos para ver amenities y lobby</div>
   </section>
 
   <!-- PLANTA -->
@@ -310,12 +352,21 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
   <div class="rp" id="recPlano"><div class="rpwrap" id="rpWrap"><img id="rpImg" alt="Planta del departamento"><svg id="rpSvg" viewBox="0 0 1800 1268" preserveAspectRatio="xMidYMid meet"></svg></div></div>
   <div class="ra" id="recAmb"><img id="raA" alt="" draggable="false"><img id="raB" alt="" draggable="false"><video id="raV" muted playsinline preload="auto"></video></div>
   <div class="rtop"><div><small id="rSub"></small><b id="rTit"></b></div>
-    <div class="ract"><button class="btn btn-g glass" id="rPlanoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 12v9"/></svg><span>Ver planta</span></button>
+    <div class="ract"><button class="btn btn-p" id="r360"><span>Ver en 360°</span></button><button class="btn btn-g glass" id="rPlanoBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h9V3M12 12v9"/></svg><span>Ver planta</span></button>
     <button class="x glass" id="rX" aria-label="Cerrar recorrido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div></div>
   <div class="rnav glass" id="rNav"><button id="rPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg><span>Anterior</span></button><span id="rCount" class="num"></span><button id="rNext"><span id="rNextLbl"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button></div>
   <div class="rthumbs" id="rThumbs"></div>
   <div class="rhint glass" id="rHint"></div>
   <div class="rfine">Imágenes ilustrativas</div>
+</section>
+<section id="xp" aria-hidden="true">
+  <div id="xpPano"></div>
+  <div id="xpImg"><div class="bg" id="xpBg"></div><img id="xpI" alt=""></div>
+  <div class="xtop"><div><small id="xpK"></small><b id="xpT"></b><a class="btn btn-g glass" id="xpMap" target="_blank" rel="noopener" style="margin-top:10px;padding:8px 14px;font-size:13px" href="https://www.google.com/maps/search/?api=1&query=Teniente+Porfirio+Saldivar+y+Fray+Luis+de+Leon+Asuncion">Cómo llegar ↗</a></div><button class="x glass" id="xpX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <button class="xnav glass" id="xpPrev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <button class="xnav glass" id="xpNext" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <div class="xhint glass" id="xpHint">Arrastrá para mirar alrededor · 360°</div>
+  <div class="xbot"><div class="xthumbs" id="xpThumbs"></div><div class="xchips" id="xpChips"></div></div>
 </section>
 <div id="modal"><div class="box" id="mBox"></div></div>
 <div id="lb"><button class="x" id="lbX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button><img id="lbImg" alt=""><p id="lbCap"></p></div>
@@ -355,14 +406,27 @@ const CONFIG = {
     C: { n: "Tipología C", dorm: 2, banos: 2, serv: false, plano: "img/tipo-c.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios en suite en disposición «mariposa», uno a cada lado del living, con balcón con parrilla." },
     D: { n: "Tipología D", dorm: 2, banos: 2, serv: true, plano: "img/tipo-d.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios, 2 baños y área de servicio. Unidades de esquina con doble orientación y balcón con parrilla.",
       // Recorrido: pines en px del plano (1800×1268), en el orden del camino real
-      recorrido: [ { n: "Living", img: "img/living-3d.webp", pin: [745, 520] }, { n: "Comedor y cocina", img: "img/living-2d.webp", pin: [700, 890] },
-        { n: "Dormitorio 2", img: "img/dorm-2.webp", pin: [1160, 560] }, { n: "Dormitorio principal", img: "img/dorm-ppal.webp", pin: [1510, 520] },
+      recorrido: [ { n: "Living", img: "img/living-3d.webp", pin: [745, 520] }, { n: "Comedor y cocina", img: "img/living-2d.webp", pin: [700, 890], pano: 0 },
+        { n: "Dormitorio 2", img: "img/dorm-2.webp", pin: [1160, 560] }, { n: "Dormitorio principal", img: "img/dorm-ppal.webp", pin: [1510, 520], pano: 1 },
         { n: "Baño en suite", img: "img/bano.webp", pin: [1450, 1030] }, { n: "Balcón con parrilla", img: "img/balcon.webp", pin: [560, 200] } ],
       // Videos de transición (camino hacia adelante). "plano>0" = entrar desde la planta al primer ambiente.
       transiciones: { "plano>0": "vid/d-entrada.mp4", "0>1": "vid/d-living-comedor.mp4", "1>2": "vid/d-comedor-dorm2.mp4", "2>3": "vid/d-dorm2-ppal.mp4" } },
     E: { n: "Tipología E", dorm: 3, banos: 3, serv: true, plano: "img/tipo-e.webp", fotos: ["img/living-3d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "3 dormitorios, 3 baños y área de servicio, en los pisos altos. Living-comedor amplio y doble balcón con parrilla." } },
   amenities: [ { n: "Piscina en azotea", img: "img/piscina.webp" }, { n: "Azotea completa", img: "img/azotea.webp" }, { n: "Gimnasio", img: "img/gimnasio.webp" },
     { n: "Salón de eventos y quincho", img: "img/sum.webp" }, { n: "Piscina, gimnasio y coworking", img: "img/azotea-2.webp" }, { n: "Lobby", img: "img/lobby.webp" } ],
+  // Puntos interactivos sobre la fachada (coordenadas 1600×900) → abren el visor de espacios
+  hotspots: [ { n: "Amenities en azotea", x: 1150, y: 196, ir: "piscina" }, { n: "Lobby e ingreso", x: 690, y: 742, ir: "lobby" } ],
+  // Espacios del visor inmersivo. t: "360" (panorama cúbico en pano/<id>-f|r|b|l|u|d.jpg) o "img"
+  espacios: [
+    { k: "piscina", n: "Piscina en azotea", items: [ { t: "360", p: "piscina", n: "Piscina · 360°" }, { t: "img", src: "img/am-piscina.webp", n: "Solárium y piscina" }, { t: "img", src: "img/piscina.webp", n: "Piscina al atardecer" } ] },
+    { k: "gimnasio", n: "Gimnasio", items: [ { t: "img", src: "img/am-gimnasio.webp", n: "Gimnasio equipado" }, { t: "img", src: "img/gimnasio.webp", n: "Gimnasio con vista" } ] },
+    { k: "sum", n: "Salón de eventos", items: [ { t: "360", p: "sum", yaw: 15, n: "Salón de eventos · 360°" }, { t: "img", src: "img/am-sum.webp", n: "Salón de eventos y cocina" } ] },
+    { k: "quincho", n: "Quincho", items: [ 1, 2, 3, 4 ].map(i => ({ t: "img", src: `img/am-quincho-${i}.webp`, n: "Quincho con parrilla" })) },
+    { k: "azotea", n: "Azotea completa", items: [ { t: "img", src: "img/am-azotea-3d.webp", n: "Piscina, gimnasio y coworking" }, { t: "img", src: "img/am-azotea-planta.webp", n: "Planta de azotea" }, { t: "img", src: "img/azotea.webp", n: "Azotea" }, { t: "img", src: "img/azotea-2.webp", n: "Azotea" } ] },
+    { k: "lobby", n: "Lobby e ingreso", items: [ { t: "360", p: "ingreso", yaw: -55, n: "Ingreso · 360°" }, { t: "img", src: "img/am-lobby.webp", n: "Lobby" }, { t: "img", src: "img/lobby.webp", n: "Lobby" } ] },
+    { k: "deptos", n: "Departamentos 360°", items: [ { t: "360", p: "d2cocina", n: "Depto 2 dorm. · Living-comedor" }, { t: "360", p: "d2ppal", yaw: -80, n: "Depto 2 dorm. · Dormitorio principal" },
+      { t: "360", p: "d3cocina", n: "Depto 3 dorm. · Living-comedor" }, { t: "360", p: "d3ppal", yaw: -60, n: "Depto 3 dorm. · Dormitorio principal" }, { t: "360", p: "d3sec", n: "Depto 3 dorm. · Dormitorio secundario" } ] },
+    { k: "barrio", n: "Vista aérea", items: [ { t: "360", p: "aerea", yaw: -30, n: "Bella Vista · 360° aéreo" }, { t: "img", src: "img/aerea.webp", n: "Vista aérea" } ] } ],
   cotizador: { anticipo: 30, saldo: 40 },
   refrescoSeg: 60
 };
@@ -402,20 +466,24 @@ function pintarTorre() {
     const libres = delPiso(+p).filter(u => u.estado === 'libre' && coincide(u)).length;
     const dim = (UI.dorm || UI.soloDisp) && !libres;
     return `<rect class="fl${dim ? ' dim' : ''}" data-p="${p}" x="${T.x1}" y="${a}" width="${T.x2 - T.x1}" height="${b - a}"/>
-      <text class="flLbl" data-p="${p}" x="${T.x2 - 16}" y="${(a + b) / 2 + 5}" text-anchor="end">Piso ${p} · ${libres} disp.</text>`; }).join('');
+      <text class="flLbl" data-p="${p}" x="${T.x2 - 16}" y="${(a + b) / 2 + 5}" text-anchor="end">Piso ${p} · ${libres} disp.</text>`; }).join('')
+    + CONFIG.hotspots.map((h, i) => { const w = h.n.length * 8.6 + 28; return `<g class="hs" data-i="${i}" transform="translate(${h.x} ${h.y})"><circle class="o" r="11"/><circle class="c" r="11"/>
+      <g class="lbl" transform="translate(${h.x > 1000 ? -18 - w : 18} -15)"><rect width="${w}" height="30" rx="15"/><text x="14" y="20">${esc(h.n)}</text></g></g>`; }).join('');
+  $$('#svgTorre .hs').forEach(g => g.onclick = e => { e.stopPropagation(); const h = CONFIG.hotspots[+g.dataset.i]; abrirXP(h.ir); });
   $$('#svgTorre .fl').forEach(r => { const p = +r.dataset.p;
     r.onmouseenter = () => hl(p, true); r.onmouseleave = () => hl(p, false); r.onclick = () => irPiso(p); });
   $('#frows').innerHTML = Array.from({ length: CONFIG.pisos }, (_, i) => CONFIG.pisos - i).map(p => {
     const us = delPiso(p), lib = us.filter(u => u.estado === 'libre' && coincide(u)).length;
-    return `<button class="frow" data-p="${p}"><b>Piso ${p}</b><span class="dots">${us.map(u => `<i class="d-${u.estado}" style="${coincide(u) ? '' : 'opacity:.18'}"></i>`).join('')}</span><span class="n num">${lib}</span></button>`; }).join('');
+    return `<button class="frow" data-p="${p}" title="${lib} disponibles"><b>Piso ${p}</b><span class="n num${lib ? '' : ' z'}">${lib}</span></button>`; }).join('');
   $$('.frow').forEach(b => { const p = +b.dataset.p; b.onmouseenter = () => hl(p, true); b.onmouseleave = () => hl(p, false); b.onclick = () => irPiso(p); });
   const lib = U.filter(u => u.estado === 'libre'), n = U.length, vend = U.filter(u => u.estado === 'vendido').length;
   const desde = lib.filter(u => u.precio).reduce((a, u) => Math.min(a, u.precio), Infinity);
   const hace = ACT ? hace_(ACT) : '';
-  $('#hero').innerHTML = `<div class="k">${esc(CONFIG.marca)} · ${esc(CONFIG.proyecto.sub)}</div><h1>${esc(CONFIG.logoTexto)}</h1>
-    <p>${esc(CONFIG.proyecto.ubicacion)}<br>${esc(CONFIG.proyecto.descripcion)}</p>
-    <div class="stats"><div class="stat"><small>Disponibles</small><b class="num">${lib.length} de ${n}</b></div><div class="stat"><small>Vendido</small><b class="num">${Math.round(vend / n * 100)}%</b></div><div class="stat"><small>Desde</small><b class="num">${isFinite(desde) ? money(desde).replace('USD ', 'USD ') : '—'}</b></div></div>
-    <span class="live"><i></i>Disponibilidad en vivo${hace ? ' · actualizado ' + hace : ''}</span>`;
+  $('#hero').innerHTML = `<div class="k">${esc(CONFIG.proyecto.nombre)} · ${esc(CONFIG.proyecto.sub)}</div>
+    <div class="l1"><b class="num">${lib.length} disponibles</b><span class="num">desde ${isFinite(desde) ? money(desde) : '—'} · ${Math.round(vend / n * 100)}% vendido</span></div>
+    <span class="live"><i></i>Disponibilidad en vivo${hace ? ' · ' + hace : ''}</span><div id="filtros"></div>
+    <div class="qk"><button data-x="piscina">Amenities</button><button data-x="lobby">Lobby</button><button data-x="deptos">Deptos 360°</button><button data-x="barrio">Aérea 360°</button></div>`;
+  $$('#hero .qk button').forEach(b => b.onclick = () => abrirXP(b.dataset.x));
   const F = [[0, 'Todos'], [1, '1 dorm.'], [2, '2 dorm.'], [3, '3 dorm.']];
   $('#filtros').innerHTML = F.map(([d, t]) => `<button data-d="${d}" class="${UI.dorm === d ? 'on' : ''}">${t}</button>`).join('') + `<button data-s="1" class="${UI.soloDisp ? 'on' : ''}">Solo disponibles</button>`;
   $$('#filtros button').forEach(b => b.onclick = () => { if (b.dataset.s) UI.soloDisp = !UI.soloDisp; else UI.dorm = +b.dataset.d; pintar(); });
@@ -423,11 +491,12 @@ function pintarTorre() {
 function hl(p, on) { $$(`#svgTorre [data-p="${p}"]`).forEach(e => e.classList.toggle(e.tagName === 'text' ? 'on' : 'hl', on)); $$(`.frow[data-p="${p}"]`).forEach(e => e.classList.toggle('hl', on)); }
 function hace_(iso) { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 2 ? 'recién' : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.round(m / 60)} h` : `el ${new Date(iso).toLocaleDateString(CONFIG.locale)}`; }
 function ajustarTorre() { const m = $('#mTorre'), port = m.clientWidth / m.clientHeight < 1.25;
-  m.classList.toggle('fit', port); $('#svgTorre').setAttribute('preserveAspectRatio', port ? 'xMidYMid meet' : 'xMidYMid slice'); }
+  m.classList.toggle('port', port); $('#svgTorre').setAttribute('preserveAspectRatio', port ? 'none' : 'xMidYMid slice'); }
 
 /* ---------- planta ---------- */
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function irPiso(p) {
+  $('#hint') && $('#hint').classList.add('off');
   p = Math.max(1, Math.min(CONFIG.pisos, p));
   const desdeTorre = UI.view === 'torre', fl = $(`#svgTorre .fl[data-p="${p}"]`);
   UI.piso = p; pintarPlanta();
@@ -473,6 +542,7 @@ function abrirFicha(id) {
     ${libre && u.precio ? `<div class="price num">${money(u.precio)}<small>${money(pm2)}/m²</small></div>` : libre ? `<div class="price">Consultar precio</div>` : ''}
     <div class="specs"><div class="spec"><b class="num">${u.m2}</b><small>m² totales</small></div><div class="spec"><b>${t.dorm}</b><small>dormit.</small></div><div class="spec"><b>${t.banos}</b><small>baños</small></div><div class="spec"><b>${t.serv ? 'Sí' : '—'}</b><small>servicio</small></div></div>
     ${t.recorrido ? `<button class="recBtn" id="dRec" style="background-image:url(${t.recorrido[0].img})"><span class="pl"><svg viewBox="0 0 24 24" fill="#fff"><path d="M7 4v16l13-8z"/></svg></span><b>Recorrer el departamento</b><small>${t.recorrido.length} ambientes · entrá desde la planta</small></button>` : ''}
+    ${t.dorm >= 2 ? `<button class="btn btn-g" id="d360" style="width:100%;margin:6px 0 2px">Ver un departamento de ${t.dorm === 3 ? 3 : 2} dormitorios en 360°</button>` : ''}
     <div class="h3">${esc(t.n)}</div><p class="desc">${esc(t.desc)}</p>
     <div class="h3">Planta</div><div class="plano" data-zoom="${t.plano}" data-cap="${esc(t.n)} · ${u.m2} m²"><img src="${t.plano}" alt="Planta ${esc(t.n)}"></div>
     <div class="gal">${t.fotos.map(f => `<img src="${f}" alt="" loading="lazy" data-zoom="${f}" data-cap="Imagen ilustrativa">`).join('')}</div>
@@ -484,6 +554,7 @@ function abrirFicha(id) {
     try { if (navigator.share) await navigator.share({ title: `Vidalta · Depto ${id}`, url }); else { await navigator.clipboard.writeText(url); toast('Link copiado'); } } catch (e) {} };
   $$('#dBody [data-zoom]').forEach(e => e.onclick = () => zoom(e.dataset.zoom, e.dataset.cap));
   if (libre) bindCot(u);
+  if ($('#d360')) $('#d360').onclick = () => abrirXP('deptos', t.dorm === 3 ? 2 : 0);
   if (t.recorrido) $('#dRec').onclick = () => { evento('recorrido', id); abrirRec(u); };
   $('#drawer').classList.add('on'); $('#drawer').setAttribute('aria-hidden', 'false');
 }
@@ -512,7 +583,7 @@ function recPlano(inicial) {
   void $('#rpWrap').offsetWidth; $('#rpWrap').style.transition = ''; requestAnimationFrame(() => { $('#rpWrap').style.transform = ''; $('#rpWrap').style.opacity = ''; });
   $$('#recAmb img').forEach(i => i.classList.remove('on')); $('#recAmb').classList.remove('act');
   $('#rSub').textContent = `Departamento ${u.id} · ${t.n}`; $('#rTit').textContent = 'Elegí un ambiente para entrar';
-  $('#rPlanoBtn').style.display = 'none'; $('#rPrev').disabled = true; $('#rCount').textContent = `${REC.L.length} ambientes`;
+  $('#rPlanoBtn').style.display = 'none'; $('#r360').style.display = 'none'; $('#rPrev').disabled = true; $('#rCount').textContent = `${REC.L.length} ambientes`;
   $('#rNextLbl').textContent = 'Empezar recorrido'; $('#rNext').disabled = false;
   $$('#rThumbs button').forEach(b => b.classList.remove('on'));
   $('#rHint').classList.add('off');
@@ -537,7 +608,7 @@ function recIr(i, desdePlano, sinZoom) {
   const listo = () => { mostrar(); if (REC.vidEl) { const v = REC.vidEl; REC.vidEl = null; setTimeout(() => { v.classList.remove('on'); $('#rec').classList.remove('vid'); }, 60); } };
   if (img.getAttribute('src') === a.img && img.complete) listo(); else { img.onload = listo; img.src = a.img; }
   $('#rSub').textContent = `Departamento ${REC.u.id} · Ambiente ${i + 1} de ${REC.L.length}`; $('#rTit').textContent = a.n;
-  $('#rPlanoBtn').style.display = ''; $('#rPrev').disabled = i === 0; $('#rCount').textContent = `${i + 1} / ${REC.L.length}`;
+  $('#rPlanoBtn').style.display = ''; $('#r360').style.display = a.pano != null ? '' : 'none'; $('#r360').onclick = () => abrirXP('deptos', a.pano); $('#rPrev').disabled = i === 0; $('#rCount').textContent = `${i + 1} / ${REC.L.length}`;
   $('#rNextLbl').textContent = i < REC.L.length - 1 ? REC.L[i + 1].n : 'Volver a la planta';
   $$('#rThumbs button').forEach(b => b.classList.toggle('on', +b.dataset.i === i));
   if (desdePlano && !REC.vioHint) { REC.vioHint = true; $('#rHint').textContent = 'Arrastrá para mirar el ambiente'; $('#rHint').classList.remove('off'); setTimeout(() => $('#rHint').classList.add('off'), 2600); }
@@ -555,6 +626,53 @@ function trans(src, alEmpezar, alTerminar, destino) {
   v.onplaying = () => { v.classList.add('on'); if (alEmpezar) alEmpezar(); v.onplaying = null; };
   REC.tv = setTimeout(terminar, 9000);
 }
+
+/* ---------- visor de espacios: 360° (Pannellum, cubos) + renders ---------- */
+const XP = { e: 0, i: 0, viewer: null };
+function xpTodos() { return CONFIG.espacios; }
+function abrirXP(k, idx) {
+  let e = CONFIG.espacios.findIndex(x => x.k === k); if (e < 0) e = 0;
+  XP.e = e; XP.i = idx || 0; $('#xp').classList.add('on'); $('#xp').setAttribute('aria-hidden', 'false');
+  pintarXP(); xpMostrar(); evento('espacio', CONFIG.espacios[e].k);
+  $('#hint') && $('#hint').classList.add('off');
+}
+function cerrarXP() { $('#xp').classList.remove('on'); $('#xp').setAttribute('aria-hidden', 'true'); if (XP.viewer) { try { XP.viewer.destroy(); } catch (e) {} XP.viewer = null; } $('#xpPano').innerHTML = ''; $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === 'torre')); }
+function pintarXP() {
+  const E = CONFIG.espacios[XP.e];
+  $('#xpChips').innerHTML = CONFIG.espacios.map((x, j) => `<button data-j="${j}" class="${j === XP.e ? 'on' : ''}">${esc(x.n)}</button>`).join('');
+  $$('#xpChips button').forEach(b => b.onclick = () => { XP.e = +b.dataset.j; XP.i = 0; pintarXP(); xpMostrar(); });
+  const on = $('#xpChips button.on'); on && on.scrollIntoView({ block: 'nearest', inline: 'center' });
+  $('#xpThumbs').innerHTML = E.items.map((it, j) => `<button data-j="${j}" class="${j === XP.i ? 'on' : ''}" style="background-image:url(${it.t === '360' ? `pano/${it.p}-f.jpg` : it.src})" aria-label="${esc(it.n)}">${it.t === '360' ? '<i>360°</i>' : ''}</button>`).join('');
+  $$('#xpThumbs button').forEach(b => b.onclick = () => { XP.i = +b.dataset.j; xpMostrar(); });
+}
+function xpMostrar() {
+  const E = CONFIG.espacios[XP.e], it = E.items[XP.i];
+  $$('#xpThumbs button').forEach(b => b.classList.toggle('on', +b.dataset.j === XP.i));
+  $('#xpMap').style.display = E.k === 'barrio' ? '' : 'none';
+  $('#xpK').textContent = E.n + (E.items.length > 1 ? ` · ${XP.i + 1} de ${E.items.length}` : ''); $('#xpT').textContent = it.n;
+  $('#xpPrev').style.visibility = $('#xpNext').style.visibility = (E.items.length > 1 || CONFIG.espacios.length > 1) ? 'visible' : 'hidden';
+  if (it.t === '360') {
+    $('#xpImg').classList.add('off'); $('#xpPano').classList.remove('off');
+    const caras = ['f', 'r', 'b', 'l', 'u', 'd'].map(f => `pano/${it.p}-${f}.jpg`);
+    const crear = () => { if (XP.viewer) { try { XP.viewer.destroy(); } catch (e) {} } $('#xpPano').innerHTML = '';
+      XP.viewer = pannellum.viewer('xpPano', { type: 'cubemap', cubeMap: caras, autoLoad: true, showControls: false, hfov: innerWidth < 700 ? 90 : 105, minHfov: 50, maxHfov: 120, yaw: it.yaw || 0, autoRotate: -2.5, autoRotateInactivityDelay: 4000, mouseZoom: true, compass: false }); };
+    if (window.pannellum) crear(); else { const t = setInterval(() => { if (window.pannellum) { clearInterval(t); crear(); } }, 150); }
+    $('#xpHint').classList.remove('off'); clearTimeout(XP.th); XP.th = setTimeout(() => $('#xpHint').classList.add('off'), 3200);
+  } else {
+    if (XP.viewer) { try { XP.viewer.destroy(); } catch (e) {} XP.viewer = null; $('#xpPano').innerHTML = ''; }
+    $('#xpPano').classList.add('off'); $('#xpImg').classList.remove('off'); $('#xpHint').classList.add('off');
+    const img = $('#xpI'); img.classList.add('fade');
+    const pre = new Image(); pre.onload = () => { img.src = it.src; $('#xpBg').style.backgroundImage = `url(${it.src})`; requestAnimationFrame(() => img.classList.remove('fade')); }; pre.src = it.src;
+  }
+}
+function xpPaso(d) {
+  const E = CONFIG.espacios[XP.e]; let i = XP.i + d;
+  if (i >= E.items.length) { XP.e = (XP.e + 1) % CONFIG.espacios.length; XP.i = 0; pintarXP(); }
+  else if (i < 0) { XP.e = (XP.e - 1 + CONFIG.espacios.length) % CONFIG.espacios.length; XP.i = CONFIG.espacios[XP.e].items.length - 1; pintarXP(); }
+  else XP.i = i;
+  xpMostrar();
+}
+$('#xpX').onclick = cerrarXP; $('#xpPrev').onclick = () => xpPaso(-1); $('#xpNext').onclick = () => xpPaso(1);
 function ajustarPan(centrar) { const img = REC.img; if (!img) return; const w = innerHeight * img.naturalWidth / img.naturalHeight, ww = Math.max(w, innerWidth);
   REC.min = Math.min(0, innerWidth - ww * 1.04); if (centrar) { REC.x = REC.min / 2; REC.v = -0.3; } }
 function colocar() { if (!REC.img) return; REC.x = Math.max(REC.min, Math.min(0, REC.x)); REC.img.style.transform = `translate3d(${REC.x}px,0,0) scale(${REC.esc || 1.04})`; }
@@ -609,8 +727,9 @@ $('#dX').onclick = cerrarFicha;
 $('#lbX').onclick = () => $('#lb').classList.remove('on'); $('#lb').onclick = e => { if (e.target.id === 'lb') $('#lb').classList.remove('on'); };
 $('#modal').onclick = e => { if (e.target.id === 'modal') cerrarModal(); };
 $$('#tabs button').forEach(b => b.onclick = () => { $$('#tabs button').forEach(x => x.classList.toggle('on', x === b)); const g = b.dataset.go;
-  if (g === 'torre') { cerrarModal(); setView('torre'); } else if (g === 'amen') amenities(); else ubicacion(); });
-document.addEventListener('keydown', e => { if (REC.on) { if (e.key === 'Escape') { e.stopImmediatePropagation(); REC.amb >= 0 ? recPlano() : cerrarRec(); } else if (e.key === 'ArrowRight') recIr(REC.amb + 1); else if (e.key === 'ArrowLeft' && REC.amb > 0) recIr(REC.amb - 1); return; }
+  if (g === 'torre') { cerrarModal(); setView('torre'); } else if (g === 'amen') abrirXP('piscina'); else abrirXP('barrio'); });
+document.addEventListener('keydown', e => { if ($('#xp').classList.contains('on')) { if (e.key === 'Escape') cerrarXP(); else if (e.key === 'ArrowRight') xpPaso(1); else if (e.key === 'ArrowLeft') xpPaso(-1); return; }
+  if (REC.on) { if (e.key === 'Escape') { e.stopImmediatePropagation(); REC.amb >= 0 ? recPlano() : cerrarRec(); } else if (e.key === 'ArrowRight') recIr(REC.amb + 1); else if (e.key === 'ArrowLeft' && REC.amb > 0) recIr(REC.amb - 1); return; }
   if (e.key === 'Escape') { if ($('#lb').classList.contains('on')) $('#lb').classList.remove('on'); else if ($('#modal').classList.contains('on')) cerrarModal(); else if ($('#drawer').classList.contains('on')) cerrarFicha(); else if (UI.view === 'planta') volverTorre(); }
   if (UI.view === 'planta' && !$('#drawer').classList.contains('on')) { if (e.key === 'ArrowUp') irPiso(UI.piso + 1); if (e.key === 'ArrowDown') irPiso(UI.piso - 1); } });
 $('#waTop').href = wa('Hola 👋 Estoy viendo el showroom de Vidalta y quiero más información.');
