@@ -50,8 +50,8 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 .media.fit img{object-fit:contain}
 /* vertical: la fachada ocupa el ancho (recorta los árboles laterales) y el fondo es la misma imagen difuminada */
 #mTorre.port{background:#151716}
-#mTorre.port:before{content:"";position:absolute;inset:-30px;background:url(img/torre.webp) center/cover;filter:blur(24px) brightness(.5)}
-#mTorre.port img,#mTorre.port svg{position:absolute;max-width:none;width:124%;height:auto;aspect-ratio:16/9;left:-12%;top:44%;transform:translateY(-50%)}
+#mTorre.port:before{content:"";position:absolute;inset:-30px;background:url(img/torre-aerea.webp) center/cover;filter:blur(24px) brightness(.5)}
+#mTorre.port img,#mTorre.port svg{position:absolute;max-width:none;width:190%;height:auto;aspect-ratio:16/9;left:-40%;top:47%;transform:translateY(-50%)}
 #vTorre .media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,11,10,.55),transparent 35%,transparent 70%,rgba(10,11,10,.45));pointer-events:none}
 .fl{fill:rgba(255,255,255,0);stroke:transparent;stroke-width:2;cursor:pointer;transition:fill .2s,stroke .2s}
 .fl:hover,.fl.hl{fill:rgba(200,121,65,.28);stroke:var(--ac)}
@@ -108,8 +108,8 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 #vPlanta .media{inset:110px 290px 40px 40px}
 .u{cursor:pointer;transition:fill .2s,stroke .2s}
 .u rect{rx:6;stroke-width:3}
-.u.libre rect{fill:rgba(63,178,127,.32);stroke:#3fb27f}
-.u.reservado rect{fill:rgba(224,163,59,.3);stroke:#e0a33b}
+.u.libre rect{fill:rgba(63,178,127,.16);stroke:#3fb27f}
+.u.reservado rect{fill:rgba(224,163,59,.2);stroke:#e0a33b}
 .u.vendido rect{fill:rgba(20,20,20,.58);stroke:rgba(138,135,129,.7)}
 .u.bloqueado rect{fill:rgba(20,20,20,.7);stroke:rgba(138,135,129,.4)}
 .u:hover rect,.u.sel rect{stroke:#fff;stroke-width:5}
@@ -327,7 +327,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 <main id="stage">
   <!-- TORRE -->
   <section class="view on" id="vTorre">
-    <div class="media" id="mTorre"><img src="img/torre.webp" alt="Fachada de Vidalta"><svg id="svgTorre" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg></div>
+    <div class="media" id="mTorre"><img src="img/torre-aerea.webp" alt="Vidalta en Bella Vista"><svg id="svgTorre" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg></div>
     <div id="hero" class="glass"></div>
         <aside id="floors" class="glass"><div class="ph">Pisos</div><div class="frows" id="frows"></div>
       <div class="legend"><span><i class="d-libre"></i>Disponibles</span><span><i class="d-reservado"></i>Reservado</span><span><i class="d-vendido"></i>Vendido</span></div></aside>
@@ -338,7 +338,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
   <section class="view" id="vPlanta">
     <div id="pHead"><button class="x" id="backT" title="Volver al edificio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
       <h2 id="pTit">Piso 1</h2><div class="step"><button id="pUp" title="Piso de arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></button><button id="pDn" title="Piso de abajo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button></div></div>
-    <div class="media fit" id="mPlanta"><img id="imgPlanta" src="img/planta-1.webp" alt="Planta del piso"><svg id="svgPlanta" viewBox="0 0 1334 454" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="media fit" id="mPlanta"><img id="imgPlanta" src="img/planta-1r.webp" alt="Planta del piso"><svg id="svgPlanta" viewBox="0 0 1334 454" preserveAspectRatio="xMidYMid meet"></svg></div>
     <aside id="pSide" class="glass"></aside>
     <div class="north">↑ Tte. 1º Porfirio Saldívar · Barrio Bella Vista</div>
   </section>
@@ -395,11 +395,14 @@ const CONFIG = {
   api: "/api",
   pisos: 6,
   // Fachada (coordenadas 1600×900): franja vertical de cada piso
-  torre: { x1: 178, x2: 1484, y: { 6: [252, 325], 5: [325, 398], 4: [398, 470], 3: [470, 545], 2: [545, 618], 1: [618, 695] } },
+  // Fachada: render aéreo real (coordenadas 1600×900). Cada piso es un polígono sobre la fachada en perspectiva.
+  torreImg: "img/torre-aerea.webp",
+  torre: { 1: [[418, 730], [1150, 530], [1150, 577], [418, 790]], 2: [[418, 671], [1150, 484], [1150, 530], [418, 730]], 3: [[418, 611], [1150, 437], [1150, 484], [418, 671]],
+    4: [[418, 551], [1150, 391], [1150, 437], [418, 611]], 5: [[418, 492], [1150, 344], [1150, 391], [418, 551]], 6: [[418, 432], [1150, 298], [1150, 344], [418, 492]] },
   // Plantas (coordenadas 1334×454) por tipo de piso: posición → [x, y, w, h]
   plantas: {
-    a: { img: "img/planta-1.webp", pisos: [1, 2, 3], u: { 1: [24, 26, 280, 194], 10: [24, 224, 280, 196], 2: [312, 32, 286, 176], 3: [737, 36, 288, 178], 4: [1024, 40, 288, 194], 5: [1024, 238, 288, 196], 6: [742, 246, 280, 166], 7: [597, 246, 142, 174], 8: [457, 246, 138, 174], 9: [312, 246, 143, 172] } },
-    b: { img: "img/planta-2.webp", pisos: [4, 5, 6], u: { 1: [26, 26, 422, 192], 8: [26, 222, 422, 198], 2: [455, 32, 140, 176], 3: [740, 36, 286, 178], 4: [1027, 40, 286, 194], 5: [1027, 238, 286, 196], 6: [742, 246, 284, 176], 7: [454, 244, 286, 178] } } },
+    a: { img: "img/planta-1r.webp", pisos: [1, 2, 3], u: { 1: [24, 26, 280, 194], 10: [24, 224, 280, 196], 2: [312, 32, 286, 176], 3: [737, 36, 288, 178], 4: [1024, 40, 288, 194], 5: [1024, 238, 288, 196], 6: [742, 246, 280, 166], 7: [597, 246, 142, 174], 8: [457, 246, 138, 174], 9: [312, 246, 143, 172] } },
+    b: { img: "img/planta-2r.webp", pisos: [4, 5, 6], u: { 1: [26, 26, 422, 192], 8: [26, 222, 422, 198], 2: [455, 32, 140, 176], 3: [740, 36, 286, 178], 4: [1027, 40, 286, 194], 5: [1027, 238, 286, 196], 6: [742, 246, 284, 176], 7: [454, 244, 286, 178] } } },
   tipologias: {
     A: { n: "Tipología A", dorm: 1, banos: 1, serv: false, plano: "img/tipo-a.webp", fotos: ["img/living-2d.webp", "img/dorm-2.webp", "img/lobby.webp"], desc: "1 dormitorio con baño completo, living-comedor integrado a la cocina y balcón. Ideal para primera vivienda o inversión en renta." },
     B: { n: "Tipología B", dorm: 2, banos: 2, serv: false, plano: "img/tipo-b.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios y 2 baños, cocina integrada y balcón con parrilla." },
@@ -415,7 +418,7 @@ const CONFIG = {
   amenities: [ { n: "Piscina en azotea", img: "img/piscina.webp" }, { n: "Azotea completa", img: "img/azotea.webp" }, { n: "Gimnasio", img: "img/gimnasio.webp" },
     { n: "Salón de eventos y quincho", img: "img/sum.webp" }, { n: "Piscina, gimnasio y coworking", img: "img/azotea-2.webp" }, { n: "Lobby", img: "img/lobby.webp" } ],
   // Puntos interactivos sobre la fachada (coordenadas 1600×900) → abren el visor de espacios
-  hotspots: [ { n: "Amenities en azotea", x: 1150, y: 196, ir: "piscina" }, { n: "Lobby e ingreso", x: 690, y: 742, ir: "lobby" } ],
+  hotspots: [ { n: "Amenities en azotea", x: 560, y: 322, ir: "piscina" }, { n: "Lobby e ingreso", x: 790, y: 722, ir: "lobby" } ],
   // Espacios del visor inmersivo. t: "360" (panorama cúbico en pano/<id>-f|r|b|l|u|d.jpg) o "img"
   espacios: [
     { k: "piscina", n: "Piscina en azotea", items: [ { t: "360", p: "piscina", n: "Piscina · 360°" }, { t: "img", src: "img/am-piscina.webp", n: "Solárium y piscina" }, { t: "img", src: "img/piscina.webp", n: "Piscina al atardecer" } ] },
@@ -426,6 +429,7 @@ const CONFIG = {
     { k: "lobby", n: "Lobby e ingreso", items: [ { t: "360", p: "ingreso", yaw: -55, n: "Ingreso · 360°" }, { t: "img", src: "img/am-lobby.webp", n: "Lobby" }, { t: "img", src: "img/lobby.webp", n: "Lobby" } ] },
     { k: "deptos", n: "Departamentos 360°", items: [ { t: "360", p: "d2cocina", n: "Depto 2 dorm. · Living-comedor" }, { t: "360", p: "d2ppal", yaw: -80, n: "Depto 2 dorm. · Dormitorio principal" },
       { t: "360", p: "d3cocina", n: "Depto 3 dorm. · Living-comedor" }, { t: "360", p: "d3ppal", yaw: -60, n: "Depto 3 dorm. · Dormitorio principal" }, { t: "360", p: "d3sec", n: "Depto 3 dorm. · Dormitorio secundario" } ] },
+    { k: "fachada", n: "Fachada", items: [ { t: "img", src: "img/torre.webp", n: "Fachada sobre Tte. Porfirio Saldívar" }, { t: "img", src: "img/am-fachada.webp", n: "Vista peatonal" } ] },
     { k: "barrio", n: "Vista aérea", items: [ { t: "360", p: "aerea", yaw: -30, n: "Bella Vista · 360° aéreo" }, { t: "img", src: "img/aerea.webp", n: "Vista aérea" } ] } ],
   cotizador: { anticipo: 30, saldo: 40 },
   refrescoSeg: 60
@@ -462,11 +466,11 @@ const coincide = u => (!UI.dorm || CONFIG.tipologias[u.tip].dorm === UI.dorm) &&
 /* ---------- torre ---------- */
 function pintarTorre() {
   const T = CONFIG.torre;
-  $('#svgTorre').innerHTML = Object.entries(T.y).map(([p, [a, b]]) => {
+  $('#svgTorre').innerHTML = Object.entries(T).map(([p, P]) => {
     const libres = delPiso(+p).filter(u => u.estado === 'libre' && coincide(u)).length;
     const dim = (UI.dorm || UI.soloDisp) && !libres;
-    return `<rect class="fl${dim ? ' dim' : ''}" data-p="${p}" x="${T.x1}" y="${a}" width="${T.x2 - T.x1}" height="${b - a}"/>
-      <text class="flLbl" data-p="${p}" x="${T.x2 - 16}" y="${(a + b) / 2 + 5}" text-anchor="end">Piso ${p} · ${libres} disp.</text>`; }).join('')
+    return `<polygon class="fl${dim ? ' dim' : ''}" data-p="${p}" points="${P.map(q => q.join(',')).join(' ')}"/>
+      <text class="flLbl" data-p="${p}" x="${P[1][0] - 14}" y="${(P[1][1] + P[2][1]) / 2 + 5}" text-anchor="end">Piso ${p} · ${libres} disp.</text>`; }).join('')
     + CONFIG.hotspots.map((h, i) => { const w = h.n.length * 8.6 + 28; return `<g class="hs" data-i="${i}" transform="translate(${h.x} ${h.y})"><circle class="o" r="11"/><circle class="c" r="11"/>
       <g class="lbl" transform="translate(${h.x > 1000 ? -18 - w : 18} -15)"><rect width="${w}" height="30" rx="15"/><text x="14" y="20">${esc(h.n)}</text></g></g>`; }).join('');
   $$('#svgTorre .hs').forEach(g => g.onclick = e => { e.stopPropagation(); const h = CONFIG.hotspots[+g.dataset.i]; abrirXP(h.ir); });
