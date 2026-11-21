@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vidalta · Showroom 3D · Bella Vista, Asunción</title>
+<meta name="description" content="Recorré Vidalta desde el celular: elegí tu piso, mirá la planta y la disponibilidad en vivo, y cotizá tu departamento.">
+<meta name="theme-color" content="#121413">
+<meta property="og:title" content="Vidalta · Showroom 3D">
+<meta property="og:description" content="Elegí tu piso, mirá cada departamento y su disponibilidad en vivo.">
+<meta property="og:image" content="img/og.jpg">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121413;--bg2:#1a1d1b;--bg3:#232724;--tx:#f2efe9;--tx2:#b7b3aa;--tx3:#7f7c75;--ln:rgba(242,239,233,.1);--ln2:rgba(242,239,233,.18);
+  --ac:#C87941;--ok:#3fb27f;--res:#e0a33b;--ven:#8a8781;--r:14px;--ease:cubic-bezier(.2,.7,.2,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img{display:block;max-width:100%}
+.num{font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:999px;font-weight:600;font-size:14px;transition:transform .15s var(--ease),background .15s,border-color .15s;white-space:nowrap}
+.btn svg{width:17px;height:17px;flex:none}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:#d78a52;transform:translateY(-1px)}
+.btn-g{border:1px solid var(--ln2)}.btn-g:hover{border-color:var(--ac);color:var(--ac)}
+.btn-w{background:#25D366;color:#fff}.btn-w:hover{background:#2fe07a}
+.glass{background:rgba(18,20,19,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:var(--r)}
+
+/* header */
+header{position:fixed;inset:0 0 auto;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;background:linear-gradient(rgba(10,11,10,.7),transparent)}
+.logo{display:flex;align-items:center;gap:12px;color:#fff}
+.logo svg{height:20px;width:auto}
+.logo small{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx2);border-left:1px solid var(--ln2);padding-left:12px}
+nav.tabs{display:flex;gap:4px;padding:4px;border-radius:999px}
+nav.tabs button{padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:500;color:var(--tx2)}
+nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:var(--tx)}
+@media(max-width:860px){.logo small{display:none}nav.tabs{display:none}header .btn span{display:none}header .btn{padding:10px}}
+
+/* stage */
+#stage{position:fixed;inset:0}
+.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s var(--ease)}
+.view.on{opacity:1;pointer-events:auto}
+.media{position:absolute;inset:0}
+.media img{width:100%;height:100%;object-fit:cover}
+.media svg{position:absolute;inset:0;width:100%;height:100%}
+.media.fit img{object-fit:contain}
+#vTorre .media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,11,10,.55),transparent 35%,transparent 70%,rgba(10,11,10,.45));pointer-events:none}
+.fl{fill:rgba(255,255,255,0);stroke:transparent;stroke-width:2;cursor:pointer;transition:fill .2s,stroke .2s}
+.fl:hover,.fl.hl{fill:rgba(200,121,65,.28);stroke:var(--ac)}
+.fl.dim{fill:rgba(10,11,10,.45)}
+.flLbl{font-size:15px;font-weight:700;fill:#fff;pointer-events:none;paint-order:stroke;stroke:rgba(0,0,0,.45);stroke-width:3px;opacity:0;transition:opacity .2s}
+.flLbl.on{opacity:1}
+
+/* hero card */
+#hero{position:absolute;left:20px;bottom:24px;width:min(380px,calc(100% - 40px));padding:20px;z-index:5}
+#hero .k{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ac);font-weight:700}
+#hero h1{font-size:30px;font-weight:600;letter-spacing:.02em;margin:6px 0 6px}
+#hero p{color:var(--tx2);font-size:13.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:rgba(242,239,233,.05);border:1px solid var(--ln);border-radius:10px;padding:9px 10px}
+.stat small{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3)}
+.stat b{font-size:16px;font-weight:700}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--tx2);margin-top:12px}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(63,178,127,.6);animation:pl 2s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 8px rgba(63,178,127,0)}100%{box-shadow:0 0 0 0 rgba(63,178,127,0)}}
+.hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font-size:12.5px;color:var(--tx2);padding:8px 14px;border-radius:999px;z-index:4;pointer-events:none}
+
+/* floor list */
+#floors{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:230px;padding:14px;z-index:5;max-height:calc(100% - 160px);overflow:auto}
+.ph{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);font-weight:700;margin-bottom:8px}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 10px;border-radius:9px;font-size:13.5px;transition:background .15s}
+.frow:hover,.frow.hl{background:rgba(242,239,233,.08)}
+.frow b{font-weight:600}
+.dots{display:flex;gap:3px}
+.dots i{width:7px;height:7px;border-radius:50%}
+.d-libre{background:var(--ok)}.d-reservado{background:var(--res)}.d-vendido{background:var(--ven);opacity:.55}.d-bloqueado{background:var(--ven);opacity:.3}
+.frow .n{font-size:12px;color:var(--tx3);min-width:16px;text-align:right}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--tx2);margin-top:10px;padding-top:10px;border-top:1px solid var(--ln)}
+.legend span{display:inline-flex;align-items:center;gap:5px}.legend i{width:8px;height:8px;border-radius:50%}
+@media(max-width:860px){#floors{top:auto;bottom:16px;right:12px;left:12px;transform:none;width:auto;max-height:none;padding:10px}
+ #floors .frows{display:flex;gap:4px;overflow-x:auto}#floors .frow{flex-direction:column;min-width:62px;padding:8px 6px;gap:4px}#floors .legend,#floors .ph{display:none}
+ #hero{bottom:auto;top:74px;left:12px;width:calc(100% - 24px);padding:14px}#hero h1{font-size:22px}#hero p{display:none}.hint{display:none}}
+
+/* filters */
+#filtros{position:absolute;left:50%;top:76px;transform:translateX(-50%);display:flex;gap:6px;padding:5px;border-radius:999px;z-index:6}
+#filtros button{padding:7px 13px;border-radius:999px;font-size:13px;color:var(--tx2);white-space:nowrap;flex:none}
+#filtros button.on{background:var(--ac);color:#fff}
+@media(max-width:860px){#filtros{top:auto;bottom:108px;max-width:calc(100% - 24px);overflow-x:auto}}
+
+/* planta */
+#vPlanta{background:radial-gradient(1200px 700px at 50% 45%,#202421,#101211)}
+#vPlanta .media{inset:110px 290px 40px 40px}
+.u{cursor:pointer;transition:fill .2s,stroke .2s}
+.u rect{rx:6;stroke-width:3}
+.u.libre rect{fill:rgba(63,178,127,.32);stroke:#3fb27f}
+.u.reservado rect{fill:rgba(224,163,59,.3);stroke:#e0a33b}
+.u.vendido rect{fill:rgba(20,20,20,.58);stroke:rgba(138,135,129,.7)}
+.u.bloqueado rect{fill:rgba(20,20,20,.7);stroke:rgba(138,135,129,.4)}
+.u:hover rect,.u.sel rect{stroke:#fff;stroke-width:5}
+.u.libre:hover rect{fill:rgba(63,178,127,.48)}
+.u.off{opacity:.25}
+.u text{font-size:24px;font-weight:700;fill:#fff;pointer-events:none;paint-order:stroke;stroke:rgba(0,0,0,.55);stroke-width:4px}
+.u text.s{font-size:15px;font-weight:600;fill:rgba(255,255,255,.9)}
+#pHead{position:absolute;left:40px;top:84px;display:flex;align-items:center;gap:14px;z-index:5}
+#pHead h2{font-size:26px;font-weight:600}
+.step{display:flex;gap:4px}.step button{width:36px;height:36px;border-radius:10px;border:1px solid var(--ln2);display:grid;place-items:center}.step button:hover{border-color:var(--ac)}
+.step svg{width:16px;height:16px}
+#pSide{position:absolute;right:20px;top:84px;bottom:24px;width:250px;padding:14px;overflow:auto;z-index:5}
+.urow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;width:100%;padding:10px;border-radius:10px;text-align:left;transition:background .15s}
+.urow:hover,.urow.sel{background:rgba(242,239,233,.07)}
+.urow .badge{width:9px;height:9px;border-radius:50%}
+.urow b{display:block;font-size:14px}.urow small{color:var(--tx3);font-size:12px}
+.urow .pr{font-size:13px;font-weight:600;text-align:right}
+.urow.vendido{opacity:.55}
+.north{position:absolute;left:40px;bottom:30px;font-size:12px;color:var(--tx3);display:flex;gap:10px;align-items:center}
+@media(max-width:860px){#vPlanta .media{inset:130px 8px 230px 8px}#pHead{left:14px;top:74px}#pHead h2{font-size:20px}#pSide{top:auto;bottom:12px;left:12px;right:12px;width:auto;height:205px}.north{display:none}}
+
+/* drawer */
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--bg2);border-left:1px solid var(--ln);z-index:60;transform:translateX(100%);transition:transform .4s var(--ease);display:flex;flex-direction:column}
+#drawer.on{transform:none}
+#drawer .top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--ln)}
+#drawer .body{overflow:auto;padding:20px;flex:1}
+#drawer .foot{padding:14px 20px;border-top:1px solid var(--ln);display:flex;gap:8px}
+#drawer .foot .btn{flex:1}
+.x{width:36px;height:36px;border-radius:10px;border:1px solid var(--ln2);display:grid;place-items:center;flex:none}.x:hover{border-color:var(--ac)}
+.x svg{width:16px;height:16px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
+.tag.libre{background:rgba(63,178,127,.16);color:#6fd3a5}.tag.reservado{background:rgba(224,163,59,.16);color:#f0bd62}.tag.vendido,.tag.bloqueado{background:rgba(138,135,129,.18);color:#bdb9b1}
+.price{font-size:32px;font-weight:700;margin-top:6px}
+.price small{font-size:13px;font-weight:500;color:var(--tx3);margin-left:6px}
+.specs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.spec{background:var(--bg3);border-radius:10px;padding:10px;text-align:center}
+.spec b{display:block;font-size:18px}.spec small{font-size:11px;color:var(--tx3)}
+.plano{border-radius:12px;overflow:hidden;background:#f4f1ea;cursor:zoom-in;margin-bottom:12px}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px}
+.gal img{aspect-ratio:4/3;object-fit:cover;border-radius:8px;cursor:zoom-in;transition:opacity .2s}.gal img:hover{opacity:.85}
+.h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);font-weight:700;margin:18px 0 10px}
+.desc{color:var(--tx2);font-size:14px}
+.cot{background:var(--bg3);border-radius:12px;padding:14px}
+.cot label{display:flex;justify-content:space-between;font-size:13px;color:var(--tx2);margin-top:10px}
+.cot input[type=range]{width:100%;accent-color:var(--ac)}
+.cot .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--ln);font-size:14px}
+.cot .row:last-child{border:0}
+.cot .row b{font-weight:700}
+.fine{font-size:11.5px;color:var(--tx3);margin-top:8px}
+.vend-msg{background:var(--bg3);border-radius:12px;padding:16px;color:var(--tx2);font-size:14px}
+
+/* galleries / modal */
+#modal{position:fixed;inset:0;z-index:80;background:rgba(8,9,8,.88);display:none;align-items:center;justify-content:center;padding:24px}
+#modal.on{display:flex}
+#modal .box{width:min(1200px,100%);max-height:100%;overflow:auto}
+#modal .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+#modal h2{font-size:26px;font-weight:600}
+.agrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.agrid figure{position:relative;border-radius:12px;overflow:hidden;cursor:zoom-in;aspect-ratio:16/10;background:#222}
+.agrid figure img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.agrid figure:hover img{transform:scale(1.05)}
+.agrid figcaption{position:absolute;left:0;right:0;bottom:0;padding:30px 14px 12px;background:linear-gradient(transparent,rgba(0,0,0,.75));font-weight:600}
+@media(max-width:760px){.agrid{grid-template-columns:1fr 1fr}}
+#lb{position:fixed;inset:0;z-index:90;background:rgba(5,6,5,.95);display:none;align-items:center;justify-content:center}
+#lb.on{display:flex}
+#lb img{max-width:96vw;max-height:88vh;border-radius:8px}
+#lb .x{position:absolute;top:16px;right:16px}
+#lb p{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:var(--tx2)}
+.ubi{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center}
+.ubi img{border-radius:14px}
+.ubi p{color:var(--tx2);margin-top:10px}
+@media(max-width:760px){.ubi{grid-template-columns:1fr}}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120%);z-index:100;padding:11px 18px;border-radius:999px;font-size:13.5px;transition:transform .3s var(--ease)}
+#toast.on{transform:translate(-50%,0)}
+.skel{position:fixed;inset:0;display:grid;place-items:center;z-index:200;background:var(--bg);transition:opacity .5s}
+.skel.off{opacity:0;pointer-events:none}
+.skel svg{width:180px;color:#fff;opacity:.9;animation:fd 1.4s ease-in-out infinite alternate}
+@keyframes fd{to{opacity:.35}}
+@media print{body{overflow:visible}header,#filtros,#floors,.hint,#stage{display:none}#drawer{position:static;transform:none;width:100%;border:0}#drawer .foot{display:none}}
+</style>
+</head>
+<body>
+<div class="skel" id="skel"><svg role="img" aria-label="VIDALTA" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 255 722 84">
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 208.878906 321.613281 L 189.957031 263.339844 L 179.667969 263.339844 L 201.859375 331.617188 L 216.132812 331.617188 L 238.320312 263.339844 L 228.035156 263.339844 Z M 208.878906 321.613281 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 284.316406 331.621094 L 294.226562 331.621094 L 294.226562 263.34375 L 284.316406 263.34375 Z M 284.316406 331.621094 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 388.777344 308.480469 C 387.765625 311.925781 386.175781 314.828125 384.007812 317.183594 C 381.84375 319.539062 379.023438 321.042969 375.546875 321.710938 C 374.410156 321.898438 373.097656 322.023438 371.609375 322.089844 C 370.125 322.152344 368.84375 322.183594 367.769531 322.183594 L 356.53125 322.183594 L 356.53125 272.777344 L 367.769531 272.777344 C 368.8125 272.777344 370.085938 272.796875 371.585938 272.84375 C 373.085938 272.894531 374.410156 273.027344 375.546875 273.25 C 378.960938 273.878906 381.75 275.359375 383.917969 277.683594 C 386.078125 280.003906 387.683594 282.882812 388.726562 286.3125 C 389.769531 289.742188 390.292969 293.464844 390.292969 297.480469 C 390.292969 301.367188 389.785156 305.035156 388.777344 308.480469 Z M 389.746094 269.503906 C 386.09375 266.34375 381.597656 264.425781 376.257812 263.765625 C 374.675781 263.546875 373.023438 263.417969 371.300781 263.386719 C 369.578125 263.355469 368.398438 263.335938 367.769531 263.335938 L 346.386719 263.335938 L 346.386719 331.621094 L 367.769531 331.621094 C 368.398438 331.621094 369.578125 331.601562 371.300781 331.570312 C 373.023438 331.542969 374.675781 331.414062 376.257812 331.191406 C 381.597656 330.527344 386.09375 328.625 389.746094 325.480469 C 393.398438 322.332031 396.152344 318.335938 398.023438 313.484375 C 399.886719 308.632812 400.820312 303.292969 400.820312 297.480469 C 400.820312 291.695312 399.886719 286.378906 398.023438 281.519531 C 396.152344 276.667969 393.398438 272.664062 389.746094 269.503906 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 461.460938 306.914062 L 472.378906 273.238281 L 483.421875 306.914062 Z M 465.355469 263.335938 L 443.160156 331.621094 L 453.453125 331.621094 L 458.445312 316.207031 L 486.472656 316.207031 L 491.527344 331.621094 L 501.816406 331.621094 L 479.628906 263.335938 Z M 465.355469 263.335938 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 559.144531 263.339844 L 549.230469 263.339844 L 549.230469 331.617188 L 590.0625 331.617188 L 590.0625 322.277344 L 559.144531 322.277344 Z M 559.144531 263.339844 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 620.882812 272.679688 L 643.59375 272.679688 L 643.59375 331.617188 L 653.503906 331.617188 L 653.503906 272.679688 L 676.214844 272.679688 L 676.214844 263.339844 L 620.882812 263.339844 Z M 620.882812 272.679688 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 733.394531 306.914062 L 744.3125 273.238281 L 755.359375 306.914062 Z M 763.460938 331.621094 L 773.75 331.621094 L 751.5625 263.335938 L 737.289062 263.335938 L 715.097656 331.621094 L 725.390625 331.621094 L 730.382812 316.207031 L 758.410156 316.207031 Z M 763.460938 331.621094 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 109.96875 274.34375 L 109.96875 289.53125 L 69.929688 316.9375 L 67.996094 318.261719 L 67.996094 303.074219 L 69.929688 301.753906 Z M 109.96875 274.34375 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 290.570312 L 133.671875 305.757812 L 131.742188 304.433594 L 131.363281 304.175781 L 109.972656 289.53125 L 109.972656 274.347656 L 131.363281 288.988281 L 131.742188 289.25 Z M 133.671875 290.570312 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 109.96875 305.601562 L 109.96875 320.789062 L 109.949219 320.800781 L 107.128906 322.734375 L 84.9375 322.734375 L 87.757812 320.800781 L 88.296875 320.433594 Z M 109.96875 305.601562 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 321.828125 L 133.671875 322.734375 L 112.804688 322.734375 L 109.988281 320.800781 L 109.972656 320.789062 L 109.972656 305.601562 L 131.363281 320.242188 L 131.742188 320.503906 Z M 133.671875 321.828125 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 76.78125 322.734375 L 124.890625 322.734375 L 124.890625 272.222656 L 76.78125 272.222656 Z M 133.675781 331.515625 L 67.996094 331.515625 L 67.996094 263.441406 L 133.675781 263.441406 Z M 133.675781 331.515625 "/>
+</svg>
+</div>
+
+<header>
+  <div class="logo"><svg role="img" aria-label="VIDALTA" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 255 722 84">
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 208.878906 321.613281 L 189.957031 263.339844 L 179.667969 263.339844 L 201.859375 331.617188 L 216.132812 331.617188 L 238.320312 263.339844 L 228.035156 263.339844 Z M 208.878906 321.613281 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 284.316406 331.621094 L 294.226562 331.621094 L 294.226562 263.34375 L 284.316406 263.34375 Z M 284.316406 331.621094 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 388.777344 308.480469 C 387.765625 311.925781 386.175781 314.828125 384.007812 317.183594 C 381.84375 319.539062 379.023438 321.042969 375.546875 321.710938 C 374.410156 321.898438 373.097656 322.023438 371.609375 322.089844 C 370.125 322.152344 368.84375 322.183594 367.769531 322.183594 L 356.53125 322.183594 L 356.53125 272.777344 L 367.769531 272.777344 C 368.8125 272.777344 370.085938 272.796875 371.585938 272.84375 C 373.085938 272.894531 374.410156 273.027344 375.546875 273.25 C 378.960938 273.878906 381.75 275.359375 383.917969 277.683594 C 386.078125 280.003906 387.683594 282.882812 388.726562 286.3125 C 389.769531 289.742188 390.292969 293.464844 390.292969 297.480469 C 390.292969 301.367188 389.785156 305.035156 388.777344 308.480469 Z M 389.746094 269.503906 C 386.09375 266.34375 381.597656 264.425781 376.257812 263.765625 C 374.675781 263.546875 373.023438 263.417969 371.300781 263.386719 C 369.578125 263.355469 368.398438 263.335938 367.769531 263.335938 L 346.386719 263.335938 L 346.386719 331.621094 L 367.769531 331.621094 C 368.398438 331.621094 369.578125 331.601562 371.300781 331.570312 C 373.023438 331.542969 374.675781 331.414062 376.257812 331.191406 C 381.597656 330.527344 386.09375 328.625 389.746094 325.480469 C 393.398438 322.332031 396.152344 318.335938 398.023438 313.484375 C 399.886719 308.632812 400.820312 303.292969 400.820312 297.480469 C 400.820312 291.695312 399.886719 286.378906 398.023438 281.519531 C 396.152344 276.667969 393.398438 272.664062 389.746094 269.503906 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 461.460938 306.914062 L 472.378906 273.238281 L 483.421875 306.914062 Z M 465.355469 263.335938 L 443.160156 331.621094 L 453.453125 331.621094 L 458.445312 316.207031 L 486.472656 316.207031 L 491.527344 331.621094 L 501.816406 331.621094 L 479.628906 263.335938 Z M 465.355469 263.335938 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 559.144531 263.339844 L 549.230469 263.339844 L 549.230469 331.617188 L 590.0625 331.617188 L 590.0625 322.277344 L 559.144531 322.277344 Z M 559.144531 263.339844 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 620.882812 272.679688 L 643.59375 272.679688 L 643.59375 331.617188 L 653.503906 331.617188 L 653.503906 272.679688 L 676.214844 272.679688 L 676.214844 263.339844 L 620.882812 263.339844 Z M 620.882812 272.679688 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 733.394531 306.914062 L 744.3125 273.238281 L 755.359375 306.914062 Z M 763.460938 331.621094 L 773.75 331.621094 L 751.5625 263.335938 L 737.289062 263.335938 L 715.097656 331.621094 L 725.390625 331.621094 L 730.382812 316.207031 L 758.410156 316.207031 Z M 763.460938 331.621094 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 109.96875 274.34375 L 109.96875 289.53125 L 69.929688 316.9375 L 67.996094 318.261719 L 67.996094 303.074219 L 69.929688 301.753906 Z M 109.96875 274.34375 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 290.570312 L 133.671875 305.757812 L 131.742188 304.433594 L 131.363281 304.175781 L 109.972656 289.53125 L 109.972656 274.347656 L 131.363281 288.988281 L 131.742188 289.25 Z M 133.671875 290.570312 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 109.96875 305.601562 L 109.96875 320.789062 L 109.949219 320.800781 L 107.128906 322.734375 L 84.9375 322.734375 L 87.757812 320.800781 L 88.296875 320.433594 Z M 109.96875 305.601562 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 321.828125 L 133.671875 322.734375 L 112.804688 322.734375 L 109.988281 320.800781 L 109.972656 320.789062 L 109.972656 305.601562 L 131.363281 320.242188 L 131.742188 320.503906 Z M 133.671875 321.828125 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 76.78125 322.734375 L 124.890625 322.734375 L 124.890625 272.222656 L 76.78125 272.222656 Z M 133.675781 331.515625 L 67.996094 331.515625 L 67.996094 263.441406 L 133.675781 263.441406 Z M 133.675781 331.515625 "/>
+</svg>
+<small>Showroom 3D</small></div>
+  <nav class="tabs glass" id="tabs">
+    <button data-go="torre" class="on">Edificio</button>
+    <button data-go="amen">Amenities</button>
+    <button data-go="ubi">Ubicación</button>
+  </nav>
+  <a class="btn btn-w" id="waTop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg><span>Consultar</span></a>
+</header>
+
+<main id="stage">
+  <!-- TORRE -->
+  <section class="view on" id="vTorre">
+    <div class="media" id="mTorre"><img src="img/torre.webp" alt="Fachada de Vidalta"><svg id="svgTorre" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg></div>
+    <div id="hero" class="glass"></div>
+    <div id="filtros" class="glass"></div>
+    <aside id="floors" class="glass"><div class="ph">Elegí tu piso</div><div class="frows" id="frows"></div>
+      <div class="legend"><span><i class="d-libre"></i>Disponible</span><span><i class="d-reservado"></i>Reservado</span><span><i class="d-vendido"></i>Vendido</span></div></aside>
+    <div class="hint glass">Tocá un piso para ver sus departamentos</div>
+  </section>
+
+  <!-- PLANTA -->
+  <section class="view" id="vPlanta">
+    <div id="pHead"><button class="x" id="backT" title="Volver al edificio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h2 id="pTit">Piso 1</h2><div class="step"><button id="pUp" title="Piso de arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></button><button id="pDn" title="Piso de abajo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button></div></div>
+    <div class="media fit" id="mPlanta"><img id="imgPlanta" src="img/planta-1.webp" alt="Planta del piso"><svg id="svgPlanta" viewBox="0 0 1334 454" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <aside id="pSide" class="glass"></aside>
+    <div class="north">↑ Tte. 1º Porfirio Saldívar · Barrio Bella Vista</div>
+  </section>
+</main>
+
+<aside id="drawer" aria-hidden="true"><div class="top"><div id="dTit"></div><button class="x" id="dX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+  <div class="body" id="dBody"></div><div class="foot" id="dFoot"></div></aside>
+
+<div id="modal"><div class="box" id="mBox"></div></div>
+<div id="lb"><button class="x" id="lbX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button><img id="lbImg" alt=""><p id="lbCap"></p></div>
+<div id="toast" class="glass"></div>
+
+<!-- CONTEXTO
+  Showroom 3D white-label (versión Vidalta). Todo el branding y los datos del proyecto salen de CONFIG.
+  Datos en vivo: GET /api/public (Cloudflare Pages Functions + D1). Si la API no responde, usa la foto de respaldo FALLBACK.
+  Vistas: Torre (render de fachada + polígonos por piso en coordenadas 1600×900) → Planta (plano 1334×454 con un rectángulo por unidad) → Ficha.
+  Para otro proyecto: cambiar CONFIG (pisos, coordenadas de pisos en la fachada, rectángulos de planta por tipo de piso, tipologías, imágenes).
+  Panel de administración: /admin.html (mismo backend, con login).
+-->
+<script>
+const CONFIG = {
+  producto:   "Showroom 3D",
+  marca:      "GAO Desarrollos",
+  logoTexto:  "VIDALTA",
+  colorAcento:"#C87941",
+  moneda:     "USD",
+  locale:     "es-PY",
+  version:    "1.0.0",
+  proyecto: { nombre: "Vidalta", sub: "Bella Vista", ubicacion: "Barrio Bella Vista · Zona Club Centenario · Asunción", entrega: "2027-12-01",
+    descripcion: "54 residencias de 1, 2 y 3 dormitorios con vista 360, piscina en azotea, gimnasio, coworking, quincho y salón de eventos." },
+  whatsapp: "595981301718",
+  api: "/api",
+  pisos: 6,
+  // Fachada (coordenadas 1600×900): franja vertical de cada piso
+  torre: { x1: 178, x2: 1484, y: { 6: [252, 325], 5: [325, 398], 4: [398, 470], 3: [470, 545], 2: [545, 618], 1: [618, 695] } },
+  // Plantas (coordenadas 1334×454) por tipo de piso: posición → [x, y, w, h]
+  plantas: {
+    a: { img: "img/planta-1.webp", pisos: [1, 2, 3], u: { 1: [24, 26, 280, 194], 10: [24, 224, 280, 196], 2: [312, 32, 286, 176], 3: [737, 36, 288, 178], 4: [1024, 40, 288, 194], 5: [1024, 238, 288, 196], 6: [742, 246, 280, 166], 7: [597, 246, 142, 174], 8: [457, 246, 138, 174], 9: [312, 246, 143, 172] } },
+    b: { img: "img/planta-2.webp", pisos: [4, 5, 6], u: { 1: [26, 26, 422, 192], 8: [26, 222, 422, 198], 2: [455, 32, 140, 176], 3: [740, 36, 286, 178], 4: [1027, 40, 286, 194], 5: [1027, 238, 286, 196], 6: [742, 246, 284, 176], 7: [454, 244, 286, 178] } } },
+  tipologias: {
+    A: { n: "Tipología A", dorm: 1, banos: 1, serv: false, plano: "img/tipo-a.webp", fotos: ["img/living-2d.webp", "img/dorm-2.webp", "img/lobby.webp"], desc: "1 dormitorio con baño completo, living-comedor integrado a la cocina y balcón. Ideal para primera vivienda o inversión en renta." },
+    B: { n: "Tipología B", dorm: 2, banos: 2, serv: false, plano: "img/tipo-b.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios y 2 baños, cocina integrada y balcón con parrilla." },
+    C: { n: "Tipología C", dorm: 2, banos: 2, serv: false, plano: "img/tipo-c.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios en suite en disposición «mariposa», uno a cada lado del living, con balcón con parrilla." },
+    D: { n: "Tipología D", dorm: 2, banos: 2, serv: true, plano: "img/tipo-d.webp", fotos: ["img/living-2d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "2 dormitorios, 2 baños y área de servicio. Unidades de esquina con doble orientación y balcón con parrilla." },
+    E: { n: "Tipología E", dorm: 3, banos: 3, serv: true, plano: "img/tipo-e.webp", fotos: ["img/living-3d.webp", "img/dorm-ppal.webp", "img/dorm-2.webp"], desc: "3 dormitorios, 3 baños y área de servicio, en los pisos altos. Living-comedor amplio y doble balcón con parrilla." } },
+  amenities: [ { n: "Piscina en azotea", img: "img/piscina.webp" }, { n: "Azotea completa", img: "img/azotea.webp" }, { n: "Gimnasio", img: "img/gimnasio.webp" },
+    { n: "Salón de eventos y quincho", img: "img/sum.webp" }, { n: "Piscina, gimnasio y coworking", img: "img/azotea-2.webp" }, { n: "Lobby", img: "img/lobby.webp" } ],
+  cotizador: { anticipo: 30, saldo: 40 },
+  refrescoSeg: 60
+};
+const FALLBACK = [["101","libre",213626],["102","libre",183678],["103","reservado",0],["104","vendido",0],["105","vendido",0],["106","libre",183678],["107","vendido",0],["108","vendido",0],["109","vendido",0],["110","libre",213626],["201","vendido",0],["202","vendido",0],["203","libre",183678],["204","libre",220034],["205","vendido",0],["206","libre",183678],["207","vendido",0],["208","vendido",0],["209","vendido",0],["210","vendido",0],["301","vendido",0],["302","libre",194864],["303","vendido",0],["304","vendido",0],["305","vendido",0],["306","vendido",0],["307","libre",97433],["308","libre",97433],["309","libre",97433],["310","vendido",0],["401","vendido",0],["402","libre",100355],["403","vendido",0],["404","vendido",0],["405","vendido",0],["406","vendido",0],["407","libre",200710],["408","vendido",0],["501","vendido",0],["502","libre",103366],["503","vendido",0],["504","vendido",0],["505","libre",240437],["506","vendido",0],["507","libre",206731],["508","reservado",0],["601","vendido",0],["602","libre",106467],["603","reservado",0],["604","reservado",0],["605","reservado",0],["606","reservado",0],["607","libre",212933],["608","libre",356432]];
+const POS = { 1: 'a', 2: 'a', 3: 'a', 4: 'b', 5: 'b', 6: 'b' };
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = n => (CONFIG.moneda === 'USD' ? 'USD ' : CONFIG.moneda + ' ') + Math.round(n).toLocaleString(CONFIG.locale);
+const EST = { libre: 'Disponible', reservado: 'Reservado', vendido: 'Vendido', bloqueado: 'No disponible' };
+document.documentElement.style.setProperty('--ac', CONFIG.colorAcento);
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2400); }
+const wa = (txt) => `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(txt)}`;
+function evento(tipo, unidad) { try { fetch(CONFIG.api + '/evento', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, unidad, origen: new URLSearchParams(location.search).get('utm_source') || document.referrer.split('/')[2] || 'directo' }), keepalive: true }); } catch (e) {} }
+
+/* ---------- datos ---------- */
+let U = [], ACT = '';
+function desdeFallback() {
+  return FALLBACK.map(([id, estado, precio]) => { const p = +id[0], pos = +id.slice(1); return { id, piso: p, pos, tip: TIPO[id], m2: M2[TIPO[id]], estado, precio: precio || null }; });
+}
+const M2 = { A: 46, B: 92, C: 92, D: 107, E: 154 };
+const TIPO = {"101":"D","102":"B","103":"C","104":"D","105":"D","106":"C","107":"A","108":"A","109":"A","110":"D","201":"D","202":"B","203":"B","204":"D","205":"D","206":"C","207":"A","208":"A","209":"A","210":"D","301":"D","302":"B","303":"C","304":"D","305":"D","306":"C","307":"A","308":"A","309":"A","310":"D","401":"E","402":"A","403":"C","404":"D","405":"D","406":"C","407":"B","408":"E","501":"E","502":"A","503":"C","504":"D","505":"D","506":"C","507":"B","508":"E","601":"E","602":"A","603":"C","604":"D","605":"D","606":"C","607":"B","608":"E"};
+async function cargar() {
+  try { const r = await fetch(CONFIG.api + '/public', { cache: 'no-store' }); if (!r.ok) throw 0; const d = await r.json(); U = d.unidades; ACT = d.actualizado; }
+  catch (e) { if (!U.length) { U = desdeFallback(); ACT = ''; } }
+  pintar();
+}
+const UI = { view: 'torre', piso: 1, sel: null, dorm: 0, soloDisp: false };
+const delPiso = p => U.filter(u => u.piso === p).sort((a, b) => a.pos - b.pos);
+const coincide = u => (!UI.dorm || CONFIG.tipologias[u.tip].dorm === UI.dorm) && (!UI.soloDisp || u.estado === 'libre');
+
+/* ---------- torre ---------- */
+function pintarTorre() {
+  const T = CONFIG.torre;
+  $('#svgTorre').innerHTML = Object.entries(T.y).map(([p, [a, b]]) => {
+    const libres = delPiso(+p).filter(u => u.estado === 'libre' && coincide(u)).length;
+    const dim = (UI.dorm || UI.soloDisp) && !libres;
+    return `<rect class="fl${dim ? ' dim' : ''}" data-p="${p}" x="${T.x1}" y="${a}" width="${T.x2 - T.x1}" height="${b - a}"/>
+      <text class="flLbl" data-p="${p}" x="${T.x2 - 16}" y="${(a + b) / 2 + 5}" text-anchor="end">Piso ${p} · ${libres} disp.</text>`; }).join('');
+  $$('#svgTorre .fl').forEach(r => { const p = +r.dataset.p;
+    r.onmouseenter = () => hl(p, true); r.onmouseleave = () => hl(p, false); r.onclick = () => irPiso(p); });
+  $('#frows').innerHTML = Array.from({ length: CONFIG.pisos }, (_, i) => CONFIG.pisos - i).map(p => {
+    const us = delPiso(p), lib = us.filter(u => u.estado === 'libre' && coincide(u)).length;
+    return `<button class="frow" data-p="${p}"><b>Piso ${p}</b><span class="dots">${us.map(u => `<i class="d-${u.estado}" style="${coincide(u) ? '' : 'opacity:.18'}"></i>`).join('')}</span><span class="n num">${lib}</span></button>`; }).join('');
+  $$('.frow').forEach(b => { const p = +b.dataset.p; b.onmouseenter = () => hl(p, true); b.onmouseleave = () => hl(p, false); b.onclick = () => irPiso(p); });
+  const lib = U.filter(u => u.estado === 'libre'), n = U.length, vend = U.filter(u => u.estado === 'vendido').length;
+  const desde = lib.filter(u => u.precio).reduce((a, u) => Math.min(a, u.precio), Infinity);
+  const hace = ACT ? hace_(ACT) : '';
+  $('#hero').innerHTML = `<div class="k">${esc(CONFIG.marca)} · ${esc(CONFIG.proyecto.sub)}</div><h1>${esc(CONFIG.logoTexto)}</h1>
+    <p>${esc(CONFIG.proyecto.ubicacion)}<br>${esc(CONFIG.proyecto.descripcion)}</p>
+    <div class="stats"><div class="stat"><small>Disponibles</small><b class="num">${lib.length} de ${n}</b></div><div class="stat"><small>Vendido</small><b class="num">${Math.round(vend / n * 100)}%</b></div><div class="stat"><small>Desde</small><b class="num">${isFinite(desde) ? money(desde).replace('USD ', 'USD ') : '—'}</b></div></div>
+    <span class="live"><i></i>Disponibilidad en vivo${hace ? ' · actualizado ' + hace : ''}</span>`;
+  const F = [[0, 'Todos'], [1, '1 dorm.'], [2, '2 dorm.'], [3, '3 dorm.']];
+  $('#filtros').innerHTML = F.map(([d, t]) => `<button data-d="${d}" class="${UI.dorm === d ? 'on' : ''}">${t}</button>`).join('') + `<button data-s="1" class="${UI.soloDisp ? 'on' : ''}">Solo disponibles</button>`;
+  $$('#filtros button').forEach(b => b.onclick = () => { if (b.dataset.s) UI.soloDisp = !UI.soloDisp; else UI.dorm = +b.dataset.d; pintar(); });
+}
+function hl(p, on) { $$(`#svgTorre [data-p="${p}"]`).forEach(e => e.classList.toggle(e.tagName === 'text' ? 'on' : 'hl', on)); $$(`.frow[data-p="${p}"]`).forEach(e => e.classList.toggle('hl', on)); }
+function hace_(iso) { const m = Math.round((Date.now() - new Date(iso)) / 6e4); return m < 2 ? 'recién' : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.round(m / 60)} h` : `el ${new Date(iso).toLocaleDateString(CONFIG.locale)}`; }
+function ajustarTorre() { const m = $('#mTorre'), port = m.clientWidth / m.clientHeight < 1.25;
+  m.classList.toggle('fit', port); $('#svgTorre').setAttribute('preserveAspectRatio', port ? 'xMidYMid meet' : 'xMidYMid slice'); }
+
+/* ---------- planta ---------- */
+function irPiso(p) { UI.piso = Math.max(1, Math.min(CONFIG.pisos, p)); setView('planta'); pintarPlanta(); }
+function pintarPlanta() {
+  const p = UI.piso, P = CONFIG.plantas[POS[p]];
+  $('#pTit').textContent = `Piso ${p}`;
+  if (!$('#imgPlanta').src.endsWith(P.img)) $('#imgPlanta').src = P.img;
+  const us = delPiso(p);
+  $('#svgPlanta').innerHTML = us.map(u => { const r = P.u[u.pos]; if (!r) return ''; const [x, y, w, h] = r, t = CONFIG.tipologias[u.tip];
+    return `<g class="u ${u.estado}${coincide(u) ? '' : ' off'}${UI.sel === u.id ? ' sel' : ''}" data-id="${u.id}"><rect x="${x + 4}" y="${y + 4}" width="${w - 8}" height="${h - 8}"/>
+      <text x="${x + w / 2}" y="${y + h / 2 - 2}" text-anchor="middle">${u.id}</text><text class="s" x="${x + w / 2}" y="${y + h / 2 + 22}" text-anchor="middle">${u.estado === 'libre' ? t.dorm + ' dorm · ' + u.m2 + ' m²' : EST[u.estado]}</text></g>`; }).join('');
+  $$('#svgPlanta .u').forEach(g => g.onclick = () => abrirFicha(g.dataset.id));
+  $('#pSide').innerHTML = `<div class="ph">Departamentos · piso ${p}</div>` + us.map(u => { const t = CONFIG.tipologias[u.tip];
+    return `<button class="urow ${u.estado}${UI.sel === u.id ? ' sel' : ''}" data-id="${u.id}"><span class="badge d-${u.estado}"></span><span><b>Depto ${u.id}</b><small>${t.n.replace('Tipología ', 'Tip. ')} · ${t.dorm} dorm · ${u.m2} m²</small></span><span class="pr num">${u.estado === 'libre' ? (u.precio ? money(u.precio).replace('USD ', '') : 'Consultar') : EST[u.estado]}</span></button>`; }).join('');
+  $$('#pSide .urow').forEach(b => b.onclick = () => abrirFicha(b.dataset.id));
+  $('#pUp').disabled = p >= CONFIG.pisos; $('#pDn').disabled = p <= 1;
+}
+
+/* ---------- ficha ---------- */
+function abrirFicha(id) {
+  const u = U.find(x => x.id === id); if (!u) return;
+  UI.sel = id; if (UI.view === 'planta') pintarPlanta();
+  const t = CONFIG.tipologias[u.tip], libre = u.estado === 'libre';
+  history.replaceState(null, '', '#u=' + id);
+  evento('vista', id);
+  $('#dTit').innerHTML = `<div style="font-size:12px;color:var(--tx3)">${esc(CONFIG.logoTexto)} · Piso ${u.piso}</div><div style="font-size:20px;font-weight:700">Departamento ${u.id}</div>`;
+  const pm2 = u.precio ? u.precio / u.m2 : 0;
+  $('#dBody').innerHTML = `<span class="tag ${u.estado}">${EST[u.estado]}</span>
+    ${libre && u.precio ? `<div class="price num">${money(u.precio)}<small>${money(pm2)}/m²</small></div>` : libre ? `<div class="price">Consultar precio</div>` : ''}
+    <div class="specs"><div class="spec"><b class="num">${u.m2}</b><small>m² totales</small></div><div class="spec"><b>${t.dorm}</b><small>dormit.</small></div><div class="spec"><b>${t.banos}</b><small>baños</small></div><div class="spec"><b>${t.serv ? 'Sí' : '—'}</b><small>servicio</small></div></div>
+    <div class="h3">${esc(t.n)}</div><p class="desc">${esc(t.desc)}</p>
+    <div class="h3">Planta</div><div class="plano" data-zoom="${t.plano}" data-cap="${esc(t.n)} · ${u.m2} m²"><img src="${t.plano}" alt="Planta ${esc(t.n)}"></div>
+    <div class="gal">${t.fotos.map(f => `<img src="${f}" alt="" loading="lazy" data-zoom="${f}" data-cap="Imagen ilustrativa">`).join('')}</div>
+    ${libre ? cotHTML(u) : `<div class="vend-msg">Esta unidad ya ${u.estado === 'vendido' ? 'fue vendida' : 'está reservada'}. Escribinos y te mostramos las disponibles con la misma tipología.</div>`}`;
+  $('#dFoot').innerHTML = `<a class="btn btn-w" id="dWa" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>${libre ? 'Me interesa' : 'Ver similares'}</a><button class="btn btn-g" id="dShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>Compartir</button>`;
+  $('#dWa').href = wa(libre ? `Hola 👋 Me interesa el departamento ${u.id} de Vidalta (${t.n}, ${t.dorm} dorm., ${u.m2} m²). ¿Me pasan más info?` : `Hola 👋 Vi el departamento ${u.id} de Vidalta. ¿Tienen disponible otra ${t.n}?`);
+  $('#dWa').onclick = () => evento('consulta', id);
+  $('#dShare').onclick = async () => { const url = location.origin + location.pathname + '#u=' + id;
+    try { if (navigator.share) await navigator.share({ title: `Vidalta · Depto ${id}`, url }); else { await navigator.clipboard.writeText(url); toast('Link copiado'); } } catch (e) {} };
+  $$('#dBody [data-zoom]').forEach(e => e.onclick = () => zoom(e.dataset.zoom, e.dataset.cap));
+  if (libre) bindCot(u);
+  $('#drawer').classList.add('on'); $('#drawer').setAttribute('aria-hidden', 'false');
+}
+function mesesHastaEntrega() { const e = new Date(CONFIG.proyecto.entrega), h = new Date(); return Math.max(1, (e.getFullYear() - h.getFullYear()) * 12 + e.getMonth() - h.getMonth() - 1); }
+function cotHTML(u) {
+  if (!u.precio) return '';
+  return `<div class="h3">Simulá tu plan de pago</div><div class="cot">
+    <label>Anticipo <b id="cA">${CONFIG.cotizador.anticipo}%</b></label><input type="range" id="rA" min="10" max="60" step="5" value="${CONFIG.cotizador.anticipo}">
+    <label>Saldo a la entrega <b id="cS">${CONFIG.cotizador.saldo}%</b></label><input type="range" id="rS" min="0" max="60" step="5" value="${CONFIG.cotizador.saldo}">
+    <div id="cOut" style="margin-top:10px"></div>
+    <p class="fine">Referencia sin compromiso. Las cuotas se pagan durante la obra y terminan con la entrega (estimada ${new Date(CONFIG.proyecto.entrega).toLocaleDateString(CONFIG.locale, { month: 'long', year: 'numeric' })}). El plan final lo confirma el equipo comercial.</p></div>`;
+}
+function bindCot(u) {
+  const f = () => { let a = +$('#rA').value, s = +$('#rS').value; if (a + s > 100) { s = 100 - a; $('#rS').value = s; }
+    $('#cA').textContent = a + '%'; $('#cS').textContent = s + '%';
+    const n = mesesHastaEntrega(), P = u.precio, cu = P * (100 - a - s) / 100;
+    $('#cOut').innerHTML = `<div class="row"><span>Anticipo</span><b class="num">${money(P * a / 100)}</b></div>
+      <div class="row"><span>${n} cuotas mensuales</span><b class="num">${money(cu / n)}</b></div>
+      <div class="row"><span>Saldo a la entrega</span><b class="num">${money(P * s / 100)}</b></div>`; };
+  $('#rA').oninput = f; $('#rS').oninput = f; f();
+}
+function cerrarFicha() { $('#drawer').classList.remove('on'); $('#drawer').setAttribute('aria-hidden', 'true'); UI.sel = null; history.replaceState(null, '', location.pathname + location.search); if (UI.view === 'planta') pintarPlanta(); }
+
+/* ---------- modales ---------- */
+function zoom(src, cap) { $('#lbImg').src = src; $('#lbCap').textContent = cap || ''; $('#lb').classList.add('on'); }
+function abrirModal(html) { $('#mBox').innerHTML = html; $('#modal').classList.add('on'); $$('#mBox [data-zoom]').forEach(e => e.onclick = () => zoom(e.dataset.zoom, e.dataset.cap)); $('#mX').onclick = cerrarModal; }
+function cerrarModal() { $('#modal').classList.remove('on'); $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === 'torre')); }
+const cerrarBtn = '<button class="x" id="mX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
+function amenities() { abrirModal(`<div class="mh"><h2>Amenities</h2>${cerrarBtn}</div><div class="agrid">${CONFIG.amenities.map(a => `<figure data-zoom="${a.img}" data-cap="${esc(a.n)}"><img src="${a.img}" alt="${esc(a.n)}" loading="lazy"><figcaption>${esc(a.n)}</figcaption></figure>`).join('')}</div>`); }
+function ubicacion() { abrirModal(`<div class="mh"><h2>Ubicación</h2>${cerrarBtn}</div><div class="ubi"><img src="img/aerea.webp" alt="Vista aérea" data-zoom="img/aerea.webp" data-cap="Vidalta · Bella Vista" style="cursor:zoom-in"><div>
+  <div class="h3" style="margin-top:0">Barrio Bella Vista · Asunción</div><p>Sobre Tte. 1º Porfirio Saldívar casi Fray Luis de León, zona Club Centenario, entre el centro histórico y el nuevo eje corporativo. Cerca de colegios, sanatorios, locales comerciales y la mejor gastronomía de Asunción.</p>
+  <p>Cocheras simples, dobles y con baulera disponibles.</p><div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-g" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Teniente+Porfirio+Saldivar+y+Fray+Luis+de+Leon+Asuncion">Abrir en Google Maps ↗</a></div></div></div>`); }
+
+/* ---------- navegación ---------- */
+function setView(v) { UI.view = v; $('#vTorre').classList.toggle('on', v === 'torre'); $('#vPlanta').classList.toggle('on', v === 'planta'); }
+function pintar() { pintarTorre(); if (UI.view === 'planta') pintarPlanta(); }
+$('#backT').onclick = () => { setView('torre'); cerrarFicha(); };
+$('#pUp').onclick = () => irPiso(UI.piso + 1); $('#pDn').onclick = () => irPiso(UI.piso - 1);
+$('#dX').onclick = cerrarFicha;
+$('#lbX').onclick = () => $('#lb').classList.remove('on'); $('#lb').onclick = e => { if (e.target.id === 'lb') $('#lb').classList.remove('on'); };
+$('#modal').onclick = e => { if (e.target.id === 'modal') cerrarModal(); };
+$$('#tabs button').forEach(b => b.onclick = () => { $$('#tabs button').forEach(x => x.classList.toggle('on', x === b)); const g = b.dataset.go;
+  if (g === 'torre') { cerrarModal(); setView('torre'); } else if (g === 'amen') amenities(); else ubicacion(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('#lb').classList.contains('on')) $('#lb').classList.remove('on'); else if ($('#modal').classList.contains('on')) cerrarModal(); else if ($('#drawer').classList.contains('on')) cerrarFicha(); else if (UI.view === 'planta') setView('torre'); }
+  if (UI.view === 'planta' && !$('#drawer').classList.contains('on')) { if (e.key === 'ArrowUp') irPiso(UI.piso + 1); if (e.key === 'ArrowDown') irPiso(UI.piso - 1); } });
+$('#waTop').href = wa('Hola 👋 Estoy viendo el showroom de Vidalta y quiero más información.');
+addEventListener('resize', ajustarTorre); ajustarTorre();
+
+(async () => {
+  await cargar();
+  const m = location.hash.match(/u=(\d{3})/);
+  if (m && U.find(u => u.id === m[1])) { const u = U.find(x => x.id === m[1]); UI.piso = u.piso; setView('planta'); pintarPlanta(); abrirFicha(u.id); }
+  setTimeout(() => $('#skel').classList.add('off'), 250);
+  setInterval(cargar, CONFIG.refrescoSeg * 1000);
+})();
+</script>
+</body>
+</html>
