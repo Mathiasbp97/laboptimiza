@@ -40,28 +40,78 @@ label.f{display:block;font-size:12px;color:var(--tx2);margin-bottom:5px}
 #login .fld{margin-bottom:12px}
 .err{color:#f87171;font-size:13px;margin-top:10px;min-height:18px}
 
-/* app */
+/* app — layout */
 #app{display:none}
-.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:12px 22px;background:rgba(15,17,21,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln)}
-.top svg.lg{height:16px;color:#fff}
-.top .sp{flex:1}
-.tabs{display:flex;gap:4px}
-.tabs button{padding:8px 13px;border-radius:9px;color:var(--tx2);font-weight:500}
-.tabs button.on,.tabs button:hover{background:var(--bg3);color:var(--tx)}
-.who{font-size:12.5px;color:var(--tx3)}
-main{padding:22px;max-width:1440px;margin:0 auto}
-.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}
-.kpi{padding:14px 16px}.kpi small{display:block;font-size:11.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em}
-.kpi b{display:block;font-size:22px;font-weight:700;margin-top:4px}.kpi span{font-size:12px;color:var(--tx2)}
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}.top{flex-wrap:wrap}.tabs{order:3;width:100%;overflow-x:auto}main{padding:14px}}
-.sec{display:none}.sec.on{display:block}
-.row2{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
-@media(max-width:1000px){.row2{grid-template-columns:1fr}}
-.ph{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--ln)}
-.ph h3{font-size:14.5px}
-.pb{padding:14px 16px}
-
+.side{position:fixed;inset:0 auto 0 0;width:232px;background:#0c0e11;border-right:1px solid var(--ln);display:flex;flex-direction:column;padding:20px 14px;z-index:30}
+.sbrand{display:flex;flex-direction:column;gap:6px;padding:4px 10px 22px}.sbrand svg.lg{height:17px;width:auto;color:#fff}.sbrand small{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3)}
+.snav{display:flex;flex-direction:column;gap:2px}
+.snav button{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:var(--tx2);font-weight:500;font-size:14px;text-align:left;transition:background .15s,color .15s}
+.snav button svg{width:18px;height:18px;flex:none}
+.snav button:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+.snav button.on{background:rgba(200,121,65,.14);color:#fff}.snav button.on svg{color:var(--ac)}
+.sfoot{margin-top:auto;display:grid;gap:8px;padding:12px 6px 0;border-top:1px solid var(--ln)}
+.who{font-size:12px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 4px}
+.btn.sm{padding:8px 12px;font-size:12.5px}
+.mtop,.bnav{display:none}
+main{margin-left:232px;padding:26px 30px 40px;max-width:1500px}
+.ptop{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.ptop small{font-size:12px;color:var(--tx3);letter-spacing:.04em}.ptop h1{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:2px}
+.pact{display:flex;gap:8px;flex-wrap:wrap}
+.sec{display:none}.sec.on{display:block;animation:fi .25s ease}@keyframes fi{from{opacity:0;transform:translateY(6px)}}
+.grid{display:grid;gap:16px;margin-bottom:16px}.g-3-2{grid-template-columns:3fr 2fr}.g-1-1{grid-template-columns:1fr 1fr}
+@media(max-width:1180px){.g-3-2,.g-1-1{grid-template-columns:1fr}}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 18px 12px;border-bottom:1px solid var(--ln)}
+.ph.wrap{flex-wrap:wrap;align-items:center}
+.ph h3{font-size:14.5px;font-weight:650}.ph .sub{display:block;font-size:12px;color:var(--tx3);margin-top:2px}
+.pb{padding:14px 18px 16px}
+.ch{position:relative;height:280px}.ch canvas{max-height:none!important}
+.chEmpty[hidden]{display:none!important}.chEmpty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;color:var(--tx3);font-size:13px}
+.dona{height:230px}.donaC{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center}
+.donaC b{display:block;font-size:30px;font-weight:700;letter-spacing:-.02em}.donaC span{font-size:11.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
+.lgd{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}.lgd div{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tx2)}.lgd i{width:9px;height:9px;border-radius:3px;flex:none}.lgd b{margin-left:auto;color:var(--tx);font-variant-numeric:tabular-nums}
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}.kpis.k4{grid-template-columns:repeat(4,1fr)}
+.kpi{padding:16px;position:relative;overflow:hidden}
+.kpi .kh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.kpi small{font-size:11.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kpi .ki{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.05);flex:none}.kpi .ki svg{width:16px;height:16px}
+.kpi b{display:block;font-size:clamp(18px,1.55vw,24px);white-space:nowrap;font-weight:700;margin-top:10px;letter-spacing:-.02em;line-height:1.15}.kpi b span{font-size:14px;color:var(--tx3);font-weight:500}
+.kpi .ks{display:block;font-size:12px;color:var(--tx2);margin-top:4px}
+.kpi .kb{height:5px;border-radius:9px;background:var(--bg3);margin-top:12px;overflow:hidden;display:flex}.kpi .kb i{display:block;height:100%}
+.kpi.ok .ki{background:rgba(16,185,129,.14);color:#34d399}.kpi.wa .ki{background:rgba(245,158,11,.14);color:#fbbf24}.kpi.ac .ki{background:rgba(200,121,65,.16);color:#e3a06e}.kpi.bl .ki{background:rgba(59,130,246,.14);color:#60a5fa}.kpi.rd .ki{background:rgba(239,68,68,.14);color:#f87171}
+@media(max-width:1380px){.kpis{grid-template-columns:repeat(3,1fr)}}
+/* alertas */
+.alist{display:flex;flex-direction:column;max-height:404px;overflow:auto}.g-3-2{align-items:start}
+.al{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--ln);text-align:left;width:100%;transition:background .15s}
+.al:hover{background:rgba(255,255,255,.025)}.al:last-child{border-bottom:0}
+.al .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none;font-weight:700;font-size:13px}
+.al .dot.rd{background:rgba(239,68,68,.14);color:#f87171}.al .dot.wa{background:rgba(245,158,11,.14);color:#fbbf24}.al .dot.ok{background:rgba(16,185,129,.14);color:#34d399}
+.al b{display:block;font-size:13.5px}.al small{display:block;color:var(--tx3);font-size:12px}.al .am{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dl{display:grid;gap:10px}
+/* celular acostado */
+@media(orientation:landscape) and (max-height:520px){
+  .kpis,.kpis.k4{grid-template-columns:repeat(3,1fr)!important}
+  .mtop{padding:6px 16px}.bnav{padding:3px 4px calc(3px + env(safe-area-inset-bottom))}.bnav button{flex-direction:row;justify-content:center;gap:6px;font-size:11.5px}.bnav button svg{width:17px;height:17px}
+  main{padding-bottom:64px}.ch{height:210px}
+}
+/* celular */
+@media(max-width:900px){
+  .side{display:none}
+  .mtop{display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:30;padding:12px 16px;background:rgba(15,17,21,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln)}
+  .mtop .sbrand{padding:0;flex:1}.mtop svg.lg{height:15px}
+  .ib{width:36px;height:36px;border-radius:10px;border:1px solid var(--ln2);display:grid;place-items:center;font-size:15px;color:var(--tx2)}
+  main{margin:0;padding:16px 14px 96px}
+  .ptop{margin-bottom:14px}.ptop h1{font-size:22px}
+  .bnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(12,14,17,.96);backdrop-filter:blur(14px);border-top:1px solid var(--ln);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;font-size:10.5px;font-weight:600;color:var(--tx3);border-radius:10px}
+  .bnav button svg{width:21px;height:21px}.bnav button.on{color:#fff}.bnav button.on svg{color:var(--ac)}
+  .kpis,.kpis.k4{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:13px}.kpi b{font-size:19px;margin-top:8px}.kpi .ks{font-size:11.5px}.kpi .ki{width:26px;height:26px}
+  .ch{height:230px}.dona{height:200px}
+  .ph{padding:14px 14px 10px}.pb{padding:12px 14px 14px}
+  .tools{width:100%}.tools input{flex:1;min-width:0;width:auto}.tools select{flex:1}
+  .ptop .pact{display:none}
+}
 /* tablero de unidades */
 .board{display:grid;gap:8px}
 .frow{display:grid;grid-template-columns:62px 1fr;gap:8px;align-items:stretch}
@@ -118,10 +168,22 @@ tr.click{cursor:pointer}
 .plan td{padding:5px 6px}
 .hint{font-size:12px;color:var(--tx3);margin-top:6px}
 .tip{border-bottom:1px dotted var(--tx3);cursor:help}
-#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,140%);z-index:99;background:var(--bg3);border:1px solid var(--ln2);padding:11px 18px;border-radius:10px;transition:transform .25s}
-#toast.on{transform:translate(-50%,0)}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,160px);opacity:0;z-index:99;background:var(--bg3);border:1px solid var(--ln2);padding:11px 18px;border-radius:10px;transition:transform .25s,opacity .25s}
+#toast.on{transform:translate(-50%,0);opacity:1}
+@media(max-width:900px){#toast{bottom:84px}}
 #toast.e{border-color:rgba(239,68,68,.6)}
 canvas{max-height:300px}
+@media(max-width:700px){
+  table.resp thead{display:none}
+  table.resp,table.resp tbody,table.resp tr,table.resp td{display:block;width:100%}
+  table.resp tr{padding:12px 14px;border-bottom:1px solid var(--ln)}
+  table.resp td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:3px 0;border:0;white-space:normal;text-align:right!important}
+  table.resp td:before{content:attr(data-l);color:var(--tx3);font-size:12px;text-align:left;flex:none}
+  table.resp td:first-child{font-size:15px;padding-bottom:6px}table.resp td:first-child:before{content:none}
+  table.resp td:empty{display:none}
+  .tw{max-height:none}
+  .units{grid-template-columns:repeat(4,minmax(0,1fr))}.ut{min-height:58px;padding:7px}.ut small:last-child{display:none}.frow{grid-template-columns:40px 1fr}
+}
 @media print{.top,.tools,#dr,.btn{display:none!important}body{background:#fff;color:#000}.card{border-color:#ccc;background:#fff}}
 </style>
 </head>
@@ -150,7 +212,8 @@ canvas{max-height:300px}
   <div class="err" id="lErr"></div></div></section>
 
 <section id="app">
-  <div class="top"><svg class="lg" role="img" aria-label="VIDALTA" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 255 722 84">
+  <aside class="side">
+    <div class="sbrand"><svg class="lg" role="img" aria-label="VIDALTA" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 255 722 84">
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 208.878906 321.613281 L 189.957031 263.339844 L 179.667969 263.339844 L 201.859375 331.617188 L 216.132812 331.617188 L 238.320312 263.339844 L 228.035156 263.339844 Z M 208.878906 321.613281 "/>
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 284.316406 331.621094 L 294.226562 331.621094 L 294.226562 263.34375 L 284.316406 263.34375 Z M 284.316406 331.621094 "/>
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 388.777344 308.480469 C 387.765625 311.925781 386.175781 314.828125 384.007812 317.183594 C 381.84375 319.539062 379.023438 321.042969 375.546875 321.710938 C 374.410156 321.898438 373.097656 322.023438 371.609375 322.089844 C 370.125 322.152344 368.84375 322.183594 367.769531 322.183594 L 356.53125 322.183594 L 356.53125 272.777344 L 367.769531 272.777344 C 368.8125 272.777344 370.085938 272.796875 371.585938 272.84375 C 373.085938 272.894531 374.410156 273.027344 375.546875 273.25 C 378.960938 273.878906 381.75 275.359375 383.917969 277.683594 C 386.078125 280.003906 387.683594 282.882812 388.726562 286.3125 C 389.769531 289.742188 390.292969 293.464844 390.292969 297.480469 C 390.292969 301.367188 389.785156 305.035156 388.777344 308.480469 Z M 389.746094 269.503906 C 386.09375 266.34375 381.597656 264.425781 376.257812 263.765625 C 374.675781 263.546875 373.023438 263.417969 371.300781 263.386719 C 369.578125 263.355469 368.398438 263.335938 367.769531 263.335938 L 346.386719 263.335938 L 346.386719 331.621094 L 367.769531 331.621094 C 368.398438 331.621094 369.578125 331.601562 371.300781 331.570312 C 373.023438 331.542969 374.675781 331.414062 376.257812 331.191406 C 381.597656 330.527344 386.09375 328.625 389.746094 325.480469 C 393.398438 322.332031 396.152344 318.335938 398.023438 313.484375 C 399.886719 308.632812 400.820312 303.292969 400.820312 297.480469 C 400.820312 291.695312 399.886719 286.378906 398.023438 281.519531 C 396.152344 276.667969 393.398438 272.664062 389.746094 269.503906 "/>
@@ -164,50 +227,86 @@ canvas{max-height:300px}
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 321.828125 L 133.671875 322.734375 L 112.804688 322.734375 L 109.988281 320.800781 L 109.972656 320.789062 L 109.972656 305.601562 L 131.363281 320.242188 L 131.742188 320.503906 Z M 133.671875 321.828125 "/>
 <path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 76.78125 322.734375 L 124.890625 322.734375 L 124.890625 272.222656 L 76.78125 272.222656 Z M 133.675781 331.515625 L 67.996094 331.515625 L 67.996094 263.441406 L 133.675781 263.441406 Z M 133.675781 331.515625 "/>
 </svg>
-<div class="tabs" id="tabs">
-      <button data-s="unidades" class="on">Unidades</button><button data-s="cobranzas">Ventas y cobranzas</button><button data-s="informes">Informes</button><button data-s="actividad">Actividad</button></div>
-    <div class="sp"></div><a class="btn btn-g" href="./" target="_blank">Ver showroom ↗</a><span class="who" id="who"></span>
-    <button class="btn btn-g" id="salir">Salir</button></div>
+<small>Panel de ventas</small></div>
+    <nav class="snav" id="tabs"><button data-s="resumen" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span>Resumen</span></button><button data-s="unidades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Unidades</span></button><button data-s="cobranzas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg><span>Cobranzas</span></button><button data-s="informes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 17v-3M12 17v-6M16 17v-4"/></svg><span>Informes</span></button><button data-s="actividad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>Actividad</span></button></nav>
+    <div class="sfoot"><a class="btn btn-g sm" href="./" target="_blank">Ver showroom ↗</a><div class="who" id="who"></div><button class="btn btn-g sm" id="salir">Salir</button></div>
+  </aside>
+  <div class="mtop"><div class="sbrand"><svg class="lg" role="img" aria-label="VIDALTA" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="60 255 722 84">
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 208.878906 321.613281 L 189.957031 263.339844 L 179.667969 263.339844 L 201.859375 331.617188 L 216.132812 331.617188 L 238.320312 263.339844 L 228.035156 263.339844 Z M 208.878906 321.613281 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 284.316406 331.621094 L 294.226562 331.621094 L 294.226562 263.34375 L 284.316406 263.34375 Z M 284.316406 331.621094 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 388.777344 308.480469 C 387.765625 311.925781 386.175781 314.828125 384.007812 317.183594 C 381.84375 319.539062 379.023438 321.042969 375.546875 321.710938 C 374.410156 321.898438 373.097656 322.023438 371.609375 322.089844 C 370.125 322.152344 368.84375 322.183594 367.769531 322.183594 L 356.53125 322.183594 L 356.53125 272.777344 L 367.769531 272.777344 C 368.8125 272.777344 370.085938 272.796875 371.585938 272.84375 C 373.085938 272.894531 374.410156 273.027344 375.546875 273.25 C 378.960938 273.878906 381.75 275.359375 383.917969 277.683594 C 386.078125 280.003906 387.683594 282.882812 388.726562 286.3125 C 389.769531 289.742188 390.292969 293.464844 390.292969 297.480469 C 390.292969 301.367188 389.785156 305.035156 388.777344 308.480469 Z M 389.746094 269.503906 C 386.09375 266.34375 381.597656 264.425781 376.257812 263.765625 C 374.675781 263.546875 373.023438 263.417969 371.300781 263.386719 C 369.578125 263.355469 368.398438 263.335938 367.769531 263.335938 L 346.386719 263.335938 L 346.386719 331.621094 L 367.769531 331.621094 C 368.398438 331.621094 369.578125 331.601562 371.300781 331.570312 C 373.023438 331.542969 374.675781 331.414062 376.257812 331.191406 C 381.597656 330.527344 386.09375 328.625 389.746094 325.480469 C 393.398438 322.332031 396.152344 318.335938 398.023438 313.484375 C 399.886719 308.632812 400.820312 303.292969 400.820312 297.480469 C 400.820312 291.695312 399.886719 286.378906 398.023438 281.519531 C 396.152344 276.667969 393.398438 272.664062 389.746094 269.503906 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 461.460938 306.914062 L 472.378906 273.238281 L 483.421875 306.914062 Z M 465.355469 263.335938 L 443.160156 331.621094 L 453.453125 331.621094 L 458.445312 316.207031 L 486.472656 316.207031 L 491.527344 331.621094 L 501.816406 331.621094 L 479.628906 263.335938 Z M 465.355469 263.335938 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 559.144531 263.339844 L 549.230469 263.339844 L 549.230469 331.617188 L 590.0625 331.617188 L 590.0625 322.277344 L 559.144531 322.277344 Z M 559.144531 263.339844 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 620.882812 272.679688 L 643.59375 272.679688 L 643.59375 331.617188 L 653.503906 331.617188 L 653.503906 272.679688 L 676.214844 272.679688 L 676.214844 263.339844 L 620.882812 263.339844 Z M 620.882812 272.679688 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 733.394531 306.914062 L 744.3125 273.238281 L 755.359375 306.914062 Z M 763.460938 331.621094 L 773.75 331.621094 L 751.5625 263.335938 L 737.289062 263.335938 L 715.097656 331.621094 L 725.390625 331.621094 L 730.382812 316.207031 L 758.410156 316.207031 Z M 763.460938 331.621094 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 109.96875 274.34375 L 109.96875 289.53125 L 69.929688 316.9375 L 67.996094 318.261719 L 67.996094 303.074219 L 69.929688 301.753906 Z M 109.96875 274.34375 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 290.570312 L 133.671875 305.757812 L 131.742188 304.433594 L 131.363281 304.175781 L 109.972656 289.53125 L 109.972656 274.347656 L 131.363281 288.988281 L 131.742188 289.25 Z M 133.671875 290.570312 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 109.96875 305.601562 L 109.96875 320.789062 L 109.949219 320.800781 L 107.128906 322.734375 L 84.9375 322.734375 L 87.757812 320.800781 L 88.296875 320.433594 Z M 109.96875 305.601562 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 133.671875 321.828125 L 133.671875 322.734375 L 112.804688 322.734375 L 109.988281 320.800781 L 109.972656 320.789062 L 109.972656 305.601562 L 131.363281 320.242188 L 131.742188 320.503906 Z M 133.671875 321.828125 "/>
+<path fill-rule="nonzero" fill="currentColor" fill-opacity="1" d="M 76.78125 322.734375 L 124.890625 322.734375 L 124.890625 272.222656 L 76.78125 272.222656 Z M 133.675781 331.515625 L 67.996094 331.515625 L 67.996094 263.441406 L 133.675781 263.441406 Z M 133.675781 331.515625 "/>
+</svg>
+</div><a class="ib" href="./" target="_blank" aria-label="Ver showroom">↗</a><button class="ib" id="salirM" aria-label="Salir">⎋</button></div>
   <main>
-    <div class="kpis" id="kpis"></div>
+    <header class="ptop"><div><small id="pKick">Vidalta · Bella Vista</small><h1 id="pTit">Resumen</h1></div><div class="pact" id="pAct"></div></header>
 
-    <div class="sec on" id="s-unidades">
-      <div class="card" style="margin-bottom:16px"><div class="ph"><h3>Tablero por piso</h3><div class="legend"><span><i style="background:var(--ok)"></i>Libre</span><span><i style="background:var(--res)"></i>Reservado</span><span><i style="background:var(--sen)"></i>Señado</span><span><i style="background:var(--ven)"></i>Vendido</span><span><i style="background:var(--blk)"></i>Bloqueado</span><span><i style="background:#ef4444;border-radius:50%"></i>Cuota vencida</span></div></div>
+    <div class="sec on" id="s-resumen">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid g-3-2">
+        <div class="card"><div class="ph"><div><h3>Ventas por mes</h3><span class="sub">Unidades vendidas y señadas según fecha de venta · absorción acumulada</span></div></div><div class="pb ch"><canvas id="chMes"></canvas><div class="chEmpty" id="emMes" hidden>Cargá la fecha de cada venta para ver la evolución mensual.</div></div></div>
+        <div class="card"><div class="ph"><div><h3>Estado del edificio</h3><span class="sub" id="subDona"></span></div></div><div class="pb ch dona"><canvas id="chDona"></canvas><div class="donaC" id="donaC"></div></div><div class="pb" style="padding-top:0"><div class="lgd" id="lgdDona"></div></div></div>
+      </div>
+      <div class="grid g-3-2">
+        <div class="card"><div class="ph"><div><h3>Cobranzas · próximos 12 meses</h3><span class="sub">Cobrado, vencido y a cobrar según los planes de pago</span></div></div><div class="pb ch"><canvas id="chCob12"></canvas><div class="chEmpty" id="emCob" hidden>Todavía no hay planes de pago cargados.</div></div></div>
+        <div class="card"><div class="ph"><div><h3>Alertas</h3><span class="sub">Lo que necesita atención hoy</span></div></div><div class="alist" id="alertas"></div></div>
+      </div>
+      <div class="grid g-1-1">
+        <div class="card"><div class="ph"><div><h3>Disponibilidad por tipología</h3></div></div><div class="pb ch"><canvas id="chTipo"></canvas></div></div>
+        <div class="card"><div class="ph"><div><h3>Precio por m² según piso</h3><span class="sub">Promedio vendido vs. lista de lo disponible (USD/m²)</span></div></div><div class="pb ch"><canvas id="chPiso"></canvas></div></div>
+      </div>
+    </div>
+
+    <div class="sec" id="s-unidades">
+      <div class="card" style="margin-bottom:16px"><div class="ph"><div><h3>Tablero por piso</h3><span class="sub">Tocá una unidad para editarla o cargar la venta</span></div><div class="legend"><span><i style="background:var(--ok)"></i>Libre</span><span><i style="background:var(--res)"></i>Reservado</span><span><i style="background:var(--sen)"></i>Señado</span><span><i style="background:var(--ven)"></i>Vendido</span><span><i style="background:var(--blk)"></i>Bloqueado</span><span><i style="background:var(--ven);border-radius:50%;width:7px;height:7px"></i>Cuota vencida</span></div></div>
         <div class="pb"><div class="board" id="board"></div></div></div>
-      <div class="card"><div class="ph"><h3>Listado de unidades</h3><div class="tools"><input id="qU" placeholder="Buscar unidad, cliente…"><select id="fE"><option value="">Todos los estados</option><option value="libre">Libre</option><option value="reservado">Reservado</option><option value="senado">Señado</option><option value="vendido">Vendido</option><option value="bloqueado">Bloqueado</option></select>
+      <div class="card"><div class="ph wrap"><h3>Listado de unidades</h3><div class="tools"><input id="qU" placeholder="Buscar unidad o cliente…"><select id="fE"><option value="">Todos los estados</option><option value="libre">Libre</option><option value="reservado">Reservado</option><option value="senado">Señado</option><option value="vendido">Vendido</option><option value="bloqueado">Bloqueado</option></select>
         <select id="fT"><option value="">Todas las tipologías</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select></div></div>
-        <div class="tw"><table id="tU"></table></div></div>
+        <div class="tw"><table id="tU" class="resp"></table></div></div>
     </div>
 
     <div class="sec" id="s-cobranzas">
-      <div class="row2" style="margin-bottom:16px">
-        <div class="card"><div class="ph"><h3>Flujo de cobranzas por mes</h3><span class="hint" style="margin:0">Cuotas cargadas en los planes de pago</span></div><div class="pb"><canvas id="chFlujo"></canvas></div></div>
-        <div class="card"><div class="ph"><h3>Cuotas vencidas sin cobrar</h3><span class="pill venc" id="nVenc"></span></div><div class="tw" style="max-height:340px"><table id="tVenc"></table></div></div>
+      <div class="kpis k4" id="kCob"></div>
+      <div class="grid g-3-2">
+        <div class="card"><div class="ph"><div><h3>Flujo de cobranzas por mes</h3><span class="sub">Cuotas cargadas en los planes de pago</span></div></div><div class="pb ch"><canvas id="chFlujo"></canvas></div></div>
+        <div class="card"><div class="ph"><div><h3>Cuotas vencidas sin cobrar</h3></div><span class="pill venc" id="nVenc"></span></div><div class="tw" style="max-height:360px"><table id="tVenc" class="resp"></table></div></div>
       </div>
-      <div class="card"><div class="ph"><h3>Cartera por cliente</h3><div class="tools"><input id="qV" placeholder="Buscar cliente o unidad…"><button class="btn btn-g" id="xlsCart">Excel</button></div></div><div class="tw"><table id="tV"></table></div></div>
+      <div class="card"><div class="ph wrap"><h3>Cartera por cliente</h3><div class="tools"><input id="qV" placeholder="Buscar cliente o unidad…"><button class="btn btn-g" id="xlsCart">Excel</button></div></div><div class="tw"><table id="tV" class="resp"></table></div></div>
     </div>
 
     <div class="sec" id="s-informes">
-      <div class="row2" style="margin-bottom:16px">
-        <div class="card"><div class="ph"><h3>Descargas</h3></div><div class="pb" style="display:grid;gap:10px">
-          <button class="btn btn-p" id="xlsAll"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Excel completo (unidades, ventas, cuotas, flujo, tipologías)</button>
-          <button class="btn btn-g" id="pdfRes">PDF · Informe de ventas para directorio</button>
-          <button class="btn btn-g" id="jsonBk">Respaldo de datos (JSON)</button>
-          <p class="hint">Los informes se generan con los datos en vivo del panel, al momento de descargarlos.</p></div></div>
-        <div class="card"><div class="ph"><h3>Avance comercial</h3></div><div class="pb"><canvas id="chAvance"></canvas></div></div>
+      <div class="kpis" id="kInf"></div>
+      <div class="grid g-1-1">
+        <div class="card"><div class="ph"><div><h3>Absorción acumulada</h3><span class="sub">Unidades comprometidas en el tiempo vs. total del edificio</span></div></div><div class="pb ch"><canvas id="chAbs"></canvas><div class="chEmpty" id="emAbs" hidden>Sin fechas de venta cargadas.</div></div></div>
+        <div class="card"><div class="ph"><div><h3>Facturación por tipología</h3><span class="sub">Vendido vs. stock a precio de lista (USD)</span></div></div><div class="pb ch"><canvas id="chFact"></canvas></div></div>
       </div>
-      <div class="card"><div class="ph"><h3>Resumen por tipología</h3></div><div class="tw"><table id="tTip"></table></div></div>
+      <div class="grid g-3-2">
+        <div class="card"><div class="ph"><h3>Resumen por tipología</h3></div><div class="tw"><table id="tTip" class="resp"></table></div></div>
+        <div class="card"><div class="ph"><div><h3>Descargas</h3><span class="sub">Generadas con los datos en vivo, al momento</span></div></div><div class="pb dl">
+          <button class="btn btn-p" id="pdfRes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Informe para directorio (PDF con gráficos)</button>
+          <button class="btn btn-g" id="xlsAll">Excel completo · unidades, ventas, cuotas, flujo</button>
+          <button class="btn btn-g" id="jsonBk">Respaldo de datos (JSON)</button></div></div>
+      </div>
     </div>
 
     <div class="sec" id="s-actividad">
-      <div class="row2">
-        <div class="card"><div class="ph"><h3>Interés en el showroom · últimos 90 días</h3><span class="hint" style="margin:0">Vistas de ficha y clics en WhatsApp</span></div><div class="tw"><table id="tInt"></table></div></div>
-        <div class="card"><div class="ph"><h3>Historial de cambios</h3></div><div class="tw"><table id="tHist"></table></div></div>
+      <div class="grid g-1-1">
+        <div class="card"><div class="ph"><div><h3>Interés en el showroom</h3><span class="sub">Últimos 90 días · vistas de ficha y clics en WhatsApp</span></div></div><div class="pb ch"><canvas id="chInt"></canvas><div class="chEmpty" id="emInt" hidden>Todavía no hay visitas registradas en el showroom.</div></div><div class="tw"><table id="tInt" class="resp"></table></div></div>
+        <div class="card"><div class="ph"><h3>Historial de cambios</h3></div><div class="tw"><table id="tHist" class="resp"></table></div></div>
       </div>
       <div class="card" style="margin-top:16px"><div class="ph"><h3>Usuarios</h3></div><div class="pb"><div class="g3"><div><label class="f">Email del nuevo administrador</label><input id="nuEmail" type="email"></div><div><label class="f">Nombre</label><input id="nuNom"></div><div><label class="f">Contraseña inicial (mín. 10)</label><input id="nuPass" type="password" autocomplete="new-password"></div></div>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-g" id="nuBtn">Agregar administrador</button><button class="btn btn-g" id="cpBtn">Cambiar mi contraseña</button></div></div></div>
     </div>
   </main>
+  <nav class="bnav" id="bnav"><button data-s="resumen" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span>Resumen</span></button><button data-s="unidades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Unidades</span></button><button data-s="cobranzas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg><span>Cobranzas</span></button><button data-s="informes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 17v-3M12 17v-6M16 17v-4"/></svg><span>Informes</span></button><button data-s="actividad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>Actividad</span></button></nav>
 </section>
 
 <div id="dr"><div class="bk" id="drBk"></div><div class="pn"><div class="hd"><div id="drT"></div><button class="x" id="drX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="bd" id="drB"></div><div class="ft" id="drF"></div></div></div>
@@ -277,23 +376,104 @@ function derivar() {
 async function entrar() { $('#login').style.display = 'none'; $('#app').style.display = 'block';
   try { await cargar(); $('#who').textContent = DB.yo ? DB.yo.nombre || DB.yo.email : ''; } catch (e) { toast(e.message, 1); } }
 
-/* ---------- KPIs ---------- */
-function pintarKpis() {
-  const U = DB.unidades, n = U.length, c = e => U.filter(u => u.estado === e);
-  const vend = c('vendido'), res = [...c('reservado'), ...c('senado')], lib = c('libre');
-  const totVend = DB.ventas.filter(v => v.estado === 'vendido').reduce((a, v) => a + v.precio_cerrado, 0);
-  const stock = lib.reduce((a, u) => a + u.precio_lista, 0);
-  const cobr = DB.ventas.reduce((a, v) => a + v.cobrado, 0), venc = DB.ventas.reduce((a, v) => a + v.vencido, 0);
-  const m2v = vend.reduce((a, u) => a + u.m2, 0);
-  $('#kpis').innerHTML = [
-    ['Vendidas', `${vend.length} <span>/ ${n}</span>`, `${Math.round(vend.length / n * 100)}% del edificio`],
-    ['Reservadas y señadas', res.length, `${c('reservado').length} reservas · ${c('senado').length} señas`],
-    ['Libres', lib.length, `Stock a lista ${money(stock)}`],
-    ['Facturación vendida', money(totVend), m2v ? `${money(totVend / m2v)}/m² promedio` : ''],
-    ['Cobrado (planes cargados)', money(cobr), `${DB.ventas.filter(v => v.sinPlan).length} ventas sin plan cargado`],
-    ['Vencido sin cobrar', `<span style="color:${venc ? '#f87171' : 'inherit'};font-size:inherit">${money(venc)}</span>`, `${DB.cuotas.filter(x => !x.pagado && x.fecha < hoy()).length} cuotas`]
-  ].map(([a, b, c]) => `<div class="card kpi"><small>${a}</small><b class="num">${b}</b><span>${c}</span></div>`).join('');
+/* ---------- métricas ---------- */
+const COL = { libre: '#10B981', reservado: '#F59E0B', senado: '#3B82F6', vendido: '#EF4444', bloqueado: '#6b7280' };
+const ICO = { casa: '<path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/>', check: '<path d="M20 6 9 17l-5-5"/>', usd: '<path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', m2: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>', cob: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>', alert: '<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>', ritmo: '<path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 6-6"/>', reloj: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', ticket: '<path d="M3 7h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4z"/>', stock: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>' };
+const ic = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
+const kpi = (cls, k, t, v, sub, bar) => `<div class="card kpi ${cls}"><div class="kh"><small>${t}</small><span class="ki">${ic(k)}</span></div><b class="num">${v}</b><span class="ks">${sub || ''}</span>${bar ? `<div class="kb">${bar}</div>` : ''}</div>`;
+const segs = parts => parts.map(([v, c]) => `<i style="width:${Math.max(0, v * 100)}%;background:${c}"></i>`).join('');
+const usdK = n => n >= 1e6 ? 'USD ' + (n / 1e6).toLocaleString(CONFIG.locale, { maximumFractionDigits: 2 }) + ' M' : money(n);
+function M() {   // todas las métricas comerciales en un solo lugar (auditable)
+  const U = DB.unidades, n = U.length, by = e => U.filter(u => u.estado === e);
+  const vend = by('vendido'), sen = by('senado'), res = by('reservado'), lib = by('libre'), blq = by('bloqueado');
+  const vv = DB.ventas.filter(v => v.estado === 'vendido'), um = id => (U.find(u => u.id === id) || {}).m2 || 0;
+  const fact = vv.reduce((a, v) => a + v.precio_cerrado, 0), m2v = vv.reduce((a, v) => a + um(v.unidad_id), 0);
+  const stock = lib.reduce((a, u) => a + u.precio_lista, 0), m2l = lib.reduce((a, u) => a + u.m2, 0);
+  const cartera = DB.ventas.reduce((a, v) => a + v.total, 0), cob = DB.ventas.reduce((a, v) => a + v.cobrado, 0), venc = DB.ventas.reduce((a, v) => a + v.vencido, 0);
+  const comp = vend.length + sen.length + res.length;
+  const fechas = DB.ventas.filter(v => v.fecha).map(v => v.fecha).sort();
+  const meses = fechas.length ? Math.max(1, (new Date(hoy()) - new Date(fechas[0])) / 2629800000) : 0;
+  const ritmo = meses ? DB.ventas.filter(v => v.fecha).length / meses : 0;
+  return { n, vend, sen, res, lib, blq, comp, fact, m2v, pm2v: m2v ? fact / m2v : 0, pm2l: m2l ? stock / m2l : 0, stock, cartera, cob, venc, saldo: cartera - cob,
+    ticket: vv.length ? fact / vv.length : 0, ritmo, agotar: ritmo ? lib.length / ritmo : 0, nVenc: DB.cuotas.filter(x => !x.pagado && x.fecha && x.fecha < hoy()).length, sinPlan: DB.ventas.filter(v => v.sinPlan).length, conFecha: fechas.length };
 }
+function pintarKpis() {
+  const k = M(), p = x => Math.round(x * 100) + '%';
+  $('#kpis').innerHTML = [
+    kpi('ok', 'check', 'Vendidas', `${k.vend.length} <span>/ ${k.n}</span>`, `${p(k.vend.length / k.n)} del edificio`, segs([[k.vend.length / k.n, COL.vendido], [k.sen.length / k.n, COL.senado], [k.res.length / k.n, COL.reservado]])),
+    kpi('wa', 'casa', 'Comprometidas', `${k.comp} <span>u.</span>`, `${k.sen.length} señadas · ${k.res.length} reservadas`, segs([[k.comp / k.n, COL.reservado]])),
+    kpi('ac', 'usd', 'Facturación vendida', usdK(k.fact), k.ticket ? `Ticket promedio ${money(k.ticket)}` : 'Sin ventas cerradas'),
+    kpi('bl', 'm2', 'USD/m² vendido', k.pm2v ? fmt(k.pm2v) : '—', k.pm2l ? `Lista disponible ${fmt(k.pm2l)}/m²` : ''),
+    kpi('ok', 'cob', 'Cobrado', usdK(k.cob), k.cartera ? `${p(k.cob / k.cartera)} de la cartera · ${k.sinPlan} sin plan` : 'Sin planes cargados', k.cartera ? segs([[k.cob / k.cartera, COL.libre]]) : ''),
+    kpi(k.venc ? 'rd' : 'ok', 'alert', 'Vencido sin cobrar', `<span style="color:${k.venc ? '#f87171' : 'inherit'};font-size:inherit;font-weight:inherit">${money(k.venc)}</span>`, `${k.nVenc} cuotas vencidas`)
+  ].join('');
+}
+
+/* ---------- gráficos ---------- */
+const CH = {};
+Chart.defaults.font.family = '"Plus Jakarta Sans",system-ui,sans-serif'; Chart.defaults.color = '#8b909a'; Chart.defaults.font.size = 11.5;
+Chart.defaults.plugins.legend.labels.boxWidth = 10; Chart.defaults.plugins.legend.labels.boxHeight = 10; Chart.defaults.plugins.legend.labels.useBorderRadius = true; Chart.defaults.plugins.legend.labels.borderRadius = 3;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1e2128'; Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,255,255,.12)'; Chart.defaults.plugins.tooltip.borderWidth = 1; Chart.defaults.plugins.tooltip.padding = 10; Chart.defaults.plugins.tooltip.cornerRadius = 8;
+const GRID = { color: 'rgba(255,255,255,.05)' }, NOGRID = { display: false };
+function graf(id, cfg) { if (CH[id]) CH[id].destroy(); cfg.options = { responsive: true, maintainAspectRatio: false, ...cfg.options }; CH[id] = new Chart($('#' + id), cfg); return CH[id]; }
+const mesLbl = k => new Date(k + '-15').toLocaleDateString(CONFIG.locale, { month: 'short', year: '2-digit' }).replace('.', '');
+function ventasPorMes() {
+  const V = DB.ventas.filter(v => v.fecha), Mm = {};
+  V.forEach(v => { const k = v.fecha.slice(0, 7); Mm[k] = Mm[k] || { n: 0, usd: 0 }; Mm[k].n++; Mm[k].usd += v.precio_cerrado; });
+  const ks = Object.keys(Mm).sort(); if (!ks.length) return [];
+  const out = []; let d = new Date(ks[0] + '-01'), fin = new Date(hoy().slice(0, 7) + '-01'), acc = 0;
+  while (d <= fin) { const k = d.toISOString().slice(0, 7), x = Mm[k] || { n: 0, usd: 0 }; acc += x.n; out.push({ mes: k, n: x.n, usd: x.usd, acc }); d.setMonth(d.getMonth() + 1); }
+  return out;
+}
+function cobranza12() {
+  const F = {}; flujoMensual().forEach(f => F[f.mes] = f);
+  const out = [], d = new Date(hoy().slice(0, 7) + '-01'); d.setMonth(d.getMonth() - 3);
+  for (let i = 0; i < 12; i++) { const k = d.toISOString().slice(0, 7); out.push({ mes: k, ...(F[k] || { cobrado: 0, vencido: 0, pendiente: 0 }) }); d.setMonth(d.getMonth() + 1); }
+  return out;
+}
+function pintarResumen() {
+  const k = M();
+  // ventas por mes
+  const VM = ventasPorMes(); $('#emMes').hidden = !!VM.length; $('#chMes').style.visibility = VM.length ? '' : 'hidden';
+  graf('chMes', { data: { labels: VM.map(x => mesLbl(x.mes)), datasets: [
+    { type: 'bar', label: 'Unidades vendidas en el mes', data: VM.map(x => x.n), backgroundColor: CONFIG.colorAcento, borderRadius: 6, maxBarThickness: 26, yAxisID: 'y' },
+    { type: 'line', label: '% del edificio acumulado', data: VM.map(x => Math.round(x.acc / k.n * 100)), borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,.12)', fill: true, tension: .35, pointRadius: 0, borderWidth: 2, yAxisID: 'y1' }] },
+    options: { interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => c.datasetIndex ? ` ${c.raw}% del edificio` : ` ${c.raw} unidades · ${money(VM[c.dataIndex].usd)}` } } },
+      scales: { x: { grid: NOGRID }, y: { grid: GRID, ticks: { precision: 0 }, title: { display: true, text: 'Unidades' } }, y1: { position: 'right', min: 0, max: 100, grid: NOGRID, ticks: { callback: v => v + '%' } } } } });
+  // dona estado
+  const E = [['vendido', 'Vendidas', k.vend.length], ['senado', 'Señadas', k.sen.length], ['reservado', 'Reservadas', k.res.length], ['libre', 'Libres', k.lib.length], ['bloqueado', 'Bloqueadas', k.blq.length]].filter(x => x[2]);
+  graf('chDona', { type: 'doughnut', data: { labels: E.map(x => x[1]), datasets: [{ data: E.map(x => x[2]), backgroundColor: E.map(x => COL[x[0]]), borderColor: '#16181d', borderWidth: 3, hoverOffset: 4 }] }, options: { cutout: '72%', plugins: { legend: { display: false } } } });
+  $('#donaC').innerHTML = `<div><b>${Math.round(k.comp / k.n * 100)}%</b><span>comprometido</span></div>`;
+  $('#subDona').textContent = `${k.n} unidades · stock libre ${usdK(k.stock)}`;
+  $('#lgdDona').innerHTML = E.map(x => `<div><i style="background:${COL[x[0]]}"></i>${x[1]}<b>${x[2]}</b></div>`).join('');
+  // cobranzas 12 meses
+  const C = cobranza12(), hay = C.some(c => c.cobrado + c.vencido + c.pendiente); $('#emCob').hidden = hay; $('#chCob12').style.visibility = hay ? '' : 'hidden';
+  graf('chCob12', { type: 'bar', data: { labels: C.map(c => mesLbl(c.mes)), datasets: [{ label: 'Cobrado', data: C.map(c => c.cobrado), backgroundColor: '#10B981', borderRadius: 4, maxBarThickness: 30 }, { label: 'Vencido', data: C.map(c => c.vencido), backgroundColor: '#EF4444', borderRadius: 4, maxBarThickness: 30 }, { label: 'A cobrar', data: C.map(c => c.pendiente), backgroundColor: 'rgba(200,121,65,.55)', borderRadius: 4, maxBarThickness: 30 }] },
+    options: { plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${money(c.raw)}` } } }, scales: { x: { stacked: true, grid: NOGRID }, y: { stacked: true, grid: GRID, ticks: { callback: v => fmt(v / 1000) + 'k' } } } } });
+  // alertas
+  const h = hoy(), venc = DB.ventas.filter(v => v.vencido).sort((a, b) => b.vencido - a.vencido);
+  const A = [];
+  venc.slice(0, 4).forEach(v => A.push(['rd', '!', `${esc(v.cliente)} · ${v.unidad_id}`, `${(DB.cuotasDe[v.id] || []).filter(c => !c.pagado && c.fecha < h).length} cuotas vencidas`, money(v.vencido), v.unidad_id]));
+  if (venc.length > 4) A.push(['rd', '+' + (venc.length - 4), 'Más clientes con atraso', 'Ver la sección Cobranzas', '', '']);
+  DB.ventas.filter(v => v.sinPlan && v.estado !== 'reservado').slice(0, 3).forEach(v => A.push(['wa', '$', `${v.unidad_id} sin plan de pago`, `${esc(v.cliente)} · cargá las cuotas para seguir la cobranza`, '', v.unidad_id]));
+  if (k.sinPlan > 3) A.push(['wa', '+' + (k.sinPlan - 3), 'Otras ventas sin plan de pago', '', '', '']);
+  DB.ventas.filter(v => v.estado === 'reservado').slice(0, 3).forEach(v => A.push(['wa', 'R', `Reserva ${v.unidad_id} · ${esc(v.cliente)}`, v.fecha ? `Desde ${fd(v.fecha)} · confirmar seña` : 'Confirmar seña', v.precio_cerrado ? money(v.precio_cerrado) : '', v.unidad_id]));
+  const prox = DB.cuotas.filter(c => !c.pagado && c.fecha >= h && c.fecha <= new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10));
+  if (prox.length) A.push(['ok', prox.length, 'Cuotas que vencen esta semana', 'Avisar a los clientes', money(prox.reduce((a, c) => a + c.monto, 0)), '']);
+  $('#alertas').innerHTML = A.length ? A.map(([c, d, t, sub, m, id]) => `<button class="al" ${id ? `data-id="${id}"` : 'data-s="cobranzas"'}><span class="dot ${c}">${d}</span><span><b>${t}</b><small>${sub}</small></span><span class="am">${m}</span></button>`).join('') : `<div class="empty">Todo al día ✓</div>`;
+  $$('#alertas .al').forEach(b => b.onclick = () => b.dataset.id ? abrirUnidad(b.dataset.id) : ir('cobranzas'));
+  // tipologías
+  const T = porTipologia();
+  graf('chTipo', { type: 'bar', data: { labels: T.map(r => `Tip. ${r.tip} · ${r.desc}`), datasets: [{ label: 'Vendidas', data: T.map(r => r.vendidas), backgroundColor: COL.vendido }, { label: 'Señadas / reservadas', data: T.map(r => r.reservadas), backgroundColor: COL.reservado }, { label: 'Libres', data: T.map(r => r.libres), backgroundColor: COL.libre }] },
+    options: { indexAxis: 'y', plugins: { legend: { position: 'bottom' } }, datasets: { bar: { borderRadius: 4, barThickness: 18 } }, scales: { x: { stacked: true, grid: GRID, ticks: { precision: 0 } }, y: { stacked: true, grid: NOGRID } } } });
+  // precio por piso
+  const P = []; for (let pi = 1; pi <= CONFIG.pisos; pi++) { const us = DB.unidades.filter(u => u.piso === pi), vs = DB.ventas.filter(v => v.estado === 'vendido' && us.some(u => u.id === v.unidad_id));
+    const m2 = vs.reduce((a, v) => a + us.find(u => u.id === v.unidad_id).m2, 0), l = us.filter(u => u.estado === 'libre');
+    P.push({ p: pi, v: m2 ? vs.reduce((a, v) => a + v.precio_cerrado, 0) / m2 : null, l: l.length ? l.reduce((a, u) => a + u.precio_lista, 0) / l.reduce((a, u) => a + u.m2, 0) : null }); }
+  graf('chPiso', { type: 'bar', data: { labels: P.map(x => 'Piso ' + x.p), datasets: [{ label: 'Vendido USD/m²', data: P.map(x => x.v && Math.round(x.v)), backgroundColor: CONFIG.colorAcento, borderRadius: 5, maxBarThickness: 22 }, { label: 'Lista disponible USD/m²', data: P.map(x => x.l && Math.round(x.l)), backgroundColor: 'rgba(255,255,255,.22)', borderRadius: 5, maxBarThickness: 22 }] },
+    options: { plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt(c.raw)}` } } }, scales: { x: { grid: NOGRID }, y: { grid: GRID, beginAtZero: true, ticks: { callback: v => fmt(v) } } } } });
+}
+function rotular() { $$('table.resp').forEach(t => { const H = [...t.querySelectorAll('thead th')].map(th => th.textContent.replace(/[↑↓]/g, '').trim()); t.querySelectorAll('tbody tr').forEach(tr => [...tr.children].forEach((td, i) => { if (H[i]) td.dataset.l = H[i]; })); }); }
 
 /* ---------- tablero + tabla ---------- */
 function pintarBoard() {
@@ -423,7 +603,6 @@ async function anular() { const v = ED.v; const motivo = prompt(`¿Anular la ven
 async function cargarSilencioso() { try { DB = await api('/admin/todo'); derivar(); pintarKpis(); pintarBoard(); pintarTablaU(); } catch (e) {} }
 
 /* ---------- cobranzas ---------- */
-let chFlujo, chAvance;
 function flujoMensual() {
   const M = {}, h = hoy();
   DB.cuotas.forEach(c => { if (!c.fecha) return; const k = c.fecha.slice(0, 7); M[k] = M[k] || { cobrado: 0, pendiente: 0, vencido: 0 };
@@ -431,12 +610,11 @@ function flujoMensual() {
   return Object.keys(M).sort().map(k => ({ mes: k, ...M[k] }));
 }
 function pintarCobranzas() {
-  const F = flujoMensual();
-  if (chFlujo) chFlujo.destroy();
-  chFlujo = new Chart($('#chFlujo'), { type: 'bar', data: { labels: F.map(f => new Date(f.mes + '-15').toLocaleDateString(CONFIG.locale, { month: 'short', year: '2-digit' })),
-    datasets: [{ label: 'Cobrado', data: F.map(f => f.cobrado), backgroundColor: '#10B981' }, { label: 'Vencido', data: F.map(f => f.vencido), backgroundColor: '#EF4444' }, { label: 'A cobrar', data: F.map(f => f.pendiente), backgroundColor: 'rgba(200,121,65,.75)' }] },
-    options: { responsive: true, plugins: { legend: { labels: { color: '#a9adb6' } }, tooltip: { callbacks: { label: c => `${c.dataset.label}: ${money(c.raw)}` } } }, scales: { x: { stacked: true, ticks: { color: '#717681' }, grid: { display: false } }, y: { stacked: true, ticks: { color: '#717681', callback: v => fmt(v / 1000) + 'k' }, grid: { color: 'rgba(255,255,255,.05)' } } } } });
-  if (!F.length) { const ctx = $('#chFlujo').getContext('2d'); }
+  const k = M(), F = flujoMensual(), p = x => Math.round(x * 100) + '%';
+  $('#kCob').innerHTML = [kpi('ac', 'usd', 'Cartera total', usdK(k.cartera), `${DB.ventas.length} operaciones activas`), kpi('ok', 'cob', 'Cobrado', usdK(k.cob), k.cartera ? p(k.cob / k.cartera) + ' de la cartera' : '', k.cartera ? segs([[k.cob / k.cartera, COL.libre]]) : ''),
+    kpi('bl', 'reloj', 'Saldo a cobrar', usdK(k.saldo), `${DB.cuotas.filter(c => !c.pagado && c.fecha >= hoy()).length} cuotas futuras`), kpi(k.venc ? 'rd' : 'ok', 'alert', 'Vencido', money(k.venc), `${k.nVenc} cuotas · ${DB.ventas.filter(v => v.vencido).length} clientes`)].join('');
+  graf('chFlujo', { type: 'bar', data: { labels: F.map(f => mesLbl(f.mes)), datasets: [{ label: 'Cobrado', data: F.map(f => f.cobrado), backgroundColor: '#10B981', borderRadius: 3 }, { label: 'Vencido', data: F.map(f => f.vencido), backgroundColor: '#EF4444', borderRadius: 3 }, { label: 'A cobrar', data: F.map(f => f.pendiente), backgroundColor: 'rgba(200,121,65,.55)', borderRadius: 3 }] },
+    options: { plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${money(c.raw)}` } } }, scales: { x: { stacked: true, grid: NOGRID }, y: { stacked: true, grid: GRID, ticks: { callback: v => fmt(v / 1000) + 'k' } } } } });
   const h = hoy(), venc = DB.cuotas.filter(c => !c.pagado && c.fecha && c.fecha < h).map(c => ({ ...c, v: DB.ventas.find(v => v.id === c.venta_id) })).sort((a, b) => a.fecha.localeCompare(b.fecha));
   $('#nVenc').textContent = `${venc.length} · ${money(venc.reduce((a, c) => a + c.monto, 0))}`;
   $('#tVenc').innerHTML = venc.length ? `<thead><tr><th>Unidad</th><th>Cliente</th><th>Concepto</th><th>Venció</th><th class="n">Monto</th></tr></thead><tbody>${venc.map(c => `<tr class="click" data-id="${c.v.unidad_id}"><td><b>${c.v.unidad_id}</b></td><td>${esc(c.v.cliente)}</td><td>${esc(c.concepto)}</td><td>${fd(c.fecha)}</td><td class="n">${fmt(c.monto)}</td></tr>`).join('')}</tbody>` : `<tbody><tr><td class="empty">Sin cuotas vencidas 🎉</td></tr></tbody>`;
@@ -464,11 +642,20 @@ function porTipologia() {
       facturado: vs.reduce((a, v) => a + v.precio_cerrado, 0), pm2Vend: m2v ? vs.reduce((a, v) => a + v.precio_cerrado, 0) / m2v : 0, pm2Lista: lib.length ? lib.reduce((a, u) => a + u.precio_lista / u.m2, 0) / lib.length : 0, stock: lib.reduce((a, u) => a + u.precio_lista, 0) }; });
 }
 function pintarInformes() {
-  const T = porTipologia();
-  $('#tTip').innerHTML = `<thead><tr><th>Tip.</th><th>Descripción</th><th class="n">m²</th><th class="n">Total</th><th class="n">Vendidas</th><th class="n">Res./Señ.</th><th class="n">Libres</th><th class="n">Facturado</th><th class="n">USD/m² vendido</th><th class="n">USD/m² lista libres</th><th class="n">Stock a lista</th></tr></thead><tbody>${T.map(r => `<tr><td><b>${r.tip}</b></td><td>${r.desc}</td><td class="n">${r.m2}</td><td class="n">${r.total}</td><td class="n">${r.vendidas}</td><td class="n">${r.reservadas}</td><td class="n">${r.libres}</td><td class="n">${fmt(r.facturado)}</td><td class="n">${r.pm2Vend ? fmt(r.pm2Vend) : '—'}</td><td class="n">${r.pm2Lista ? fmt(r.pm2Lista) : '—'}</td><td class="n">${fmt(r.stock)}</td></tr>`).join('')}</tbody>`;
-  if (chAvance) chAvance.destroy();
-  chAvance = new Chart($('#chAvance'), { type: 'bar', data: { labels: T.map(r => 'Tip. ' + r.tip), datasets: [{ label: 'Vendidas', data: T.map(r => r.vendidas), backgroundColor: '#EF4444' }, { label: 'Reservadas/Señadas', data: T.map(r => r.reservadas), backgroundColor: '#F59E0B' }, { label: 'Libres', data: T.map(r => r.libres), backgroundColor: '#10B981' }] },
-    options: { indexAxis: 'y', plugins: { legend: { labels: { color: '#a9adb6' } } }, scales: { x: { stacked: true, ticks: { color: '#717681', precision: 0 }, grid: { color: 'rgba(255,255,255,.05)' } }, y: { stacked: true, ticks: { color: '#a9adb6' }, grid: { display: false } } } } });
+  const k = M(), T = porTipologia(), p = x => Math.round(x * 100) + '%';
+  $('#kInf').innerHTML = [
+    kpi('ac', 'ritmo', 'Ritmo de ventas', k.ritmo ? k.ritmo.toLocaleString(CONFIG.locale, { maximumFractionDigits: 1 }) + ' <span>u./mes</span>' : '—', k.ritmo ? `Promedio desde la 1ª venta (${k.conFecha} con fecha)` : 'Cargá fechas de venta'),
+    kpi('bl', 'reloj', 'Stock se agota en', k.agotar ? Math.ceil(k.agotar) + ' <span>meses</span>' : '—', k.agotar ? `${k.lib.length} libres al ritmo actual` : ''),
+    kpi('ok', 'ticket', 'Ticket promedio', k.ticket ? money(k.ticket) : '—', `${k.vend.length} ventas cerradas`),
+    kpi('bl', 'm2', 'USD/m² vendido', k.pm2v ? fmt(k.pm2v) : '—', k.pm2l && k.pm2v ? `Lista disponible ${fmt(k.pm2l)} (${k.pm2l >= k.pm2v ? '+' : ''}${p(k.pm2l / k.pm2v - 1)})` : ''),
+    kpi('wa', 'stock', 'Stock a lista', usdK(k.stock), `${k.lib.length} unidades libres`),
+    kpi('ac', 'usd', 'Valor del proyecto', usdK(k.fact + k.stock + DB.ventas.filter(v => v.estado !== 'vendido').reduce((a, v) => a + v.precio_cerrado, 0)), `Vendido ${p((k.fact) / Math.max(1, k.fact + k.stock))}`)].join('');
+  const VM = ventasPorMes(); $('#emAbs').hidden = !!VM.length; $('#chAbs').style.visibility = VM.length ? '' : 'hidden';
+  graf('chAbs', { type: 'line', data: { labels: VM.map(x => mesLbl(x.mes)), datasets: [{ label: 'Unidades comprometidas', data: VM.map(x => x.acc), borderColor: CONFIG.colorAcento, backgroundColor: 'rgba(200,121,65,.15)', fill: true, tension: .3, pointRadius: 0, borderWidth: 2.5 }, { label: 'Total del edificio', data: VM.map(() => k.n), borderColor: 'rgba(255,255,255,.3)', borderDash: [5, 5], pointRadius: 0, borderWidth: 1.5 }] },
+    options: { interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'bottom' } }, scales: { x: { grid: NOGRID }, y: { grid: GRID, min: 0, ticks: { precision: 0 } } } } });
+  graf('chFact', { type: 'bar', data: { labels: T.map(r => 'Tip. ' + r.tip), datasets: [{ label: 'Vendido', data: T.map(r => r.facturado), backgroundColor: CONFIG.colorAcento, borderRadius: 5 }, { label: 'Stock a lista', data: T.map(r => r.stock), backgroundColor: 'rgba(16,185,129,.55)', borderRadius: 5 }] },
+    options: { plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${money(c.raw)}` } } }, scales: { x: { stacked: true, grid: NOGRID }, y: { stacked: true, grid: GRID, ticks: { callback: v => fmt(v / 1000) + 'k' } } } } });
+  $('#tTip').innerHTML = `<thead><tr><th>Tipología</th><th class="n">m²</th><th class="n">Total</th><th class="n">Vendidas</th><th class="n">Res./Señ.</th><th class="n">Libres</th><th>Avance</th><th class="n">Facturado</th><th class="n">USD/m² vend.</th><th class="n">USD/m² lista</th></tr></thead><tbody>${T.map(r => `<tr><td><b>${r.tip}</b> <span style="color:var(--tx3)">${r.desc}</span></td><td class="n">${r.m2}</td><td class="n">${r.total}</td><td class="n">${r.vendidas}</td><td class="n">${r.reservadas}</td><td class="n">${r.libres}</td><td><div class="bar"><i style="width:${r.total ? Math.round((r.vendidas + r.reservadas) / r.total * 100) : 0}%"></i></div></td><td class="n">${fmt(r.facturado)}</td><td class="n">${r.pm2Vend ? fmt(r.pm2Vend) : '—'}</td><td class="n">${r.pm2Lista ? fmt(r.pm2Lista) : '—'}</td></tr>`).join('')}</tbody>`;
 }
 function hojaUnidades() { return DB.unidades.map(u => { const v = DB.ventaDe[u.id]; return { Unidad: u.id, Piso: u.piso, Tipologia: u.tip, 'm2': u.m2, Estado: EST[u.estado], 'Precio lista USD': u.precio_lista, 'USD/m2 lista': Math.round(u.precio_lista / u.m2), Cliente: v ? v.cliente : '', 'Precio cerrado USD': v ? v.precio_cerrado : '', Cochera: v ? v.cochera : '', 'Cochera USD': v ? v.cochera_usd : '', 'Total USD': v ? v.total : '', 'Cobrado USD': v ? v.cobrado : '', 'Saldo USD': v ? v.total - v.cobrado : '', 'Vencido USD': v ? v.vencido : '' }; }); }
 function exportarExcel(soloCartera) {
@@ -485,20 +672,49 @@ function exportarExcel(soloCartera) {
 }
 $('#xlsAll').onclick = () => exportarExcel(false); $('#xlsCart').onclick = () => exportarExcel(true);
 $('#jsonBk').onclick = () => { const b = new Blob([JSON.stringify({ exportado: new Date().toISOString(), unidades: DB.unidades, ventas: DB.ventas, cuotas: DB.cuotas }, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `Vidalta_respaldo_${hoy()}.json`; a.click(); toast('Respaldo descargado'); };
+function imgChart(id, w, h) {   // renderiza un gráfico en fondo claro para el PDF
+  const src = CH[id]; if (!src) return null;
+  const cv = document.createElement('canvas'); cv.width = w * 2; cv.height = h * 2; cv.style.width = w + 'px'; cv.style.height = h + 'px';
+  const box = document.createElement('div'); box.style.cssText = `position:fixed;left:-9999px;top:0;width:${w}px;height:${h}px`; box.appendChild(cv); document.body.appendChild(box);
+  const cfg = { type: src.config.type, data: JSON.parse(JSON.stringify(src.config.data)), options: { ...src.config.options, responsive: false, animation: false, devicePixelRatio: 2 } };
+  cfg.data.datasets.forEach(d => { if (d.borderColor === '#16181d') d.borderColor = '#fff'; });
+  const ch = new Chart(cv, cfg); ch.options.color = '#333'; ['x', 'y', 'y1'].forEach(k => { const s = ch.options.scales && ch.options.scales[k]; if (s) { s.ticks = { ...s.ticks, color: '#555' }; if (s.grid && s.grid.display !== false) s.grid.color = '#e6e6e6'; if (s.title) s.title.color = '#555'; } });
+  if (cfg.type === 'doughnut') { ch.options.plugins.legend.display = true; ch.options.plugins.legend.position = 'right'; }
+  if (ch.options.plugins.legend) ch.options.plugins.legend.labels = { ...ch.options.plugins.legend.labels, color: '#333' }; ch.update('none');
+  const url = cv.toDataURL('image/png'); ch.destroy(); box.remove(); return url;
+}
 $('#pdfRes').onclick = () => {
-  const { jsPDF } = window.jspdf, d = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' }), W = d.internal.pageSize.getWidth();
-  const U = DB.unidades, c = e => U.filter(u => u.estado === e).length, n = U.length;
-  const tv = DB.ventas.filter(v => v.estado === 'vendido').reduce((a, v) => a + v.precio_cerrado, 0), cob = DB.ventas.reduce((a, v) => a + v.cobrado, 0), ven = DB.ventas.reduce((a, v) => a + v.vencido, 0), stock = U.filter(u => u.estado === 'libre').reduce((a, u) => a + u.precio_lista, 0);
-  d.setFont('helvetica', 'bold'); d.setFontSize(18); d.text('VIDALTA · Informe de ventas', 40, 50);
-  d.setFont('helvetica', 'normal'); d.setFontSize(10); d.setTextColor(110); d.text(`${CONFIG.marca} · Generado el ${new Date().toLocaleString(CONFIG.locale)}`, 40, 66); d.setTextColor(0);
-  const K = [['Vendidas', `${c('vendido')} de ${n} (${Math.round(c('vendido') / n * 100)}%)`], ['Reservadas / señadas', `${c('reservado')} / ${c('senado')}`], ['Libres', `${c('libre')} · stock ${money(stock)}`], ['Facturación vendida', money(tv)], ['Cobrado (planes)', money(cob)], ['Vencido sin cobrar', money(ven)]];
-  K.forEach(([a, b], i) => { const x = 40 + (i % 3) * ((W - 80) / 3), y = 92 + Math.floor(i / 3) * 44; d.setFillColor(244, 241, 236); d.roundedRect(x, y, (W - 80) / 3 - 10, 36, 4, 4, 'F'); d.setFontSize(8); d.setTextColor(110); d.text(a.toUpperCase(), x + 10, y + 13); d.setFontSize(12); d.setTextColor(0); d.setFont('helvetica', 'bold'); d.text(b, x + 10, y + 28); d.setFont('helvetica', 'normal'); });
-  d.autoTable({ startY: 190, head: [['Tip.', 'Descripción', 'm²', 'Total', 'Vendidas', 'Res./Señ.', 'Libres', 'Facturado', 'USD/m² vend.', 'USD/m² lista', 'Stock a lista']], body: porTipologia().map(r => [r.tip, r.desc, r.m2, r.total, r.vendidas, r.reservadas, r.libres, fmt(r.facturado), r.pm2Vend ? fmt(r.pm2Vend) : '—', r.pm2Lista ? fmt(r.pm2Lista) : '—', fmt(r.stock)]), styles: { fontSize: 9 }, headStyles: { fillColor: [32, 37, 34] } });
-  d.autoTable({ startY: d.lastAutoTable.finalY + 18, head: [['Mes', 'Cobrado', 'Vencido', 'A cobrar', 'Total']], body: flujoMensual().map(f => [f.mes, fmt(f.cobrado), fmt(f.vencido), fmt(f.pendiente), fmt(f.cobrado + f.vencido + f.pendiente)]), styles: { fontSize: 9 }, headStyles: { fillColor: [200, 121, 65] } });
-  d.addPage(); d.setFontSize(14); d.setFont('helvetica', 'bold'); d.text('Cartera de ventas', 40, 44); d.setFont('helvetica', 'normal');
-  d.autoTable({ startY: 56, head: [['Unidad', 'Cliente', 'Estado', 'Total', 'Cobrado', 'Saldo', 'Vencido', 'Próximo pago']], body: DB.ventas.map(v => [v.unidad_id, v.cliente, EST[v.estado], fmt(v.total), fmt(v.cobrado), fmt(v.total - v.cobrado), v.vencido ? fmt(v.vencido) : '—', v.prox ? fd(v.prox.fecha) + ' · ' + fmt(v.prox.monto) : (v.sinPlan ? 'sin plan' : '—')]), styles: { fontSize: 8.5 }, headStyles: { fillColor: [32, 37, 34] } });
+  // asegurar que los gráficos existan aunque no se haya visitado la sección
+  const prev = SEC; ['resumen', 'informes'].forEach(x => { if (!CH[x === 'resumen' ? 'chMes' : 'chAbs']) { SEC = x; pintar(); } }); SEC = prev;
+  const { jsPDF } = window.jspdf, d = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' }), W = d.internal.pageSize.getWidth(), H = d.internal.pageSize.getHeight();
+  const k = M(), pc = x => Math.round(x * 100) + '%', AC = [200, 121, 65];
+  const cab = (t, sub) => { d.setFillColor(22, 24, 29); d.rect(0, 0, W, 58, 'F'); d.setFillColor(...AC); d.rect(0, 58, W, 3, 'F'); d.setTextColor(255); d.setFont('helvetica', 'bold'); d.setFontSize(17); d.text(t, 40, 36); d.setFont('helvetica', 'normal'); d.setFontSize(9); d.setTextColor(190); d.text(sub, W - 40, 36, { align: 'right' }); d.setTextColor(0); };
+  const pie = n => { d.setFontSize(8); d.setTextColor(140); d.text(`${CONFIG.marca} · Informe confidencial`, 40, H - 20); d.text(`Página ${n}`, W - 40, H - 20, { align: 'right' }); d.setTextColor(0); };
+  const sub = `Generado el ${new Date().toLocaleString(CONFIG.locale)}`;
+  cab('VIDALTA · Informe comercial para directorio', sub);
+  const K = [['Vendidas', `${k.vend.length} de ${k.n} (${pc(k.vend.length / k.n)})`], ['Comprometidas', `${k.comp} u. (${pc(k.comp / k.n)})`], ['Facturación vendida', money(k.fact)], ['USD/m2 vendido', k.pm2v ? fmt(k.pm2v) : '—'],
+    ['Stock libre a lista', `${money(k.stock)} · ${k.lib.length} u.`], ['Cobrado', `${money(k.cob)}${k.cartera ? ' (' + pc(k.cob / k.cartera) + ')' : ''}`], ['Vencido sin cobrar', money(k.venc)], ['Ritmo / agotamiento', k.ritmo ? `${k.ritmo.toFixed(1)} u./mes · ${Math.ceil(k.agotar)} meses` : 'sin fechas']];
+  const kw = (W - 80 - 30) / 4;
+  K.forEach(([a, b], i) => { const x = 40 + (i % 4) * (kw + 10), y = 80 + Math.floor(i / 4) * 52; d.setFillColor(246, 243, 238); d.roundedRect(x, y, kw, 44, 5, 5, 'F'); d.setFillColor(...AC); d.rect(x, y + 8, 2.5, 28, 'F'); d.setFontSize(7.5); d.setTextColor(120); d.text(a.toUpperCase(), x + 12, y + 16); d.setFontSize(12.5); d.setTextColor(20); d.setFont('helvetica', 'bold'); d.text(b, x + 12, y + 34); d.setFont('helvetica', 'normal'); });
+  const g = (id, x, y, w, h, t) => { const u = imgChart(id, w, h - 16); d.setFontSize(10); d.setFont('helvetica', 'bold'); d.text(t, x, y); d.setFont('helvetica', 'normal'); if (u) d.addImage(u, 'PNG', x, y + 8, w, h - 16); };
+  const cw = (W - 100) / 2;
+  g(VM_OK() ? 'chMes' : 'chTipo', 40, 200, cw, 170, VM_OK() ? 'Ventas por mes y avance acumulado' : 'Estado por tipología');
+  g('chDona', 60 + cw, 200, cw, 170, `Estado del edificio · ${pc(k.comp / k.n)} comprometido`);
+  g(VM_OK() ? 'chTipo' : 'chPiso', 40, 395, cw, 170, VM_OK() ? 'Estado por tipología' : 'USD/m² por piso');
+  g('chFact', 60 + cw, 395, cw, 170, 'Vendido vs stock por tipología (USD)');
+  pie(1);
+  d.addPage(); cab('Detalle por tipología y cobranzas', sub);
+  d.autoTable({ startY: 80, head: [['Tip.', 'Descripción', 'm²', 'Total', 'Vendidas', 'Res./Señ.', 'Libres', 'Facturado', 'USD/m² vend.', 'USD/m² lista', 'Stock a lista']], body: porTipologia().map(r => [r.tip, r.desc, r.m2, r.total, r.vendidas, r.reservadas, r.libres, fmt(r.facturado), r.pm2Vend ? fmt(r.pm2Vend) : '—', r.pm2Lista ? fmt(r.pm2Lista) : '—', fmt(r.stock)]), styles: { fontSize: 9 }, headStyles: { fillColor: [22, 24, 29] }, alternateRowStyles: { fillColor: [248, 246, 242] } });
+  let y = d.lastAutoTable.finalY + 26;
+  if (CH.chCob12 && flujoMensual().length) { g('chCob12', 40, y, W - 80, 200, 'Cobranzas: últimos 3 meses y próximos 9'); y += 210; }
+  pie(2);
+  d.addPage(); cab('Cartera de ventas', sub);
+  d.autoTable({ startY: 80, head: [['Unidad', 'Cliente', 'Estado', 'Total', 'Cobrado', 'Saldo', 'Vencido', 'Próximo pago']], body: DB.ventas.map(v => [v.unidad_id, v.cliente, EST[v.estado], fmt(v.total), fmt(v.cobrado), fmt(v.total - v.cobrado), v.vencido ? fmt(v.vencido) : '—', v.prox ? fd(v.prox.fecha) + ' · ' + fmt(v.prox.monto) : (v.sinPlan ? 'sin plan' : '—')]), styles: { fontSize: 8.5 }, headStyles: { fillColor: [22, 24, 29] }, alternateRowStyles: { fillColor: [248, 246, 242] },
+    didParseCell: c => { if (c.section === 'body' && c.column.index === 6 && c.cell.raw !== '—') c.cell.styles.textColor = [200, 40, 40]; } });
+  pie(3);
   d.save(`Vidalta_Informe_${hoy()}.pdf`); toast('PDF descargado');
 };
+const VM_OK = () => ventasPorMes().length > 0;
 
 /* ---------- actividad ---------- */
 function pintarActividad() {
@@ -506,6 +722,9 @@ function pintarActividad() {
   const R = Object.entries(I).map(([u, x]) => ({ u, ...x, est: (DB.unidades.find(z => z.id === u) || {}).estado })).sort((a, b) => b.consulta * 5 + b.vista - (a.consulta * 5 + a.vista));
   $('#tInt').innerHTML = R.length ? `<thead><tr><th>Unidad</th><th>Estado</th><th class="n">Vistas</th><th class="n">WhatsApp</th><th>Último</th></tr></thead><tbody>${R.map(r => `<tr class="click" data-id="${r.u}"><td><b>${r.u}</b></td><td><span class="pill ${r.est}">${EST[r.est] || ''}</span></td><td class="n">${r.vista}</td><td class="n">${r.consulta}</td><td>${new Date(r.ultimo).toLocaleString(CONFIG.locale)}</td></tr>`).join('')}</tbody>` : `<tbody><tr><td class="empty">Todavía no hay visitas registradas en el showroom.</td></tr></tbody>`;
   $$('#tInt tr.click').forEach(tr => tr.onclick = () => abrirUnidad(tr.dataset.id));
+  const top = R.slice(0, 12); $('#emInt') && ($('#emInt').hidden = !!top.length); $('#chInt').style.visibility = top.length ? '' : 'hidden';
+  graf('chInt', { type: 'bar', data: { labels: top.map(r => r.u), datasets: [{ label: 'Vistas en el showroom', data: top.map(r => r.vista), backgroundColor: 'rgba(59,130,246,.7)', borderRadius: 4 }, { label: 'Consultas por WhatsApp', data: top.map(r => r.consulta), backgroundColor: CONFIG.colorAcento, borderRadius: 4 }] },
+    options: { plugins: { legend: { position: 'bottom' } }, scales: { x: { grid: NOGRID }, y: { grid: GRID, ticks: { precision: 0 } } } } });
   const A = { unidad: 'Unidad', venta: 'Venta', anular: 'Anulación', cobro: 'Cobro', usuario: 'Usuario', password: 'Contraseña', setup: 'Alta inicial' };
   $('#tHist').innerHTML = DB.historial.length ? `<thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody>${DB.historial.map(h => { let d = h.detalle; try { const o = JSON.parse(d); d = Object.entries(o).map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(' · '); } catch (e) {}
     return `<tr><td>${new Date(h.ts).toLocaleString(CONFIG.locale)}</td><td>${esc(h.email)}</td><td>${A[h.accion] || esc(h.accion)}</td><td style="white-space:normal;max-width:420px">${esc(d)}</td></tr>`; }).join('')}</tbody>` : `<tbody><tr><td class="empty">Sin cambios registrados</td></tr></tbody>`;
@@ -515,9 +734,17 @@ $('#cpBtn').onclick = async () => { const a = prompt('Contraseña actual'); if (
   try { await api('/admin/password', { method: 'PUT', body: { actual: a, nueva: n } }); toast('Contraseña actualizada'); } catch (e) { toast(e.message, 1); } };
 
 /* ---------- navegación ---------- */
-let SEC = 'unidades';
-function pintar() { pintarKpis(); pintarBoard(); pintarTablaU(); if (SEC === 'cobranzas') pintarCobranzas(); if (SEC === 'informes') pintarInformes(); if (SEC === 'actividad') pintarActividad(); }
-$$('#tabs button').forEach(b => b.onclick = () => { SEC = b.dataset.s; $$('#tabs button').forEach(x => x.classList.toggle('on', x === b)); $$('.sec').forEach(s => s.classList.toggle('on', s.id === 's-' + SEC)); pintar(); });
+const TIT = { resumen: 'Resumen comercial', unidades: 'Unidades', cobranzas: 'Cobranzas', informes: 'Informes', actividad: 'Actividad' };
+let SEC = 'resumen';
+function pintar() {
+  const sec = { resumen: () => { pintarKpis(); pintarResumen(); }, unidades: () => { pintarBoard(); pintarTablaU(); }, cobranzas: pintarCobranzas, informes: pintarInformes, actividad: pintarActividad }[SEC];
+  try { sec(); } catch (e) { console.error(e); }
+  $('#pTit').textContent = TIT[SEC]; $('#pKick').textContent = `${CONFIG.producto || 'Vidalta'} · actualizado ${new Date().toLocaleTimeString(CONFIG.locale, { hour: '2-digit', minute: '2-digit' })}`;
+  rotular();
+}
+function ir(s) { SEC = s; $$('#tabs button,#bnav button').forEach(x => x.classList.toggle('on', x.dataset.s === s)); $$('.sec').forEach(x => x.classList.toggle('on', x.id === 's-' + s)); window.scrollTo({ top: 0 }); pintar(); }
+$$('#tabs button,#bnav button').forEach(b => b.onclick = () => ir(b.dataset.s));
+$('#salirM').onclick = () => salir();
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#dr').classList.contains('on')) cerrarDr(); });
 if (TOKEN) entrar(); else initLogin();
 setInterval(() => { if (TOKEN && !$('#dr').classList.contains('on')) cargarSilencioso(); }, 60000);
