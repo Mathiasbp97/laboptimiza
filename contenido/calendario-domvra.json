@@ -65,7 +65,7 @@
   },
   {
    "id": "r3-recorrido",
-   "cuando": "2026-11-24T12:30-03:00",
+   "cuando": "2026-11-28T12:30-03:00",
    "tipo": "REELS",
    "archivo": "r3-entra-recorre-vuelve.mp4",
    "thumb_offset": 800,
@@ -102,6 +102,14 @@
    "archivo": "r13-sin-vs-con-showroom.mp4",
    "thumb_offset": 1200,
    "texto": "Desarrollador SIN showroom vs desarrollador CON showroom.\n\nSin: 3 PDF, una lista de precios vieja, «te paso los números mañana» y consultas por unidades que ya se vendieron.\nCon: un link que el comprador recorre, se cotiza solo y siempre muestra la disponibilidad real.\n\n👇 Comentá SHOWROOM y te mando la demo por mensaje privado.\n\n(Proyecto demostrativo)\n\n#KTAVisual #showroom3d #preventa #desarrolladoras #inmobiliaria #Asunción #Paraguay"
+  },
+  {
+   "id": "r14-vidalta",
+   "cuando": "2026-11-24T12:30-03:00",
+   "tipo": "REELS",
+   "archivo": "r14-vidalta-nuevo-proyecto.mp4",
+   "thumb_offset": "1300",
+   "texto": "Nuevo proyecto: Vidalta, Bella Vista 🏢\n\nUn showroom 3D no es solo una imagen linda. Mirá todo lo que hace:\n\n▫️ Disponibilidad en vivo, de día y de noche\n▫️ Planta por piso: qué está libre, reservado o vendido\n▫️ Precio y simulador de cuotas al instante\n▫️ Recorrido del depto, ambiente por ambiente\n▫️ Amenities en 360°\n▫️ Consulta directa por WhatsApp\n▫️ Panel de ventas con métricas para la desarrolladora\n\nTodo en un solo link: vidalta.pages.dev\n\n¿Querés uno para tu proyecto? Comentá SHOWROOM y te mando la demo 👇\n\n#showroom3d #desarrolloinmobiliario #inmobiliariaparaguay #asuncion #preventa #arquitectura #realestate #ktavisual"
   }
  ],
  "pausados": [
