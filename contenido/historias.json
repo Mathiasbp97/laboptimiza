@@ -1,4 +1,41 @@
-{"base":"https://raw.githubusercontent.com/Mathiasbp97/laboptimiza/main/media/historias/",
- "cuentas":{"domvra":"17841433343880808","laboptimiza":"17841455874113136"},
- "dias":{"2026-11-17":["d1","l1"],"2026-11-18":["d2","l2"],"2026-11-19":["d3","l3"],"2026-11-20":["d4","l4"],"2026-11-21":["d5","l5"],"2026-11-22":["d6","l6"],"2026-11-23":["d7","l7"]},
- "nota":"dN -> @domvra97, lN -> @laboptimiza. Publicar con media_type=STORIES, image_url=base+id.jpg, luego media_publish."}
+{
+ "base": "https://raw.githubusercontent.com/Mathiasbp97/laboptimiza/main/media/historias/",
+ "cuentas": {
+  "domvra": "17841433343880808",
+  "laboptimiza": "17841455874113136"
+ },
+ "dias": {
+  "2026-11-17": [
+   "d1",
+   "l1"
+  ],
+  "2026-11-18": [
+   "d2",
+   "l2"
+  ],
+  "2026-11-19": [
+   "d3",
+   "l3"
+  ],
+  "2026-11-20": [
+   "d4",
+   "l4"
+  ],
+  "2026-11-21": [
+   "d5",
+   "l5"
+  ],
+  "2026-11-22": [
+   "d6",
+   "l6"
+  ],
+  "2026-11-23": [
+   "d-vidalta",
+   "l7"
+  ],
+  "2026-11-24": [
+   "d7"
+  ]
+ },
+ "nota": "dN -> @domvra97, lN -> @laboptimiza. Publicar con media_type=STORIES, image_url=base+id.jpg, luego media_publish."
+}
