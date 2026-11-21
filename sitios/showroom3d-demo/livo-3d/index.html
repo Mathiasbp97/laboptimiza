@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LIVO Botánico · Showroom 3D interactivo (demo)</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1214;--ink:#f3efe6;--mut:#a9a497;--ac:#c89b5c;--ok:#10B981;--wa:#F59E0B;--rd:#EF4444;--card:rgba(18,21,24,.78);--ln:rgba(255,255,255,.09)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+#sky{position:fixed;inset:0;background:radial-gradient(120% 90% at 50% 0%,#dfe6ea 0%,#c9d3d8 45%,#aab6bc 100%);transition:background 1.2s}
+body.night #sky{background:radial-gradient(120% 90% at 50% 0%,#1d2a3a 0%,#121b26 50%,#0b1017 100%)}
+canvas{display:block}
+#c3d{position:fixed;inset:0}
+.glass{background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--ln);border-radius:16px}
+/* cabecera */
+#top{position:fixed;left:20px;top:18px;padding:14px 18px;display:flex;gap:14px;align-items:center;z-index:5}
+#top h1{font-family:Marcellus,serif;font-weight:400;font-size:24px;letter-spacing:.02em;line-height:1}
+#top small{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ac);margin-bottom:5px}
+.demo{font-size:11px;color:var(--mut);margin-top:6px}
+/* pisos */
+#floors{position:fixed;right:20px;top:18px;width:236px;padding:10px;z-index:5}
+#floors h3{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);font-weight:600;padding:6px 8px 10px}
+.fl{display:flex;align-items:center;gap:10px;width:100%;padding:10px 10px;border-radius:11px;color:var(--ink);font:inherit;font-size:14px;background:none;border:0;cursor:pointer;text-align:left;transition:background .15s}
+.fl:hover{background:rgba(255,255,255,.06)}.fl.on{background:rgba(200,155,92,.18)}
+.fl b{font-weight:600;min-width:62px}.fl span{margin-left:auto;font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+.fl i{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+.fl.all{border-top:1px solid var(--ln);border-radius:0 0 11px 11px;margin-top:6px;padding-top:12px;color:var(--mut)}
+/* barra inferior */
+#bar{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:6px;padding:6px;z-index:5}
+#bar button{font:inherit;font-size:13px;color:var(--ink);background:none;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;display:flex;gap:7px;align-items:center;white-space:nowrap}
+#bar button:hover{background:rgba(255,255,255,.07)}#bar button.on{background:rgba(255,255,255,.12)}
+#bar svg{width:16px;height:16px}
+/* leyenda */
+#lgd{position:fixed;left:20px;bottom:20px;padding:10px 14px;display:flex;gap:14px;font-size:12px;color:var(--mut);z-index:5}
+#lgd span{display:flex;align-items:center;gap:6px}#lgd i{width:9px;height:9px;border-radius:3px}
+/* ficha */
+#card{position:fixed;right:276px;top:18px;width:300px;padding:18px;z-index:6;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .2s,transform .2s}
+#card.on{opacity:1;transform:none;pointer-events:auto}
+#card .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac)}
+#card h2{font-family:Marcellus,serif;font-weight:400;font-size:34px;margin:4px 0 2px}
+#card .st{display:inline-block;font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;margin:6px 0 12px}
+.st.libre{background:rgba(16,185,129,.18);color:#34d399}.st.reservado{background:rgba(245,158,11,.18);color:#fbbf24}.st.vendido{background:rgba(239,68,68,.18);color:#f87171}
+#card .row{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--ln);font-size:14px}#card .row span{color:var(--mut)}
+#card .price{font-size:22px;font-weight:700;margin:12px 0 4px;font-variant-numeric:tabular-nums}
+#card .cuota{font-size:12.5px;color:var(--mut)}
+#card .btns{display:grid;gap:8px;margin-top:14px}
+.btn{display:flex;justify-content:center;align-items:center;gap:8px;font:inherit;font-weight:600;font-size:14px;padding:12px;border-radius:12px;border:0;cursor:pointer;text-decoration:none}
+.btn.p{background:#25D366;color:#fff}.btn.g{background:rgba(255,255,255,.08);color:var(--ink)}
+#cardX{position:absolute;right:12px;top:12px;width:30px;height:30px;border-radius:9px;border:0;background:rgba(255,255,255,.08);color:var(--ink);cursor:pointer;font-size:16px}
+/* etiquetas 3D */
+.ul{font:600 12px "Plus Jakarta Sans",sans-serif;color:#fff;padding:4px 8px;border-radius:8px;background:rgba(15,18,20,.78);border:1px solid rgba(255,255,255,.18);pointer-events:auto;cursor:pointer;transition:transform .15s;white-space:nowrap}
+.ul:hover,.ul.h{transform:scale(1.12)}.ul.libre{border-color:#34d399}.ul.reservado{border-color:#fbbf24}.ul.vendido{opacity:.75}
+.ul em{font-style:normal;display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.fltag{font:600 11px "Plus Jakarta Sans",sans-serif;letter-spacing:.12em;color:#1d2124;background:rgba(255,255,255,.85);padding:4px 9px;border-radius:7px;pointer-events:auto;cursor:pointer}
+body.night .fltag{background:rgba(20,24,28,.8);color:#e9e4d8}
+/* carga */
+#load{position:fixed;inset:0;display:grid;place-items:center;z-index:20;background:#0f1214;transition:opacity .6s}
+#load.off{opacity:0;pointer-events:none}
+#load div{text-align:center}#load b{font-family:Marcellus,serif;font-weight:400;font-size:34px;display:block}
+#load small{color:var(--mut);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+#pb{width:220px;height:2px;background:rgba(255,255,255,.1);margin:22px auto 0;border-radius:2px;overflow:hidden}#pb i{display:block;height:100%;width:0;background:var(--ac);transition:width .2s}
+/* sello */
+#kta{position:fixed;left:20px;bottom:64px;font:500 10px "Plus Jakarta Sans";letter-spacing:.2em;color:rgba(255,255,255,.55);z-index:5;text-decoration:none}
+body:not(.night) #kta{color:rgba(20,24,28,.5)}
+#hint{position:fixed;left:50%;top:22px;transform:translateX(-50%);padding:9px 16px;font-size:13px;z-index:4;transition:opacity .4s}
+#hint.off{opacity:0}
+/* celular */
+@media (max-width:820px){
+  #top{left:12px;right:12px;top:10px;padding:10px 14px}#top h1{font-size:20px}
+  #floors{left:0;right:0;top:auto;bottom:66px;width:auto;border-radius:0;padding:8px 10px;display:flex;gap:6px;overflow-x:auto;background:rgba(15,18,20,.82)}
+  #floors h3,.fl.all span{display:none}#fl{display:flex;gap:4px}.fl{flex:none;width:auto;padding:9px 12px;font-size:13px}.fl b{min-width:0}.fl span{display:none}.fl.all{border:0;margin:0;padding:9px 12px}
+  #bar{bottom:10px;max-width:calc(100% - 20px);overflow-x:auto}#bar button{padding:9px 10px;font-size:12px}
+  #lgd{display:none}#kta{bottom:auto;top:96px;left:16px}
+  #card{left:10px;right:10px;width:auto;top:auto;bottom:126px;padding:16px}#card h2{font-size:28px}
+  #hint{top:auto;bottom:130px;white-space:nowrap}
+}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+<div id="sky"></div>
+<div id="c3d"></div>
+<div id="load"><div><small>Showroom 3D interactivo</small><b>LIVO Botánico</b><div id="pb"><i></i></div></div></div>
+<header id="top" class="glass"><div><small>Demo · modelo BIM</small><h1>LIVO Botánico</h1><div class="demo">Generado desde el modelo Revit · precios y estados ficticios</div></div></header>
+<nav id="floors" class="glass"><h3>Elegí un piso</h3><div id="fl"></div></nav>
+<div id="lgd" class="glass"><span><i style="background:var(--ok)"></i>Disponible</span><span><i style="background:var(--wa)"></i>Reservado</span><span><i style="background:var(--rd)"></i>Vendido</span></div>
+<div id="bar" class="glass">
+  <button id="bOrb" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>Girar</button>
+  <button id="bNight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>Noche</span></button>
+  <button id="bMue" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M4 18h16M6 10V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/></svg>Muebles</button>
+  <button id="bTop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></svg>Planta</button>
+</div>
+<div id="hint" class="glass">Arrastrá para girar · tocá un piso para entrar</div>
+<aside id="card" class="glass"><button id="cardX" aria-label="Cerrar">×</button><div id="cardB"></div></aside>
+<a id="kta" href="https://ktavisual.pages.dev" target="_blank" rel="noopener">SHOWROOM 3D · KTA VISUAL</a>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/GLTFLoader.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/CSS2DRenderer.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+const CONFIG = { wa: '595981301718', moneda: 'USD', cuotas: 36, anticipo: .3 };
+const PISOS = [ // nivel de piso terminado (m) e identificador
+  { k: 0, n: 'PB', e: 0.40 }, { k: 1, n: 'Nivel 1', e: 3.64 }, { k: 2, n: 'Nivel 2', e: 6.88 }, { k: 3, n: 'Nivel 3', e: 10.12 },
+  { k: 4, n: 'Nivel 4', e: 13.36 }, { k: 5, n: 'Nivel 5', e: 16.60 }, { k: 6, n: 'Azotea', e: 19.94 } ];
+const COL = { libre: 0x10B981, reservado: 0xF59E0B, vendido: 0xEF4444 };
+const EST = { libre: 'Disponible', reservado: 'Reservado', vendido: 'Vendido' };
+const $ = s => document.querySelector(s);
+const money = n => 'USD ' + Math.round(n).toLocaleString('es-PY');
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const MOV = matchMedia('(max-width:820px)').matches;
+const VG = MOV ? [95, 60, 110] : [62, 34, 70];
+
+/* ---------- escena ---------- */
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOV ? 2 : 1.75));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.localClippingEnabled = true;
+$('#c3d').appendChild(renderer.domElement);
+const labels = new CSS2DRenderer(); labels.setSize(innerWidth, innerHeight);
+Object.assign(labels.domElement.style, { position: 'fixed', inset: '0', pointerEvents: 'none' }); document.body.appendChild(labels.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xc9d3d8, 120, 320);
+const camera = new THREE.PerspectiveCamera(MOV ? 52 : 38, innerWidth / innerHeight, .5, 900);
+camera.position.set(150, 110, 170);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = .07; controls.maxPolarAngle = Math.PI * .49; controls.minDistance = 14; controls.maxDistance = 220;
+controls.target.set(0, 10, 0); controls.autoRotate = true; controls.autoRotateSpeed = .45;
+
+const hemi = new THREE.HemisphereLight(0xf4f1ea, 0x9aa39a, 1.25); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff3e2, 2.2); sun.position.set(-40, 70, 45); sun.castShadow = true;
+sun.shadow.mapSize.set(MOV ? 1024 : 2048, MOV ? 1024 : 2048); Object.assign(sun.shadow.camera, { left: -45, right: 45, top: 45, bottom: -45, near: 10, far: 200 }); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03;
+scene.add(sun);
+const night = new THREE.PointLight(0xffc98a, 0, 90, 1.6); night.position.set(0, 14, 0); scene.add(night);
+
+// suelo, vereda y vegetación simple de contexto
+const ground = new THREE.Mesh(new THREE.CircleGeometry(260, 64), new THREE.MeshStandardMaterial({ color: 0xd9dcd3, roughness: 1 }));
+ground.rotation.x = -Math.PI / 2; ground.position.y = -.16; ground.receiveShadow = true; scene.add(ground);
+const lot = new THREE.Mesh(new THREE.PlaneGeometry(60, 30), new THREE.MeshStandardMaterial({ color: 0xece9e2, roughness: 1 }));
+lot.rotation.x = -Math.PI / 2; lot.position.y = -.14; lot.receiveShadow = true; scene.add(lot);
+const treeG = new THREE.Group(); scene.add(treeG);
+{ const trunk = new THREE.CylinderGeometry(.18, .25, 3, 6), crown = new THREE.IcosahedronGeometry(2.2, 1);
+  const mT = new THREE.MeshStandardMaterial({ color: 0x8a7d6b, roughness: 1 }), mC = new THREE.MeshStandardMaterial({ color: 0xb9c7a8, roughness: 1, flatShading: true });
+  const spots = []; for (let x = -34; x <= 34; x += 8) spots.push([x, 17.5], [x, -17.5]); [[-34, 0], [34, 0], [-34, 9], [34, -9]].forEach(p => spots.push(p));
+  spots.forEach(([x, z], i) => { const t = new THREE.Mesh(trunk, mT); t.position.set(x, 1.4, z); const c = new THREE.Mesh(crown, mC); c.position.set(x, 4 + (i % 3) * .5, z); c.scale.setScalar(.9 + (i % 4) * .12); t.castShadow = c.castShadow = true; treeG.add(t, c); }); }
+
+/* ---------- materiales (maqueta blanca de arquitectura) ---------- */
+const MAT = {
+  muros: () => new THREE.MeshStandardMaterial({ color: 0xf6f3ec, roughness: .92 }),
+  losas: () => new THREE.MeshStandardMaterial({ color: 0xe9e4da, roughness: .95 }),
+  carpinteria: () => new THREE.MeshStandardMaterial({ color: 0x3d4246, roughness: .6, metalness: .2 }),
+  vidrio: () => new THREE.MeshPhysicalMaterial({ color: 0x9cc3d8, roughness: .08, metalness: .1, transparent: true, opacity: .32, depthWrite: false }),
+  muebles: () => new THREE.MeshStandardMaterial({ color: 0xd6c3a5, roughness: .85 })
+};
+const floors = PISOS.map(() => ({ g: new THREE.Group(), mats: [], cut: new THREE.Plane(new THREE.Vector3(0, -1, 0), 999), y: 0, vis: 1 }));
+floors.forEach(f => scene.add(f.g));
+const muebles = [];
+
+/* ---------- carga ---------- */
+const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
+const prog = { a: 0, b: 0 }; const setP = () => $('#pb i').style.width = Math.round((prog.a * .55 + prog.b * .45) * 100) + '%';
+function cargar(url, key) {
+  return new Promise(res => loader.load(url, gl => { prog[key] = 1; setP(); res(gl); }, e => { if (e.total) { prog[key] = e.loaded / e.total; setP(); } }, () => res(null)));
+}
+let U = [];
+Promise.all([cargar('est.glb', 'a'), cargar('mue.glb', 'b'), fetch('units.json').then(r => r.json())]).then(([a, b, units]) => {
+  U = units;
+  const todos = []; [a, b].forEach(gl => gl && gl.scene.traverse(o => { if (o.isMesh) todos.push(o); }));
+  todos.forEach(o => { const m = /^p(\d)_(\w+)/.exec(o.name) || /^p(\d)_(\w+)/.exec(o.parent?.name || ''); if (!m) return;
+    const k = +m[1], cat = m[2], F = floors[k]; const mat = MAT[cat] ? MAT[cat]() : MAT.muebles(); mat.flatShading = true; if (!o.geometry.attributes.normal) o.geometry.deleteAttribute?.('normal');
+    mat.clippingPlanes = [F.cut]; mat.clipShadows = true; mat.side = THREE.DoubleSide;
+    o.material = mat; F.mats.push(mat); o.castShadow = cat !== 'vidrio'; o.receiveShadow = true;
+    if (cat === 'muebles') muebles.push(o);
+    o.updateWorldMatrix(true, false); o.matrixWorld.decompose(o.position, o.quaternion, o.scale); F.g.add(o);
+  });
+  armarUnidades(); armarUI();
+  $('#load').classList.add('off');
+  volar({ pos: new THREE.Vector3(...VG), tgt: new THREE.Vector3(0, MOV ? 14 : 11, 0) }, 2600);
+  setTimeout(() => $('#hint').classList.add('off'), 6000);
+});
+
+/* ---------- unidades ---------- */
+const uMeshes = []; const uLabels = [];
+function armarUnidades() {
+  U.forEach(u => {
+    const P = PISOS[u.piso]; const sh = new THREE.Shape(u.poly.map(([x, z]) => new THREE.Vector2(x, -z)));
+    // contracción leve para que no toque muros
+    const geo = new THREE.ShapeGeometry(sh); geo.rotateX(-Math.PI / 2);
+    const mat = new THREE.MeshBasicMaterial({ color: COL[u.estado], transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide });
+    const m = new THREE.Mesh(geo, mat); m.position.y = P.e + .06; m.renderOrder = 2; m.userData.u = u; m.visible = false;
+    scene.add(m); uMeshes.push(m); u.mesh = m;
+    const el = document.createElement('div'); el.className = 'ul ' + u.estado; el.innerHTML = `<em style="background:#${COL[u.estado].toString(16).padStart(6, '0')}"></em>${u.id}`;
+    el.onclick = e => { e.stopPropagation(); abrir(u); }; el.onmouseenter = () => hover(u); el.onmouseleave = () => hover(null);
+    const lb = new CSS2DObject(el); lb.position.set(u.c[0], P.e + 1.2, u.c[1]); lb.visible = false; scene.add(lb); u.lb = lb; uLabels.push(lb);
+  });
+}
+
+/* ---------- UI de pisos ---------- */
+let FOCO = -1;
+function armarUI() {
+  const box = $('#fl');
+  box.innerHTML = [...PISOS].reverse().map(p => { const us = U.filter(u => u.piso === p.k), lib = us.filter(u => u.estado === 'libre').length;
+    return `<button class="fl" data-k="${p.k}"><i style="background:${us.length ? (lib ? 'var(--ok)' : 'var(--rd)') : 'var(--mut)'}"></i><b>${p.n}</b><span>${us.length ? lib + ' disp. / ' + us.length : (p.k ? 'Amenities' : 'Acceso')}</span></button>`; }).join('')
+    + `<button class="fl all" data-k="-1"><b>Edificio completo</b></button>`;
+  box.querySelectorAll('.fl').forEach(b => b.onclick = () => enfocar(+b.dataset.k));
+}
+function enfocar(k) {
+  FOCO = k; cerrar();
+  document.querySelectorAll('.fl').forEach(b => b.classList.toggle('on', +b.dataset.k === k));
+  controls.autoRotate = k < 0 && $('#bOrb').classList.contains('on');
+  const tPos = k < 0 ? new THREE.Vector3(...VG) : null;
+  floors.forEach((F, i) => { F.target = k < 0 || i <= k ? 1 : 0; F.cutTarget = k >= 0 && i <= k ? PISOS[k].e + 1.45 : 999; F.cut.constant = F.cutTarget > 500 ? 999 : PISOS[k].e + 3.4; });
+  uMeshes.forEach(m => { const on = k >= 0 && m.userData.u.piso === k; m.visible = on; m.material.opacity = 0; m.userData.t = on ? .62 : 0; });
+  uLabels.forEach(l => l.visible = false);
+  setTimeout(() => U.forEach(u => u.lb.visible = k >= 0 && u.piso === k), 900);
+  if (k >= 0) {
+    const e = PISOS[k].e, d = MOV ? 78 : 44;
+    volar({ pos: new THREE.Vector3(d * .55, e + d * .9, d * .78), tgt: new THREE.Vector3(0, e, 0) }, 1400);
+  } else volar({ pos: tPos, tgt: new THREE.Vector3(0, 11, 0) }, 1400);
+}
+
+/* ---------- animación de cámara ---------- */
+let vuelo = null;
+function volar(to, ms) { vuelo = { p0: camera.position.clone(), t0: controls.target.clone(), p1: to.pos, t1: to.tgt, s: performance.now(), ms }; }
+
+/* ---------- ficha ---------- */
+function abrir(u) {
+  hover(u, true);
+  const cuota = u.precio * (1 - CONFIG.anticipo) / CONFIG.cuotas;
+  $('#cardB').innerHTML = `<div class="k">${PISOS[u.piso].n} · ${u.tipo}</div><h2>Unidad ${u.id}</h2><span class="st ${u.estado}">${EST[u.estado]}</span>
+    <div class="row"><span>Superficie aprox.</span><b>${u.m2} m²</b></div><div class="row"><span>Dormitorios</span><b>${u.dorm || 'Mono'}</b></div>
+    ${u.estado !== 'vendido' ? `<div class="price">${money(u.precio)}</div><div class="cuota">Anticipo ${CONFIG.anticipo * 100}% + ${CONFIG.cuotas} cuotas de ${money(cuota)}</div>` : '<div class="cuota" style="margin-top:12px">Esta unidad ya fue vendida. Mirá las disponibles en verde.</div>'}
+    <div class="btns">${u.estado !== 'vendido' ? `<a class="btn p" target="_blank" href="https://wa.me/${CONFIG.wa}?text=${encodeURIComponent('Hola! Me interesa la unidad ' + u.id + ' de LIVO Botánico (demo 3D)')}">Consultar por WhatsApp</a>` : ''}<button class="btn g" id="bVer">Ver unidad de cerca</button></div>`;
+  $('#card').classList.add('on');
+  $('#bVer').onclick = () => { const e = PISOS[u.piso].e; volar({ pos: new THREE.Vector3(u.c[0] + 9, e + 13, u.c[1] + 12), tgt: new THREE.Vector3(u.c[0], e, u.c[1]) }, 1200); };
+}
+function cerrar() { $('#card').classList.remove('on'); hover(null, true); }
+$('#cardX').onclick = cerrar;
+let SEL = null;
+function hover(u, fijo) {
+  if (fijo) SEL = u;
+  uMeshes.forEach(m => { const x = m.userData.u; m.userData.t = (FOCO >= 0 && x.piso === FOCO) ? (x === u || x === SEL ? .9 : .58) : 0; });
+  U.forEach(x => x.lb && x.lb.element.classList.toggle('h', x === u || x === SEL));
+}
+
+/* ---------- interacción ---------- */
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null;
+renderer.domElement.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; controls.autoRotate = false; });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+  ptr.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera);
+  if (FOCO >= 0) { const h = ray.intersectObjects(uMeshes.filter(m => m.visible))[0]; if (h) return abrir(h.object.userData.u); }
+  else { // clic en el edificio: elegir el piso según la altura del punto
+    const h = ray.intersectObjects(floors.map(f => f.g), true)[0];
+    if (h) { const y = h.point.y; let k = 0; PISOS.forEach(p => { if (y >= p.e - .3) k = p.k; }); return enfocar(Math.min(k, 5)); }
+  }
+});
+renderer.domElement.addEventListener('pointermove', e => {
+  if (FOCO < 0 || e.buttons) return; ptr.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera);
+  const h = ray.intersectObjects(uMeshes.filter(m => m.visible))[0]; hover(h ? h.object.userData.u : null); renderer.domElement.style.cursor = h ? 'pointer' : '';
+});
+$('#bOrb').onclick = e => { const b = e.currentTarget; b.classList.toggle('on'); controls.autoRotate = b.classList.contains('on') && FOCO < 0; };
+$('#bMue').onclick = e => { const b = e.currentTarget; b.classList.toggle('on'); muebles.forEach(m => m.visible = b.classList.contains('on')); };
+$('#bTop').onclick = () => { const k = FOCO < 0 ? 1 : FOCO, e = PISOS[k].e; if (FOCO < 0) enfocar(k); setTimeout(() => volar({ pos: new THREE.Vector3(0.01, e + (MOV ? 70 : 48), 0.5), tgt: new THREE.Vector3(0, e, 0) }, 1300), FOCO < 0 ? 50 : 0); };
+$('#bNight').onclick = e => { const n = document.body.classList.toggle('night'); e.currentTarget.classList.toggle('on', n); e.currentTarget.querySelector('span').textContent = n ? 'Día' : 'Noche'; NOCHE = n ? 1 : 0; };
+let NOCHE = 0, noche = 0;
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight); });
+
+/* ---------- bucle ---------- */
+const cDay = new THREE.Color(0xc9d3d8), cNight = new THREE.Color(0x101820);
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), .25), L = r => 1 - Math.exp(-dt * r);
+  if (vuelo) { const t = Math.min(1, (performance.now() - vuelo.s) / vuelo.ms), k = ease(t);
+    camera.position.lerpVectors(vuelo.p0, vuelo.p1, k); controls.target.lerpVectors(vuelo.t0, vuelo.t1, k); if (t >= 1) vuelo = null; }
+  floors.forEach((F, i) => {
+    const tgt = F.target ?? 1; F.vis += (tgt - F.vis) * L(5.5); if (Math.abs(tgt - F.vis) < .01) F.vis = tgt;
+    F.g.position.y = (1 - F.vis) * 14; F.g.visible = F.vis > .02;
+    F.mats.forEach(m => { const base = m.userData.base ?? (m.userData.base = m.opacity); m.transparent = F.vis < .99 || base < 1; m.opacity = base * F.vis; m.depthWrite = F.vis > .99 && base >= 1; });
+    const ct = F.cutTarget ?? 999; if (ct < 500) F.cut.constant += (ct - F.cut.constant) * L(3.2);
+  });
+  uMeshes.forEach(m => { const t = m.userData.t || 0; m.material.opacity += (t - m.material.opacity) * L(6); });
+  noche += (NOCHE - noche) * L(2.5);
+  hemi.intensity = 1.25 - noche * .95; sun.intensity = 2.2 - noche * 2.05; night.intensity = noche * 260; scene.fog.color.lerpColors(cDay, cNight, noche);
+  renderer.toneMappingExposure = 1.05 + noche * .15;
+  controls.update(); renderer.render(scene, camera); labels.render(scene, camera);
+});
+</script>
+</body>
+</html>
