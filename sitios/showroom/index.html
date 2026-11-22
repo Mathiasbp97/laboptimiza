@@ -232,6 +232,29 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
  #vPlanta{position:static;opacity:1}
  #side{position:static;width:auto;border:0;box-shadow:none;background:#fff;color:#111}
 }
+
+@media (min-width:761px){.hBrk{display:none}}.hBrk{margin-top:10px;font-size:12.5px}.hBrk small{color:var(--ac);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:10px}
+#bChip{position:fixed;left:16px;bottom:16px;z-index:50;padding:8px 13px;border-radius:12px;display:flex;flex-direction:column;gap:1px;font-size:12px}
+#bChip small{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac);font-weight:700}
+#langPop{position:fixed;top:64px;right:64px;z-index:80;padding:6px;border-radius:14px;display:none;min-width:170px}
+#langPop.on{display:block}#langPop button{display:flex;gap:10px;align-items:center;width:100%;padding:9px 12px;border-radius:9px;background:none;border:0;color:var(--tx);font:500 13.5px inherit;cursor:pointer;text-align:left}
+#langPop button b{width:24px;color:var(--mu);font-size:11.5px}#langPop button:hover{background:rgba(255,255,255,.07)}#langPop button.on{background:rgba(255,255,255,.1)}#langPop button.on b{color:var(--ac)}
+#ubiG{display:grid;grid-template-columns:1fr 340px;height:min(640px,86vh)}
+#map{position:relative;overflow:hidden;background:#1a1d22;cursor:grab;touch-action:none}#map:active{cursor:grabbing}
+#mapT img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}
+#mCtl{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;z-index:3}#mCtl .tbtn{width:38px;height:38px;justify-content:center;font-size:18px;padding:0}
+#mAttr{position:absolute;left:8px;bottom:5px;font-size:9.5px;color:rgba(255,255,255,.8);text-shadow:0 1px 2px #000;z-index:3}
+.mpoi{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:6px;z-index:2}
+.mpoi button{width:30px;height:30px;border-radius:50%;background:var(--c);border:2px solid #fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.45);padding:0}
+.mpoi button svg{width:16px;height:16px}.mpoi span{font-size:11.5px;font-weight:600;color:#fff;background:rgba(11,13,18,.78);padding:3px 8px;border-radius:8px;white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none}
+.mpoi:hover span,.mpoi.on span{opacity:1}.mpoi.on button{transform:scale(1.2)}
+.mpro{position:absolute;transform:translate(-50%,-100%);z-index:2}.mpro .pin{background:var(--ac);color:#111;font-weight:800;font-size:12px;letter-spacing:.08em;padding:8px 12px;border-radius:12px;position:relative;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+.mpro .pin:after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:var(--ac)}
+#ubiS{padding:18px;overflow:auto;display:flex;flex-direction:column}
+.poi{display:flex;gap:11px;align-items:center;width:100%;text-align:left;padding:10px 11px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:var(--tx);margin-bottom:7px;cursor:pointer;transition:background .15s}
+.poi:hover,.poi.on{background:rgba(255,255,255,.1)}.poi i{width:10px;height:10px;border-radius:50%;flex:none}.poi span{display:flex;flex-direction:column;gap:2px}.poi b{font-size:13.5px;font-weight:600}.poi small{font-size:11.5px;color:var(--mu)}
+@media (max-width:1600px){#bUbi .lbl,#bAmen .lbl{display:none}}
+@media (max-width:760px){#bUbi,#bLang{display:none!important}#bChip{display:none}#ubiG{grid-template-columns:1fr;grid-template-rows:52vh auto;height:auto;max-height:90vh}#ubiS{max-height:38vh}#langPop{right:12px;top:58px}#bUbi .lbl{display:none}}
 </style>
 </head>
 <body>
@@ -242,11 +265,14 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
  <div class="brand" id="brand"></div>
  <div style="display:flex;gap:8px">
   <button class="tbtn g" id="bBuscar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="lbl">Buscar depto</span></button>
-  <button class="tbtn g" id="bAmen"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg><span class="lbl">Amenities</span></button>
+  <button class="tbtn g" id="bUbi" title="Ubicación"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="lbl">Ubicación</span></button>
+  <button class="tbtn g" id="bAmen" title="Amenities"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg><span class="lbl">Amenities</span></button>
   <a class="tbtn p" id="bInteres" target="_blank" rel="noopener"><span class="lbl">Registrar interés</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  <button class="tbtn g" id="bLang" aria-label="Idioma"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><b id="bLangT" style="font-size:12px;letter-spacing:.04em">ES</b></button>
   <button class="tbtn g" id="bMenu" aria-label="Menú"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
  </div>
 </header>
+<div class="glass" id="langPop"></div>
 
 <section class="view on" id="vTorre">
  <svg id="torreSvg" viewBox="0 0 2688 1520" preserveAspectRatio="xMidYMid slice"><rect x="0" y="-600" width="2688" height="620" fill="#1B2A5C"/><rect x="0" y="1500" width="2688" height="600" fill="#0B0D12"/><image id="extImg" href="img/exterior.jpg" x="0" y="0" width="2688" height="1520"/><g id="floors"></g></svg>
@@ -281,6 +307,7 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
   <div><span class="lab">Dormitorios</span><div class="chips" id="fDorm"></div></div>
   <div><label for="fMax">Precio máximo · <b class="num" id="fMaxV" style="color:var(--tx)"></b></label><input type="range" id="fMax"></div>
   <div><label for="fPiso">Desde el piso</label><select id="fPiso"></select></div>
+  <div><span class="lab">Orientación</span><div class="chips" id="fOr"></div></div>
   <div><label for="fOrd">Ordenar por</label><select id="fOrd"><option value="precio">Menor precio</option><option value="m2p">Menor precio por m²</option><option value="m2">Más metros</option><option value="piso">Piso más alto</option></select></div>
  </div>
  <div class="rhd"><span><b class="num" id="fCount"></b> disponibles con estos filtros</span><button class="tbtn g" id="fTorre">Ver en la torre</button></div>
@@ -301,8 +328,14 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
   <div class="ok"><div style="font-size:40px;color:#34D399">✓</div><h3 style="margin:6px 0 4px">¡Listo!</h3><p style="color:var(--mu);font-size:14px">Un asesor te escribe en breve con la info del <b id="lOkU"></b>.</p><button type="button" class="btn g" data-close style="margin-top:14px">Seguir mirando</button></div>
  </form>
 </div></div>
+<div class="modal" id="mUbi"><div class="mbox mw glass" style="width:min(1120px,100%);padding:0;overflow:hidden">
+ <div id="ubiG"><div id="map"><div id="mapT"></div><div id="mCtl"><button class="tbtn g" id="mZi" aria-label="Acercar">+</button><button class="tbtn g" id="mZo" aria-label="Alejar">−</button><button class="tbtn g" id="mCen" aria-label="Centrar en el proyecto">◎</button></div><div id="mAttr" data-notr>Imagen satelital © Esri, Maxar, Earthstar Geographics</div></div>
+ <div id="ubiS"><div class="mhd" style="margin-bottom:6px"><div><h3>Ubicación</h3><p data-notr></p></div><button class="xb" data-close>×</button></div>
+  <div class="sec" style="margin-top:4px">Puntos de interés</div><p style="font-size:11.5px;color:var(--mu);margin:-4px 0 10px">Distancia en línea recta · tiempo estimado en auto</p><div id="poiL"></div>
+  <a class="btn g" id="mGo" target="_blank" rel="noopener" style="margin-top:12px">Cómo llegar</a></div></div>
+</div></div>
 <div class="modal" id="mPanel"><div class="mbox mw glass" style="width:min(1120px,100%)">
- <div class="mhd"><div><h3>Panel de ventas</h3><p><span class="live"><i></i>En vivo</span> &nbsp;·&nbsp; lo que hace la gente dentro del showroom</p></div><div style="display:flex;gap:8px"><button class="tbtn g" id="pXls">Exportar leads</button><button class="xb" data-close>×</button></div></div>
+ <div class="mhd"><div><h3>Panel de ventas</h3><p><span class="live"><i></i>En vivo</span> &nbsp;·&nbsp; lo que hace la gente dentro del showroom</p></div><div style="display:flex;gap:8px"><button class="tbtn g" id="pBro">Generar brochure</button><button class="tbtn g" id="pXls">Exportar leads</button><button class="xb" data-close>×</button></div></div>
  <div class="kpis" id="pKpis"></div>
  <div class="pgrid">
   <div class="pcard"><h4>Consultas por día <span style="text-transform:none;letter-spacing:0;font-weight:600" id="pTot"></span></h4><canvas id="pChart"></canvas></div>
@@ -311,6 +344,7 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
  <div class="pgrid" style="grid-template-columns:1fr 1.6fr">
   <div class="pcard"><h4>Interés por tipología</h4><div id="pTipo"></div></div>
   <div class="pcard"><h4>Últimas consultas <input id="pQ" placeholder="Buscar…" style="width:160px;padding:6px 10px;font-size:12px;text-transform:none;letter-spacing:0"></h4><div style="max-height:260px;overflow:auto"><table class="lt"><thead><tr><th data-s="fecha">Fecha</th><th data-s="nombre">Nombre</th><th data-s="unidad">Depto</th><th data-s="origen">Origen</th><th data-s="temp">Interés</th></tr></thead><tbody id="pLeads"></tbody></table></div></div>
+ <div class="pcard" style="margin-top:14px"><h4>Inmobiliarias · links propios</h4><div id="pBrok" style="overflow:auto"></div></div>
  </div>
 </div></div>
 
@@ -319,6 +353,9 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
  <button class="mi" data-a="panel">Panel de ventas (desarrolladora)</button>
  <button class="mi" data-a="buscar">Buscar departamento</button>
  <button class="mi" data-a="amen">Ver amenities</button>
+ <button class="mi" data-a="brochure">Descargar brochure (PDF)</button>
+ <button class="mi" data-a="ubi">Ubicación</button>
+ <button class="mi" data-a="lang">Idioma · Language</button>
  <button class="mi" data-a="xlsx">Exportar unidades a Excel</button>
  <button class="mi" data-a="json">Exportar datos (JSON)</button>
  <button class="mi" data-a="imp">Importar datos (JSON)</button>
@@ -372,6 +409,17 @@ const CONFIG = {
   vistas: [ { hasta: 3, n: "Vista pisos 1 a 3", img: "img/vista-bajo.jpg" }, { hasta: 7, n: "Vista pisos 4 a 7", img: "img/vista-medio.jpg" }, { hasta: 99, n: "Vista pisos 8 a 10", img: "img/vista-alto.jpg" } ],
   amenities: [ { n: "Azotea con piscina", img: "img/rooftop.jpg" }, { n: "Lobby doble altura", img: "img/lobby.jpg" } ],
   cotizador: { anticipo: 30, cuotasPct: 40, cuotas: 30, tasaAnual: 9, anios: 15 },
+  // Idiomas del showroom (el comprador elige con el botón de idioma). es = idioma base de los textos.
+  idiomas:   ['es', 'en', 'pt', 'nl'],
+  // Links para inmobiliarias: cada una comparte  …/?b=slug  y sus consultas llegan etiquetadas.
+  // wa opcional: si se completa, el WhatsApp del comprador va directo a esa inmobiliaria.
+  inmobiliarias: [ { slug: 'norte-propiedades', n: 'Norte Propiedades', wa: '' }, { slug: 'casa-urbana', n: 'Casa Urbana Inmobiliaria', wa: '' }, { slug: 'prime-brokers', n: 'Prime Brokers', wa: '' } ],
+  // Ubicación real del proyecto y puntos de interés (lat/lon). Distancia en línea recta; minutos estimados en auto a 25 km/h promedio urbano.
+  ubicacion: { lat: -25.2905, lon: -57.5762, zoom: 16,
+    pois: [ { n: 'Centro comercial', cat: 'compras', lat: -25.2868, lon: -57.5688 }, { n: 'Supermercado', cat: 'compras', lat: -25.2931, lon: -57.5729 },
+            { n: 'Colegio bilingüe', cat: 'educacion', lat: -25.2852, lon: -57.5801 }, { n: 'Universidad', cat: 'educacion', lat: -25.2978, lon: -57.5841 },
+            { n: 'Hospital privado', cat: 'salud', lat: -25.2949, lon: -57.5672 }, { n: 'Parque y pista de caminata', cat: 'verde', lat: -25.2878, lon: -57.5826 },
+            { n: 'Gimnasio', cat: 'deporte', lat: -25.2893, lon: -57.5719 }, { n: 'Restaurantes y cafés', cat: 'gastronomia', lat: -25.2919, lon: -57.5795 } ] },
   planilla:  { url: "", cadaSeg: 60 },
   panel:     { pedirPin: true },          // false = el panel de ventas se abre sin PIN (solo para demos)
   comparar:  { max: 3 },
@@ -389,6 +437,117 @@ const money = v => (CONFIG.moneda === 'PYG' ? 'Gs. ' : CONFIG.moneda === 'EUR' ?
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const COL = { disponible: '#10B981', reservado: '#F59E0B', vendido: '#EF4444' };
 const LET = Object.keys(CONFIG.tipologias);
+
+// ---------- IDIOMAS (ES · EN · PT · NL) ----------
+// Traductor sobre el DOM: los textos del showroom se escriben en español y se traducen al mostrarse.
+// E = frases completas; P = palabras/expresiones sueltas (se aplican dentro de textos compuestos).
+// Para sumar un idioma: agregá una columna en E y P y su código en CONFIG.idiomas.
+const I18N = {
+  cols: { en: 0, pt: 1, nl: 2 },
+  nombres: { es: 'Español', en: 'English', pt: 'Português', nl: 'Nederlands' },
+  E: {
+    'Volver': ['Back', 'Voltar', 'Terug'], 'Torre': ['Tower', 'Torre', 'Toren'], 'Planta': ['Floor plan', 'Planta', 'Plattegrond'],
+    'Buscar depto': ['Find a unit', 'Buscar apto', 'Zoek appartement'], 'Amenities': ['Amenities', 'Áreas comuns', 'Voorzieningen'],
+    'Registrar interés': ['I’m interested', 'Tenho interesse', 'Interesse'], 'Ubicación': ['Location', 'Localização', 'Locatie'],
+    'Disponibilidad en vivo': ['Live availability', 'Disponibilidade ao vivo', 'Live beschikbaarheid'], 'Elegí tu piso': ['Choose your floor', 'Escolha seu andar', 'Kies je verdieping'],
+    'Sin disponibilidad': ['Sold out', 'Esgotado', 'Uitverkocht'], 'Quitar filtro': ['Clear filter', 'Limpar filtro', 'Filter wissen'],
+    'Tocá un piso para ver los departamentos': ['Tap a floor to see the apartments', 'Toque um andar para ver os apartamentos', 'Tik op een verdieping om de appartementen te zien'],
+    'Tocá un departamento para ver su ficha, recorrer los ambientes y simular el pago.': ['Tap an apartment to see its details, walk through the rooms and simulate the payment.', 'Toque um apartamento para ver a ficha, percorrer os ambientes e simular o pagamento.', 'Tik op een appartement voor de details, een rondleiding en een betaalsimulatie.'],
+    'Recorré el departamento': ['Walk through the apartment', 'Percorra o apartamento', 'Loop door het appartement'], 'Simulá tu pago': ['Simulate your payment', 'Simule seu pagamento', 'Simuleer je betaling'],
+    'Cubierta': ['Indoor area', 'Área coberta', 'Binnenoppervlak'], 'Dormitorios · baños': ['Bedrooms · bathrooms', 'Quartos · banheiros', 'Slaapkamers · badkamers'],
+    'Orientación': ['Orientation', 'Orientação', 'Oriëntatie'], 'Anticipo %': ['Down payment %', 'Entrada %', 'Aanbetaling %'],
+    '% en cuotas de obra': ['% in construction instalments', '% em parcelas de obra', '% in termijnen tijdens de bouw'], 'Cantidad de cuotas': ['Number of instalments', 'Número de parcelas', 'Aantal termijnen'],
+    'Tasa banco anual %': ['Bank rate per year %', 'Taxa bancária anual %', 'Bankrente per jaar %'], 'Anticipo': ['Down payment', 'Entrada', 'Aanbetaling'],
+    'Saldo a la entrega': ['Balance on delivery', 'Saldo na entrega', 'Restbedrag bij oplevering'], 'Anticipo + cuotas superan el 100% del precio': ['Down payment + instalments exceed 100% of the price', 'Entrada + parcelas superam 100% do preço', 'Aanbetaling + termijnen zijn meer dan 100% van de prijs'],
+    'Me interesa este depto': ['I’m interested in this unit', 'Tenho interesse neste apto', 'Ik heb interesse in dit appartement'], 'Comparar': ['Compare', 'Comparar', 'Vergelijken'],
+    'En comparación ✓': ['In comparison ✓', 'Em comparação ✓', 'In vergelijking ✓'], 'Compartir link': ['Share link', 'Compartilhar link', 'Link delen'],
+    'Ficha PDF': ['Unit sheet PDF', 'Ficha em PDF', 'Factsheet PDF'], 'Imprimir ficha': ['Print sheet', 'Imprimir ficha', 'Afdrukken'],
+    'Arrastrá para mirar alrededor': ['Drag to look around', 'Arraste para olhar ao redor', 'Sleep om rond te kijken'],
+    'Encontrá tu departamento': ['Find your apartment', 'Encontre seu apartamento', 'Vind je appartement'],
+    'Filtrá por lo que necesitás y te mostramos solo lo que hay.': ['Filter by what you need and we show only what’s available.', 'Filtre pelo que você precisa e mostramos só o que está disponível.', 'Filter op wat je zoekt; we tonen alleen wat beschikbaar is.'],
+    'Dormitorios': ['Bedrooms', 'Quartos', 'Slaapkamers'], 'Desde el piso': ['From floor', 'A partir do andar', 'Vanaf verdieping'], 'Ordenar por': ['Sort by', 'Ordenar por', 'Sorteren op'],
+    'Menor precio': ['Lowest price', 'Menor preço', 'Laagste prijs'], 'Menor precio por m²': ['Lowest price per m²', 'Menor preço por m²', 'Laagste prijs per m²'], 'Más metros': ['Largest', 'Mais metros', 'Grootste'], 'Piso más alto': ['Highest floor', 'Andar mais alto', 'Hoogste verdieping'],
+    'disponibles con estos filtros': ['available with these filters', 'disponíveis com estes filtros', 'beschikbaar met deze filters'], 'Ver en la torre': ['Show on the tower', 'Ver na torre', 'Toon in de toren'],
+    'Todos': ['All', 'Todos', 'Alle'], 'Todas': ['All', 'Todas', 'Alle'], 'Comparación': ['Comparison', 'Comparação', 'Vergelijking'], 'En verde, la mejor opción de cada fila.': ['In green, the best option in each row.', 'Em verde, a melhor opção de cada linha.', 'In het groen de beste optie per rij.'],
+    'Ver ficha': ['View unit', 'Ver ficha', 'Bekijk'], 'Limpiar': ['Clear', 'Limpar', 'Wissen'], 'Nombre': ['Name', 'Nome', 'Naam'], 'Tu nombre': ['Your name', 'Seu nome', 'Je naam'],
+    'Teléfono / WhatsApp': ['Phone / WhatsApp', 'Telefone / WhatsApp', 'Telefoon / WhatsApp'], '¿Para cuándo?': ['When?', 'Para quando?', 'Wanneer?'],
+    'Quiero reservar': ['I want to book', 'Quero reservar', 'Ik wil reserveren'], 'Este año': ['This year', 'Este ano', 'Dit jaar'], 'Solo mirando': ['Just looking', 'Só olhando', 'Even rondkijken'],
+    'Quiero que me contacten': ['Please contact me', 'Quero ser contatado', 'Neem contact met me op'], 'Prefiero escribir por WhatsApp': ['I’d rather write on WhatsApp', 'Prefiro escrever pelo WhatsApp', 'Liever via WhatsApp'],
+    '¡Listo!': ['Done!', 'Pronto!', 'Klaar!'], 'Un asesor te escribe en breve con la info del': ['An advisor will message you shortly with the details of', 'Um consultor vai te escrever em breve com as informações do', 'Een adviseur stuurt je zo de informatie over'],
+    'Seguir mirando': ['Keep browsing', 'Continuar olhando', 'Verder kijken'], 'Consulta enviada al equipo de ventas': ['Request sent to the sales team', 'Consulta enviada à equipe de vendas', 'Aanvraag verstuurd naar het verkoopteam'],
+    'Opciones': ['Options', 'Opções', 'Opties'], 'Cerrar': ['Close', 'Fechar', 'Sluiten'], 'Buscar departamento': ['Find an apartment', 'Buscar apartamento', 'Appartement zoeken'], 'Ver amenities': ['See amenities', 'Ver áreas comuns', 'Bekijk voorzieningen'],
+    'Descargar brochure (PDF)': ['Download brochure (PDF)', 'Baixar brochure (PDF)', 'Brochure downloaden (PDF)'], 'Brochure PDF': ['Brochure PDF', 'Brochure PDF', 'Brochure PDF'], 'Idioma': ['Language', 'Idioma', 'Taal'],
+    'Panel de ventas (desarrolladora)': ['Sales panel (developer)', 'Painel de vendas (incorporadora)', 'Verkooppaneel (ontwikkelaar)'], 'Exportar unidades a Excel': ['Export units to Excel', 'Exportar unidades para Excel', 'Units naar Excel'],
+    'Exportar datos (JSON)': ['Export data (JSON)', 'Exportar dados (JSON)', 'Gegevens exporteren (JSON)'], 'Importar datos (JSON)': ['Import data (JSON)', 'Importar dados (JSON)', 'Gegevens importeren (JSON)'],
+    'Modo administrador': ['Admin mode', 'Modo administrador', 'Beheerdersmodus'], 'Conectar planilla en vivo': ['Connect live spreadsheet', 'Conectar planilha ao vivo', 'Live spreadsheet koppelen'],
+    'Restaurar datos demo': ['Restore demo data', 'Restaurar dados demo', 'Demogegevens herstellen'], 'Limpiar y empezar de cero': ['Clear and start over', 'Limpar e começar do zero', 'Wissen en opnieuw beginnen'],
+    'Superficie cubierta': ['Indoor area', 'Área coberta', 'Binnenoppervlak'], 'Precio por m²': ['Price per m²', 'Preço por m²', 'Prijs per m²'], 'Cuota de obra': ['Construction instalment', 'Parcela de obra', 'Bouwtermijn'],
+    'Vistas en el showroom': ['Views in the showroom', 'Visualizações no showroom', 'Weergaven in de showroom'], 'Tipología': ['Type', 'Tipologia', 'Type'], 'Precio': ['Price', 'Preço', 'Prijs'], 'Estado': ['Status', 'Status', 'Status'],
+    'Los pisos con opciones quedan resaltados': ['Floors with options are highlighted', 'Os andares com opções ficam destacados', 'Verdiepingen met opties zijn gemarkeerd'],
+    'Puntos de interés': ['Points of interest', 'Pontos de interesse', 'Bezienswaardigheden'], 'Cerca del proyecto': ['Near the project', 'Perto do projeto', 'In de buurt'],
+    'Distancia en línea recta · tiempo estimado en auto': ['Straight-line distance · estimated drive time', 'Distância em linha reta · tempo estimado de carro', 'Hemelsbrede afstand · geschatte rijtijd'],
+    'Cómo llegar': ['Directions', 'Como chegar', 'Route'], 'Centro comercial': ['Shopping mall', 'Shopping', 'Winkelcentrum'], 'Supermercado': ['Supermarket', 'Supermercado', 'Supermarkt'],
+    'Colegio bilingüe': ['Bilingual school', 'Escola bilíngue', 'Tweetalige school'], 'Universidad': ['University', 'Universidade', 'Universiteit'], 'Hospital privado': ['Private hospital', 'Hospital particular', 'Privéziekenhuis'],
+    'Parque y pista de caminata': ['Park and walking track', 'Parque e pista de caminhada', 'Park en wandelpad'], 'Gimnasio': ['Gym', 'Academia', 'Sportschool'], 'Restaurantes y cafés': ['Restaurants and cafés', 'Restaurantes e cafés', 'Restaurants en cafés'],
+    'Entrada': ['Entrance', 'Entrada', 'Entree'], 'Living y comedor': ['Living and dining', 'Sala de estar e jantar', 'Woon- en eetkamer'], 'Cocina': ['Kitchen', 'Cozinha', 'Keuken'], 'Suite principal': ['Master suite', 'Suíte principal', 'Hoofdslaapkamer'], 'Baño en suite': ['En-suite bathroom', 'Banheiro da suíte', 'En-suite badkamer'],
+    'Azotea con piscina': ['Rooftop with pool', 'Rooftop com piscina', 'Dakterras met zwembad'], 'Lobby doble altura': ['Double-height lobby', 'Lobby com pé-direito duplo', 'Lobby met dubbele hoogte'],
+    '10 pisos de departamentos de 1, 2 y 3 dormitorios con balcones corridos, lobby de doble altura y azotea con piscina infinita.': ['10 floors of 1, 2 and 3-bedroom apartments with wraparound balconies, a double-height lobby and a rooftop infinity pool.', '10 andares de apartamentos de 1, 2 e 3 quartos com varandas corridas, lobby com pé-direito duplo e rooftop com piscina de borda infinita.', '10 verdiepingen met appartementen van 1, 2 en 3 slaapkamers, doorlopende balkons, een lobby met dubbele hoogte en een dakterras met infinity pool.'],
+    'Vengo por': ['I come from', 'Venho por', 'Via'], 'Ventas': ['Sales', 'Vendas', 'Verkoop'], 'Preparando la ficha…': ['Preparing the unit sheet…', 'Preparando a ficha…', 'Factsheet wordt gemaakt…'],
+    'Unidad': ['Unit', 'Unidade', 'Unit'], 'Detalle': ['Detail', 'Detalhe', 'Detail'], 'Forma de pago': ['Payment plan', 'Forma de pagamento', 'Betaalplan'], 'Monto': ['Amount', 'Valor', 'Bedrag'],
+    'Ver este departamento en el showroom': ['See this apartment in the showroom', 'Ver este apartamento no showroom', 'Bekijk dit appartement in de showroom'], 'Ficha descargada': ['Unit sheet downloaded', 'Ficha baixada', 'Factsheet gedownload'],
+    'Armando el brochure…': ['Building the brochure…', 'Montando o brochure…', 'Brochure wordt gemaakt…'], 'Tipologías': ['Unit types', 'Tipologias', 'Woningtypes'], 'Tipo': ['Type', 'Tipo', 'Type'],
+    'Ambientes y amenities': ['Rooms and amenities', 'Ambientes e áreas comuns', 'Ruimtes en voorzieningen'], 'Disponibilidad y precios': ['Availability and prices', 'Disponibilidade e preços', 'Beschikbaarheid en prijzen'],
+    'Actualizado': ['Updated', 'Atualizado', 'Bijgewerkt'], 'Recorré el proyecto en 3D': ['Explore the project in 3D', 'Explore o projeto em 3D', 'Bekijk het project in 3D'], 'Brochure descargado': ['Brochure downloaded', 'Brochure baixado', 'Brochure gedownload'],
+    'Valores orientativos, sujetos a disponibilidad y aprobación. Imágenes ilustrativas. No constituye oferta vinculante.': ['Indicative values, subject to availability and approval. Images for illustration only. Not a binding offer.', 'Valores orientativos, sujeitos a disponibilidade e aprovação. Imagens ilustrativas. Não constitui oferta vinculante.', 'Indicatieve waarden, onder voorbehoud van beschikbaarheid en goedkeuring. Illustratieve beelden. Geen bindend aanbod.'],
+    'Orientación ·': ['Orientation ·', 'Orientação ·', 'Oriëntatie ·'], 'Cualquiera': ['Any', 'Qualquer', 'Alle'],
+    'Te atiende': ['Your agent', 'Seu corretor', 'Je makelaar'], 'Recorré, elegí y consultá': ['Explore, choose and ask', 'Explore, escolha e consulte', 'Bekijk, kies en vraag'],
+  },
+  P: [
+    ['Vista pisos (\\d+) a (\\d+)', ['View floors $1 to $2', 'Vista andares $1 a $2', 'Uitzicht verdiepingen $1 tot $2']],
+    ['Ver la vista desde el piso', ['See the view from floor', 'Ver a vista do andar', 'Bekijk het uitzicht vanaf verdieping']],
+    ['Todos los del piso', ['All on floor', 'Todos do andar', 'Alle op verdieping']], ['Me interesa el', ['I’m interested in', 'Tenho interesse no', 'Interesse in']],
+    ['o más alto', ['or higher', 'ou mais alto', 'of hoger']], ['\\(todos\\)', ['(all)', '(todos)', '(alle)']],
+    ['Financiado a (\\d+) años', ['Financed over $1 years', 'Financiado em $1 anos', 'Gefinancierd over $1 jaar']], ['cuotas de obra', ['construction instalments', 'parcelas de obra', 'bouwtermijnen']], ['cuota de obra', ['construction instalment', 'parcela de obra', 'bouwtermijn']],
+    ['depto elegido · sumá otro', ['unit chosen · add another', 'apto escolhido · adicione outro', 'appartement gekozen · voeg er een toe']], ['deptos elegidos', ['units chosen', 'aptos escolhidos', 'appartementen gekozen']],
+    ['agregado a la comparación', ['added to the comparison', 'adicionado à comparação', 'toegevoegd aan de vergelijking']], ['Podés comparar hasta (\\d+) departamentos', ['You can compare up to $1 apartments', 'Você pode comparar até $1 apartamentos', 'Je kunt tot $1 appartementen vergelijken']],
+    ['No hay departamentos disponibles con esos filtros\\. Probá subir el precio máximo o elegir otro piso\\.', ['No apartments available with those filters. Try a higher maximum price or another floor.', 'Não há apartamentos disponíveis com esses filtros. Tente aumentar o preço máximo ou escolher outro andar.', 'Geen appartementen met deze filters. Verhoog de maximumprijs of kies een andere verdieping.']],
+    ['Precio máximo', ['Maximum price', 'Preço máximo', 'Maximale prijs']], ['copiado', ['copied', 'copiado', 'gekopieerd']], ['Link del', ['Link to', 'Link do', 'Link naar']], ['descargad[ao]', ['downloaded', 'baixado', 'gedownload']],
+    ['Cargando PDF, probá en un segundo', ['Loading PDF, try again in a second', 'Carregando PDF, tente em um segundo', 'PDF laden, probeer het zo opnieuw']],
+    ['Disponibles', ['Available', 'Disponíveis', 'Beschikbaar']], ['disponibles', ['available', 'disponíveis', 'beschikbaar']], ['Disponible', ['Available', 'Disponível', 'Beschikbaar']], ['disponible', ['available', 'disponível', 'beschikbaar']],
+    ['Reservado', ['Reserved', 'Reservado', 'Gereserveerd']], ['reservado', ['reserved', 'reservado', 'gereserveerd']], ['Vendido', ['Sold', 'Vendido', 'Verkocht']], ['vendido', ['sold', 'vendido', 'verkocht']],
+    ['Desde', ['From', 'A partir de', 'Vanaf']], ['de (\\d+)\\b', ['of $1', 'de $1', 'van $1']], ['Entrega', ['Delivery', 'Entrega', 'Oplevering']],
+    ['dormitorios', ['bedrooms', 'quartos', 'slaapkamers']], ['dormitorio', ['bedroom', 'quarto', 'slaapkamer']], ['dorm\\.', ['bed.', 'qto.', 'slpk.']],
+    ['Balcón', ['Balcony', 'Varanda', 'Balkon']], ['balcón', ['balcony', 'varanda', 'balkon']], ['Deptos', ['Units', 'Aptos', 'Appartementen']], ['deptos', ['units', 'aptos', 'appartementen']], ['Depto', ['Unit', 'Apto', 'App.']], ['depto', ['unit', 'apto', 'app.']],
+    ['Piso', ['Floor', 'Andar', 'Verdieping']], ['piso', ['floor', 'andar', 'verdieping']], ['hasta', ['up to', 'até', 'tot']], ['\\/ mes', ['/ month', '/ mês', '/ maand']], ['\\/mes', ['/month', '/mês', '/maand']],
+    ['Norte', ['North', 'Norte', 'Noord']], ['Sur', ['South', 'Sul', 'Zuid']], ['Este', ['East', 'Leste', 'Oost']], ['Oeste', ['West', 'Oeste', 'West']],
+    ['Enero', ['January', 'Janeiro', 'Januari']], ['Febrero', ['February', 'Fevereiro', 'Februari']], ['Marzo', ['March', 'Março', 'Maart']], ['Abril', ['April', 'Abril', 'April']], ['Mayo', ['May', 'Maio', 'Mei']], ['Junio', ['June', 'Junho', 'Juni']],
+    ['Julio', ['July', 'Julho', 'Juli']], ['Agosto', ['August', 'Agosto', 'Augustus']], ['Septiembre', ['September', 'Setembro', 'September']], ['Octubre', ['October', 'Outubro', 'Oktober']], ['Noviembre', ['November', 'Novembro', 'November']], ['Diciembre', ['December', 'Dezembro', 'December']],
+    ['años', ['years', 'anos', 'jaar']], ['min en auto', ['min by car', 'min de carro', 'min met de auto']], [' y ', [' and ', ' e ', ' en ']],
+  ]
+};
+const LANGS = (CONFIG.idiomas || ['es']).filter(l => l === 'es' || l in I18N.cols);
+let LANG = (() => { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q;
+  try { const s = localStorage.getItem('showroom.lang'); if (LANGS.includes(s)) return s; } catch (e) {}
+  const n = (navigator.language || 'es').slice(0, 2).toLowerCase(); return LANGS.includes(n) ? n : 'es'; })();
+const I18N_P = I18N.P.map(([re, tr]) => [new RegExp('(?<![\\p{L}])' + re + '(?![\\p{L}])', 'gu'), tr]).sort((a, b) => b[0].source.length - a[0].source.length);
+// Traduce un texto en español al idioma activo (también se usa para PDF y WhatsApp).
+function tr(s) { if (LANG === 'es' || s == null) return s; const c = I18N.cols[LANG], t = String(s), k = t.trim();
+  if (I18N.E[k]) return t.replace(k, I18N.E[k][c]);
+  let o = t; for (const [re, v] of I18N_P) o = o.replace(re, v[c]); return o; }
+const ORIG = new WeakMap(), ORIGA = new WeakMap(), NOTR = '#mPanel, .adm, script, style, #ktaSello, [data-notr]';
+function traducirNodo(n) {
+  if (n.nodeType === 3) { if (!n.nodeValue.trim() || (n.parentElement && n.parentElement.closest(NOTR))) return;
+    if (!ORIG.has(n)) ORIG.set(n, n.nodeValue); const o = ORIG.get(n), v = tr(o); if (n.nodeValue !== v) n.nodeValue = v; return; }
+  if (n.nodeType !== 1 || n.matches(NOTR)) return;
+  ['placeholder', 'aria-label', 'data-t', 'title'].forEach(a => { if (!n.hasAttribute(a)) return; let m = ORIGA.get(n); if (!m) ORIGA.set(n, m = {});
+    if (!(a in m)) m[a] = n.getAttribute(a); const v = tr(m[a]); if (n.getAttribute(a) !== v) n.setAttribute(a, v); });
+  n.childNodes.forEach(traducirNodo);
+}
+new MutationObserver(ms => { if (LANG === 'es') return; ms.forEach(m => m.addedNodes.forEach(traducirNodo)); }).observe(document.body, { childList: true, subtree: true });
+function setLang(l) { LANG = l; try { localStorage.setItem('showroom.lang', l); } catch (e) {} document.documentElement.lang = l;
+  if (typeof refrescar === 'function') { refrescar(); if (UI.view === 'amb') abrirAmb(UI.ambModo, UI.amb); }
+  traducirNodo(document.body); $$('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === l)); $('#bLangT').textContent = l.toUpperCase(); }
+
 function toast(m) { const t = document.createElement('div'); t.className = 'toast glass'; t.textContent = m; $('#toasts').appendChild(t); setTimeout(() => t.remove(), 2400); }
 
 document.documentElement.style.setProperty('--ac', CONFIG.colorAcento);
@@ -413,7 +572,7 @@ function demoData() {
 // Actividad demo: vistas por unidad y consultas de los últimos 14 días (nombres ficticios).
 function demoActividad(U) {
   const r = rng(29), N = ['Laura G.', 'Martín R.', 'Sofía B.', 'Diego A.', 'Carla M.', 'Andrés V.', 'Paula F.', 'Javier S.', 'Lucía P.', 'Tomás C.', 'Valeria O.', 'Nicolás D.', 'Camila E.', 'Federico L.', 'Ana T.', 'Gustavo N.', 'Micaela Z.', 'Rodrigo H.'];
-  const O = ['Instagram', 'Instagram', 'WhatsApp', 'Web', 'Sala de ventas'], TP = ['caliente', 'tibio', 'tibio', 'frio'];
+  const O = ['Instagram', 'Instagram', 'WhatsApp', 'Web', 'Sala de ventas', ...CONFIG.inmobiliarias.map(b => 'Inmobiliaria: ' + b.n), 'Inmobiliaria: ' + CONFIG.inmobiliarias[0].n], TP = ['caliente', 'tibio', 'tibio', 'frio'];
   const vistas = {}; U.forEach(u => { vistas[u.id] = Math.round(8 + r() * 30 + u.piso * 4 + (u.letra === 'C' ? 25 : u.letra === 'A' ? 12 : 0)); });
   const vivos = U.filter(u => u.estado !== 'vendido'), leads = [], hoy = new Date(); hoy.setHours(12, 0, 0, 0);
   for (let d = 13; d >= 0; d--) { const n = Math.round(1 + r() * 3 + (13 - d) * .18);
@@ -438,9 +597,10 @@ function renderTorre() {
   const U = DB.unidades, n = U.length, d = U.filter(u => u.estado === 'disponible');
   const desde = d.length ? Math.min(...d.map(u => u.precio)) : 0;
   $('#heroCard').innerHTML = `<div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);font-weight:700">${esc(CONFIG.marca)}</div>
-   <h1 style="margin-top:6px">${esc(CONFIG.proyecto.nombre)}</h1><p>${esc(CONFIG.proyecto.ubicacion)} · Entrega ${esc(CONFIG.proyecto.entrega)}<br>${esc(CONFIG.proyecto.descripcion)}</p>
+   <h1 style="margin-top:6px">${esc(CONFIG.proyecto.nombre)}</h1><p><span data-notr>${esc(CONFIG.proyecto.ubicacion)}</span> · Entrega ${esc(CONFIG.proyecto.entrega)}<br>${esc(CONFIG.proyecto.descripcion)}</p>
    <div class="stats"><div class="stat"><small>Disponibles</small><b class="num">${d.length} de ${n}</b></div><div class="stat"><small>Vendido</small><b class="num">${Math.round(U.filter(u => u.estado === 'vendido').length / n * 100)}%</b></div><div class="stat"><small>Desde</small><b class="num">${desde ? money(desde) : '—'}</b></div></div>
-   <div style="margin-top:12px"><span class="live"><i></i>Disponibilidad en vivo</span></div>`;
+   ${BROKER ? `<div class="hBrk"><small>Te atiende</small> <b data-notr>${esc(BROKER.n)}</b></div>` : ''}<div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><span class="live"><i></i>Disponibilidad en vivo</span><button class="tbtn g" id="bBro" style="font-size:12px;padding:6px 11px">Brochure PDF</button></div>`;
+  $('#bBro').onclick = () => pdfBrochure();
   $('#floorList').innerHTML = `<h3>Elegí tu piso</h3>` + Array.from({ length: T.pisos }, (_, i) => T.pisos - i).map(p => {
     const D = del(p), nd = D.filter(u => u.estado === 'disponible').length;
     return `<div class="frow${matchPiso(p) ? ' match' : ''}" data-p="${p}"><b class="num">Piso ${String(p).padStart(2, '0')}</b><span style="display:flex;align-items:center;gap:10px"><span class="dots">${D.map(u => `<i class="${UI.fx.includes(u.id) ? 'fx' : ''}" style="background:${COL[u.estado]}"></i>`).join('')}</span><span class="num" style="color:var(--mu);font-size:12px;width:16px;text-align:right">${nd}</span></span></div>`; }).join('');
@@ -517,12 +677,12 @@ function renderFicha(u) {
    <div style="height:14px"></div>
    ${u.estado === 'vendido' ? '' : `<button class="btn p no-print" id="bLead">Me interesa este depto</button>`}
    <div class="btns3 no-print"><button class="btn g${UI.cmp.includes(u.id) ? ' on' : ''}" id="bCmp">${UI.cmp.includes(u.id) ? 'En comparación ✓' : 'Comparar'}</button><button class="btn g" id="bShare">Compartir link</button>
-    <button class="btn g" id="bPdf">Cotización PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
+    <button class="btn g" id="bPdf">Ficha PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
   $('#bLista').onclick = () => selUnidad(u.id);
   $$('#sideBody .amb button').forEach(b => b.onclick = () => { const u = DB.unidades.find(x => x.id === UI.sel); const pin = u && CONFIG.planta.unidades[u.letra].pins[b.dataset.k]; const [x, y] = pin ? ptOnSvg('#plantaSvg', pin[0], pin[1]) : [innerWidth / 2, innerHeight / 2]; entrarAmb(b.dataset.k, x, y); });
   $$('#sideBody [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? Math.max(0, v) : 0; $('#qOut').innerHTML = qOut(cotizar(u)); });
   $('#bVista').onclick = e => abrirVista(e.clientX, e.clientY);
-  $('#bPdf').onclick = () => pdfCot(u); $('#bPrint').onclick = () => print();
+  $('#bPdf').onclick = () => pdfFicha(u); $('#bPrint').onclick = () => print();
   if ($('#bLead')) $('#bLead').onclick = () => abrirLead(u);
   $('#bCmp').onclick = () => toggleCmp(u.id); $('#bShare').onclick = () => compartir(u);
   if ($('#aSave')) $('#aSave').onclick = () => { u.estado = $('#aE').value; const pr = parseFloat($('#aP').value); if (pr > 0) u.precio = pr; DB.actualizado = new Date().toISOString(); save(); renderTorre(); renderPlanta(); toast(`Depto ${u.id} actualizado`); };
@@ -606,6 +766,9 @@ $$('#menu [data-a]').forEach(b => b.onclick = () => {
     const ws = XLSX.utils.json_to_sheet(DB.unidades.map(u => ({ Unidad: u.id, Piso: u.piso, Tipologia: u.tipo, Dormitorios: u.dorm, Banos: u.banos, m2: u.m2, Balcon_m2: u.balcon, Orientacion: u.orient, Precio: u.precio, Precio_m2: Math.round(u.precio / u.m2), Estado: u.estado })));
     const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Unidades'); XLSX.writeFile(wb, `${KEY}.xlsx`); toast('Excel descargado'); }
   if (a === 'amen') abrirAmb('a', 'a0');
+  if (a === 'brochure') pdfBrochure();
+  if (a === 'ubi') abrirUbicacion();
+  if (a === 'lang') setTimeout(() => $('#langPop').classList.add('on'), 30);
   if (a === 'panel') abrirPanel();
   if (a === 'buscar') abrirBuscar();
   if (a === 'json') { dl(new Blob([JSON.stringify(DB, null, 1)], { type: 'application/json' }), `${KEY}.json`); toast('Datos exportados'); }
@@ -648,9 +811,9 @@ function refrescar() { renderTorre(); if (UI.view === 'planta') renderPlanta(); 
 // ---------- 4. BUSCADOR ----------
 const pisoDe = id => DB.unidades.find(u => u.id === id)?.piso;
 const precios = () => DB.unidades.map(u => u.precio);
-function filtrar(f) { return DB.unidades.filter(u => u.estado === 'disponible' && (!f.dorm || u.dorm === f.dorm) && u.precio <= f.max && u.piso >= f.piso); }
+function filtrar(f) { return DB.unidades.filter(u => u.estado === 'disponible' && (!f.dorm || u.dorm === f.dorm) && u.precio <= f.max && u.piso >= f.piso && (!f.or || u.orient.includes(f.or))); }
 function matchPiso(p) { return UI.filtro ? filtrar(UI.filtro).some(u => u.piso === p) : false; }
-const FB = { dorm: 0, max: 0, piso: 1, ord: 'precio' };
+const FB = { dorm: 0, max: 0, piso: 1, ord: 'precio', or: '' };
 function abrirBuscar() {
   const P = precios(), lo = Math.floor(Math.min(...P) / 5000) * 5000, hi = Math.ceil(Math.max(...P) / 5000) * 5000;
   if (!FB.max) FB.max = hi;
@@ -659,6 +822,9 @@ function abrirBuscar() {
   Object.assign($('#fMax'), { min: lo, max: hi, step: 1000, value: FB.max });
   $('#fPiso').innerHTML = Array.from({ length: T.pisos }, (_, i) => `<option value="${i + 1}" ${FB.piso === i + 1 ? 'selected' : ''}>Piso ${i + 1}${i ? ' o más alto' : ' (todos)'}</option>`).join('');
   $('#fOrd').value = FB.ord;
+  const ors = ['Norte', 'Sur', 'Este', 'Oeste'].filter(o => DB.unidades.some(u => u.orient.includes(o)));
+  $('#fOr').innerHTML = ['', ...ors].map(o => `<button class="chip${FB.or === o ? ' on' : ''}" data-o="${o}">${o || 'Cualquiera'}</button>`).join('');
+  $$('#fOr .chip').forEach(c => c.onclick = () => { FB.or = c.dataset.o; $$('#fOr .chip').forEach(x => x.classList.toggle('on', x === c)); pintarBusqueda(); });
   $$('#fDorm .chip').forEach(c => c.onclick = () => { FB.dorm = +c.dataset.d; $$('#fDorm .chip').forEach(x => x.classList.toggle('on', x === c)); pintarBusqueda(); });
   $('#fMax').oninput = e => { FB.max = +e.target.value; pintarBusqueda(); };
   $('#fPiso').onchange = e => { FB.piso = +e.target.value; pintarBusqueda(); };
@@ -711,10 +877,10 @@ addEventListener('hashchange', abrirDesdeLink);
 // ---------- 7. LEADS ----------
 let leadU = null;
 function abrirLead(u) { leadU = u; $('#lForm').classList.remove('done'); $('#lTit').textContent = `Me interesa el Depto ${u.id}`; $('#lSub').textContent = `${u.tipo} · ${u.m2} m² · piso ${u.piso} · ${money(u.precio)}`; $('#lOkU').textContent = 'Depto ' + u.id;
-  $('#lWa').href = waLink(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`); $('#mLead').classList.add('on'); setTimeout(() => $('#lNom').focus(), 50); }
+  $('#lWa').href = waDe(tr(`Hola! Me interesa el Depto ${u.id} (${u.tipo}, ${u.m2} m²) de ${CONFIG.proyecto.nombre}. ¿Me pasan más información?`)); $('#mLead').classList.add('on'); setTimeout(() => $('#lNom').focus(), 50); }
 $$('#lCuando .chip').forEach(c => c.onclick = () => $$('#lCuando .chip').forEach(x => x.classList.toggle('on', x === c)));
 $('#lForm').onsubmit = e => { e.preventDefault(); const nombre = $('#lNom').value.trim(), tel = $('#lTel').value.trim(); if (!nombre || !tel) return;
-  DB.leads.push({ fecha: new Date().toISOString(), nombre, tel, unidad: leadU.id, origen: 'Showroom', temp: $('#lCuando .chip.on').dataset.v, nuevo: true }); save();
+  DB.leads.push({ fecha: new Date().toISOString(), nombre, tel, unidad: leadU.id, origen: origen(), temp: $('#lCuando .chip.on').dataset.v, nuevo: true }); save();
   $('#lForm').classList.add('done'); $('#lNom').value = $('#lTel').value = ''; toast('Consulta enviada al equipo de ventas'); };
 
 // ---------- 8. PANEL DE VENTAS ----------
@@ -751,7 +917,7 @@ function pintarPanel() {
   const tv = tp.reduce((s, x) => s + x.v, 0) || 1;
   $('#pTipo').innerHTML = tp.sort((a, b) => b.v - a.v).map(x => `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px"><b>Tipo ${x.k} · ${x.t.tipo}</b><span class="num" style="color:var(--mu)">${Math.round(x.v / tv * 100)}% · ${x.c} cons. · quedan ${x.d}</span></div><div class="bar"><i style="width:${x.v / tv * 100}%"></i></div></div>`).join('')
     + `<p style="font-size:12px;color:var(--mu);line-height:1.5">Pista: si una tipología concentra el interés y quedan pocas, es la candidata a subir de precio.</p>`;
-  pintarLeads();
+  pintarLeads(); pintarBrokers();
 }
 function pintarLeads() {
   const q = ($('#pQ').value || '').toLowerCase(), k = pSort.k;
@@ -763,6 +929,7 @@ function pintarLeads() {
 }
 $('#pQ').oninput = pintarLeads;
 $$('#mPanel .lt th').forEach(th => th.onclick = () => { pSort = { k: th.dataset.s, d: pSort.k === th.dataset.s ? -pSort.d : 1 }; pintarLeads(); });
+$('#pBro').onclick = () => pdfBrochure();
 $('#pXls').onclick = () => { if (!window.XLSX) return toast('Cargando Excel, probá en un segundo');
   const ws = XLSX.utils.json_to_sheet(DB.leads.map(l => ({ Fecha: new Date(l.fecha).toLocaleString(CONFIG.locale), Nombre: l.nombre, Telefono: l.tel, Unidad: l.unidad, Origen: l.origen, Interes: l.temp })));
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Consultas'); XLSX.writeFile(wb, `${KEY}-consultas.xlsx`); toast('Consultas exportadas a Excel'); };
@@ -787,6 +954,156 @@ function irAmb(modo, k) { if (k === UI.amb) return; transicion(modo === 'u' ? ru
 function abrirVista(x, y) { const i = CONFIG.vistas.findIndex(v => UI.piso <= v.hasta); transicion([], '#vPlanta', x, y, () => abrirAmb('v', 'v' + Math.max(0, i))); }
 $('#aPrev').onclick = e => { e.stopPropagation(); const i = ORDEN.indexOf(UI.amb); if (i > 0) irAmb('u', ORDEN[i - 1]); };
 $('#aNext').onclick = e => { e.stopPropagation(); const i = ORDEN.indexOf(UI.amb); if (i >= 0 && i < ORDEN.length - 1) irAmb('u', ORDEN[i + 1]); };
+
+// ---------- 9. LINKS PARA INMOBILIARIAS (?b=slug) ----------
+// Cada inmobiliaria comparte su propio link. El comprador ve quién lo atiende, sus consultas y WhatsApp
+// llegan etiquetados y el panel muestra visitas y consultas por inmobiliaria.
+const brokers = () => [...CONFIG.inmobiliarias, ...(DB.brokers || [])];
+var BROKER = (() => { const q = new URLSearchParams(location.search).get('b') || (location.hash.match(/b=([\w-]+)/) || [])[1];
+  if (q) { try { sessionStorage.setItem('showroom.b', q); } catch (e) {} }
+  const slug = q || (() => { try { return sessionStorage.getItem('showroom.b'); } catch (e) { return null; } })();
+  return slug ? brokers().find(b => b.slug === slug) || null : null; })();
+if (!DB.bVisitas) { const r = rng(7); DB.bVisitas = {}; CONFIG.inmobiliarias.forEach(b => DB.bVisitas[b.slug] = Math.round(40 + r() * 160)); }
+if (BROKER && !sessionStorage.getItem('showroom.bv')) { DB.bVisitas[BROKER.slug] = (DB.bVisitas[BROKER.slug] || 0) + 1; try { sessionStorage.setItem('showroom.bv', '1'); } catch (e) {} save(); }
+const origen = () => BROKER ? 'Inmobiliaria: ' + BROKER.n : 'Showroom';
+const waDe = txt => BROKER ? (BROKER.wa ? `https://wa.me/${BROKER.wa}?text=${encodeURIComponent(txt)}` : waLink(`${txt} (${tr('Vengo por')} ${BROKER.n})`)) : waLink(txt);
+if (BROKER) { const c = document.createElement('div'); c.className = 'glass'; c.id = 'bChip';
+  c.innerHTML = `<small>Te atiende</small><b data-notr>${esc(BROKER.n)}</b>`; document.body.appendChild(c);
+  $('#bInteres').href = waDe(tr(`Hola! Me interesa ${CONFIG.proyecto.nombre}. ¿Me pasan información?`)); }
+const linkBroker = b => location.origin + location.pathname + '?b=' + b.slug;
+function pintarBrokers() {
+  const L = DB.leads, B = brokers();
+  $('#pBrok').innerHTML = `<table class="lt"><thead><tr><th>Inmobiliaria</th><th>Visitas</th><th>Consultas</th><th>Quieren reservar</th><th>Link</th></tr></thead><tbody>${B.map(b => {
+    const ls = L.filter(l => l.origen === 'Inmobiliaria: ' + b.n);
+    return `<tr><td><b>${esc(b.n)}</b></td><td class="num">${DB.bVisitas[b.slug] || 0}</td><td class="num">${ls.length}</td><td class="num">${ls.filter(l => l.temp === 'caliente').length}</td><td><button class="tbtn g" data-bl="${b.slug}">Copiar link</button></td></tr>`; }).join('')}</tbody></table>
+   <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><input id="bNew" placeholder="Nombre de la inmobiliaria" style="flex:1;min-width:180px"><button class="tbtn p" id="bAdd">Crear link</button></div>
+   <p style="font-size:12px;color:var(--mu);line-height:1.5;margin-top:8px">Cada inmobiliaria comparte su link: sus clientes ven quién los atiende y cada consulta llega con su nombre. Con servidor, las visitas se cuentan desde todos los dispositivos.</p>`;
+  $$('#pBrok [data-bl]').forEach(x => x.onclick = async () => { const b = B.find(y => y.slug === x.dataset.bl), u = linkBroker(b);
+    try { await navigator.clipboard.writeText(u); toast(`Link de ${b.n} copiado`); } catch (e) { prompt('Copiá el link', u); } });
+  $('#bAdd').onclick = () => { const n = $('#bNew').value.trim(); if (!n) return toast('Escribí el nombre de la inmobiliaria');
+    const slug = n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    if (B.some(b => b.slug === slug)) return toast('Ya existe una inmobiliaria con ese nombre');
+    (DB.brokers = DB.brokers || []).push({ slug, n, wa: '' }); DB.bVisitas[slug] = 0; save(); pintarBrokers(); toast(`Link de ${n} creado`); };
+}
+
+// ---------- 10. FICHA PDF y BROCHURE ----------
+const imgCache = {};
+function cargarImg(src) { return imgCache[src] || (imgCache[src] = new Promise((ok, mal) => { const i = new Image(); i.onload = () => ok(i); i.onerror = mal; i.src = src; })); }
+// recorte de una imagen a dataURL JPEG (sin estirar: cover dentro del recuadro pedido)
+async function recorte(src, sx, sy, sw, sh, W = 1400) { const i = await cargarImg(src); const c = document.createElement('canvas'); c.width = W; c.height = Math.round(W * sh / sw);
+  const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(i, sx, sy, sw, sh, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', .86); }
+async function cover(src, ratio, W = 1600) { const i = await cargarImg(src), r0 = i.naturalWidth / i.naturalHeight;
+  let sw = i.naturalWidth, sh = i.naturalHeight; if (r0 > ratio) sw = sh * ratio; else sh = sw / ratio;
+  return recorte(src, (i.naturalWidth - sw) / 2, (i.naturalHeight - sh) / 2, sw, sh, W); }
+const hex2rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+function pdfBase() { const { jsPDF } = window.jspdf, doc = new jsPDF({ unit: 'mm', format: 'a4' }), AC = hex2rgb(CONFIG.colorAcento);
+  const pie = () => { const n = doc.getNumberOfPages(); for (let p = 1; p <= n; p++) { doc.setPage(p); doc.setFontSize(7.5); doc.setTextColor(120);
+    doc.text(tr('Valores orientativos, sujetos a disponibilidad y aprobación. Imágenes ilustrativas. No constituye oferta vinculante.'), 14, 289);
+    doc.text(`${CONFIG.marca} · ${new Date().toLocaleDateString(CONFIG.locale)}`, 196, 289, { align: 'right' }); } };
+  const banda = (t, sub) => { doc.setFillColor(15, 17, 21); doc.rect(0, 0, 210, 26, 'F'); doc.setFillColor(...AC); doc.rect(0, 26, 210, 1.2, 'F');
+    doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.text(t, 14, 13); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(200); doc.text(sub, 14, 20); doc.setTextColor(30); };
+  return { doc, AC, pie, banda }; }
+const contacto = () => BROKER ? `${tr('Te atiende')}: ${BROKER.n}${BROKER.wa ? ' · +' + BROKER.wa : ''}` : `${tr('Ventas')}: +${CONFIG.whatsapp}`;
+async function pdfFicha(u) {
+  if (!window.jspdf) return toast(tr('Cargando PDF, probá en un segundo'));
+  toast(tr('Preparando la ficha…'));
+  const { doc, AC, pie, banda } = pdfBase(), q = cotizar(u), [x, y, w, h] = CONFIG.planta.unidades[u.letra].rect, pad = 60;
+  banda(`${CONFIG.proyecto.nombre} · ${tr('Depto')} ${u.id}`, `${tr(u.tipo)} · ${tr('Piso')} ${u.piso} · ${CONFIG.proyecto.ubicacion}`);
+  try { const sx = Math.max(0, x - pad), sy = Math.max(0, y - pad), sw = Math.min(2688 - sx, w + pad * 2), sh = Math.min(1520 - sy, h + pad * 2);
+    const im = await recorte('img/planta.jpg', sx, sy, sw, sh), H = Math.min(95, 182 * sh / sw); doc.addImage(im, 'JPEG', 14, 33, H * sw / sh, H); var y0 = 33 + H + 6; } catch (e) { var y0 = 34; }
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...AC); doc.text(money(u.precio), 14, y0 + 4); doc.setTextColor(110); doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text(`${money(u.precio / u.m2)} / m2 · ${tr(u.estado)}`, 14, y0 + 10);
+  doc.autoTable({ startY: y0 + 14, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Unidad'), tr('Detalle')]], body: [[tr('Tipología'), tr(u.tipo)], [tr('Piso'), String(u.piso)], [tr('Superficie cubierta'), `${u.m2} m2`], [tr('Balcón'), `${u.balcon} m2`], [tr('Dormitorios · baños'), `${u.dorm} · ${u.banos}`], [tr('Orientación'), tr(u.orient)]] });
+  doc.autoTable({ startY: doc.lastAutoTable.finalY + 5, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Forma de pago'), tr('Monto')]], body: [[`${tr('Anticipo')} (${q.c.anticipo}%)`, money(q.ant)], [`${q.c.cuotas} ${tr('cuotas de obra')} (${q.c.cuotasPct}%)`, `${money(q.cuota)} ${tr('/ mes')}`], [tr('Saldo a la entrega'), money(Math.max(0, q.saldo))], [tr(`Financiado a ${q.c.anios} años`) + ` (${q.c.tasaAnual}%)`, `${money(q.fin)} ${tr('/ mes')}`]] });
+  doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 8); doc.setTextColor(...AC); doc.textWithLink(tr('Ver este departamento en el showroom'), 14, doc.lastAutoTable.finalY + 14, { url: linkUnidad(u) + (BROKER ? '&b=' + BROKER.slug : '') });
+  pie(); doc.save(`ficha-${u.id}.pdf`); toast(tr('Ficha descargada'));
+}
+async function pdfBrochure() {
+  if (!window.jspdf) return toast(tr('Cargando PDF, probá en un segundo'));
+  toast(tr('Armando el brochure…'));
+  const { doc, AC, pie, banda } = pdfBase(), P = CONFIG.proyecto, U = DB.unidades, D = U.filter(u => u.estado === 'disponible');
+  // 1. portada
+  try { doc.addImage(await cover('img/exterior.jpg', 210 / 190), 'JPEG', 0, 0, 210, 190); } catch (e) {}
+  doc.setFillColor(15, 17, 21); doc.rect(0, 190, 210, 107, 'F'); doc.setFillColor(...AC); doc.rect(14, 202, 24, 1.2, 'F');
+  doc.setTextColor(...AC); doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.text(CONFIG.marca.toUpperCase(), 14, 198);
+  doc.setTextColor(255); doc.setFontSize(30); doc.text(P.nombre, 14, 218); doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(210);
+  doc.text(`${P.ubicacion} · ${tr('Entrega')} ${tr(P.entrega)}`, 14, 227); doc.setFontSize(10.5); doc.text(doc.splitTextToSize(tr(P.descripcion), 182), 14, 237);
+  const st = [[tr('Disponibles'), `${D.length} / ${U.length}`], [tr('Desde'), D.length ? money(Math.min(...D.map(u => u.precio))) : '—'], [tr('Tipologías'), String(LET.length)]];
+  st.forEach(([a, b], i) => { const X = 14 + i * 62; doc.setTextColor(150); doc.setFontSize(8); doc.text(a.toUpperCase(), X, 262); doc.setTextColor(255); doc.setFontSize(15); doc.setFont('helvetica', 'bold'); doc.text(b, X, 270); doc.setFont('helvetica', 'normal'); });
+  doc.setTextColor(150); doc.setFontSize(8); doc.text(contacto(), 14, 286);
+  // 2. tipologías
+  doc.addPage(); banda(tr('Tipologías'), `${P.nombre} · ${P.ubicacion}`);
+  try { doc.addImage(await recorte('img/planta.jpg', 0, 0, 2688, 1520), 'JPEG', 14, 33, 182, 103); } catch (e) {}
+  doc.autoTable({ startY: 142, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Tipo'), tr('Tipología'), 'm2', tr('Balcón'), tr('Orientación'), tr('Desde'), tr('Disponibles')]],
+    body: LET.map(k => { const t = CONFIG.tipologias[k], us = U.filter(u => u.letra === k), d = us.filter(u => u.estado === 'disponible');
+      return [k, tr(t.tipo), t.m2, `${t.balcon} m2`, tr(t.orient), d.length ? money(Math.min(...d.map(u => u.precio))) : '—', `${d.length} / ${us.length}`]; }) });
+  // 3. ambientes y amenities
+  doc.addPage(); banda(tr('Ambientes y amenities'), P.nombre);
+  const fotos = [...Object.values(CONFIG.ambientes), ...CONFIG.amenities].slice(0, 6);
+  for (let i = 0; i < fotos.length; i++) { const X = 14 + (i % 2) * 93, Y = 34 + Math.floor(i / 2) * 82;
+    try { doc.addImage(await cover(fotos[i].img, 89 / 66, 900), 'JPEG', X, Y, 89, 66); } catch (e) {} doc.setFontSize(9.5); doc.setTextColor(40); doc.text(tr(fotos[i].n), X, Y + 72); }
+  // 4. disponibilidad y precios
+  doc.addPage(); banda(tr('Disponibilidad y precios'), `${tr('Actualizado')} ${new Date().toLocaleDateString(CONFIG.locale)}`);
+  doc.autoTable({ startY: 34, theme: 'striped', headStyles: { fillColor: AC }, styles: { fontSize: 8.5 }, head: [[tr('Depto'), tr('Piso'), tr('Tipología'), 'm2', tr('Balcón'), tr('Orientación'), tr('Precio'), tr('Anticipo')]],
+    body: D.sort((a, b) => a.piso - b.piso || a.id.localeCompare(b.id)).map(u => [u.id, u.piso, tr(u.tipo), u.m2, u.balcon, tr(u.orient), money(u.precio), money(cotizar(u).ant)]) });
+  doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 9);
+  doc.setTextColor(...AC); doc.textWithLink(tr('Recorré el proyecto en 3D'), 14, doc.lastAutoTable.finalY + 15, { url: location.origin + location.pathname + (BROKER ? '?b=' + BROKER.slug : '') });
+  pie(); doc.save(`brochure-${KEY.replace('showroom.', '').replace('.v2', '')}.pdf`); toast(tr('Brochure descargado'));
+}
+
+// ---------- 11. UBICACIÓN Y PUNTOS DE INTERÉS (mapa satelital) ----------
+const GEO = CONFIG.ubicacion;
+const CAT = { compras: ['#F59E0B', 'M6 6h15l-1.5 9h-12z M6 6L5 3H2 M9 20h.01 M18 20h.01'], educacion: ['#60A5FA', 'M22 10L12 5 2 10l10 5 10-5z M6 12v5c3 2 9 2 12 0v-5'], salud: ['#F87171', 'M12 6v12 M6 12h12'],
+  verde: ['#34D399', 'M12 3c4 4 5 8 0 12-5-4-4-8 0-12z M12 15v6'], deporte: ['#A78BFA', 'M6 9v6 M18 9v6 M3 11v2 M21 11v2 M6 12h12'], gastronomia: ['#FB923C', 'M7 3v8 M5 3v4a2 2 0 0 0 4 0V3 M7 11v10 M16 3c-2 2-2 6 0 8v10'] };
+const dist = (a, b) => { const R = 6371, dLa = (b.lat - a.lat) * Math.PI / 180, dLo = (b.lon - a.lon) * Math.PI / 180, x = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+const M = { z: GEO.zoom, cx: 0, cy: 0 };
+const w2p = (lat, lon, z) => { const n = 256 * 2 ** z, s = Math.sin(lat * Math.PI / 180); return [(lon + 180) / 360 * n, (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * n]; };
+function pintarMapa() {
+  const el = $('#map'), W = el.clientWidth, H = el.clientHeight, z = M.z, n = 2 ** z;
+  const x0 = M.cx - W / 2, y0 = M.cy - H / 2, tx0 = Math.floor(x0 / 256), ty0 = Math.floor(y0 / 256), tx1 = Math.floor((x0 + W) / 256), ty1 = Math.floor((y0 + H) / 256);
+  let h = ''; for (let tx = tx0; tx <= tx1; tx++) for (let ty = ty0; ty <= ty1; ty++) { if (ty < 0 || ty >= n) continue; const wx = ((tx % n) + n) % n;
+    h += `<img draggable="false" alt="" src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${wx}" style="left:${tx * 256 - x0}px;top:${ty * 256 - y0}px">`; }
+  const mk = (p, cls, inner) => { const [px, py] = w2p(p.lat, p.lon, z); return `<div class="${cls}" style="left:${px - x0}px;top:${py - y0}px">${inner}</div>`; };
+  h += GEO.pois.map((p, i) => mk(p, 'mpoi', `<button data-i="${i}" style="--c:${CAT[p.cat]?.[0] || '#fff'}"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${CAT[p.cat]?.[1] || ''}"/></svg></button><span>${esc(p.n)}</span>`)).join('');
+  h += mk(GEO, 'mpro', `<div class="pin"><span>${esc(CONFIG.logoTexto.length < 16 ? CONFIG.logoTexto : CONFIG.proyecto.nombre)}</span></div>`);
+  $('#mapT').innerHTML = h;
+  $$('#mapT .mpoi button').forEach(b => b.onclick = e => { e.stopPropagation(); selPoi(+b.dataset.i); });
+}
+function centrar(lat, lon, z) { if (z) M.z = Math.max(12, Math.min(19, z)); [M.cx, M.cy] = w2p(lat, lon, M.z); pintarMapa(); }
+function selPoi(i) { $$('#poiL .poi').forEach(x => x.classList.toggle('on', +x.dataset.i === i)); $$('#mapT .mpoi').forEach((x, k) => x.classList.toggle('on', k === i));
+  const p = GEO.pois[i], [ax, ay] = w2p(GEO.lat, GEO.lon, M.z), [bx, by] = w2p(p.lat, p.lon, M.z); M.cx = (ax + bx) / 2; M.cy = (ay + by) / 2; pintarMapa();
+  $$('#mapT .mpoi').forEach((x, k) => x.classList.toggle('on', k === i)); }
+function encuadrar() { // zoom que muestra el proyecto y todos los puntos
+  const el = $('#map'), W = el.clientWidth - 90, H = el.clientHeight - 90, P = [GEO, ...GEO.pois]; let z = 18;
+  for (; z > 12; z--) { const xy = P.map(p => w2p(p.lat, p.lon, z)), xs = xy.map(a => a[0]), ys = xy.map(a => a[1]); if (Math.max(...xs) - Math.min(...xs) <= W && Math.max(...ys) - Math.min(...ys) <= H) break; }
+  M.z = z; const xy = P.map(p => w2p(p.lat, p.lon, z)); M.cx = (Math.max(...xy.map(a => a[0])) + Math.min(...xy.map(a => a[0]))) / 2; M.cy = (Math.max(...xy.map(a => a[1])) + Math.min(...xy.map(a => a[1]))) / 2; pintarMapa(); }
+function abrirUbicacion() {
+  const L = GEO.pois.map((p, i) => ({ ...p, i, d: dist(GEO, p) })).sort((a, b) => a.d - b.d);
+  $('#poiL').innerHTML = L.map(p => `<button class="poi" data-i="${p.i}"><i style="background:${CAT[p.cat]?.[0]}"></i><span><b>${esc(p.n)}</b><small class="num">${p.d < 1 ? Math.round(p.d * 1000) + ' m' : p.d.toFixed(1).replace('.', ',') + ' km'} · ${Math.max(1, Math.round(p.d / 25 * 60 + 1))} min en auto</small></span></button>`).join('');
+  $$('#poiL .poi').forEach(b => b.onclick = () => selPoi(+b.dataset.i));
+  $('#ubiS .mhd p').textContent = CONFIG.proyecto.ubicacion;
+  $('#mGo').href = `https://www.google.com/maps/dir/?api=1&destination=${GEO.lat},${GEO.lon}`;
+  $('#mUbi').classList.add('on'); requestAnimationFrame(encuadrar);
+}
+(() => { const el = $('#map'); let d = null;
+  el.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; d = [e.clientX, e.clientY]; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => { if (!d) return; M.cx -= e.clientX - d[0]; M.cy -= e.clientY - d[1]; d = [e.clientX, e.clientY]; pintarMapa(); });
+  el.addEventListener('pointerup', () => d = null);
+  const zoom = (k, ox, oy) => { const nz = Math.max(12, Math.min(19, M.z + k)); if (nz === M.z) return; const r = el.getBoundingClientRect(), dx = (ox ?? r.width / 2) - r.width / 2, dy = (oy ?? r.height / 2) - r.height / 2, f = 2 ** (nz - M.z);
+    M.cx = (M.cx + dx) * f - dx; M.cy = (M.cy + dy) * f - dy; M.z = nz; pintarMapa(); };
+  el.addEventListener('wheel', e => { e.preventDefault(); const r = el.getBoundingClientRect(); zoom(e.deltaY < 0 ? 1 : -1, e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  $('#mZi').onclick = () => zoom(1); $('#mZo').onclick = () => zoom(-1); $('#mCen').onclick = encuadrar;
+  addEventListener('resize', () => { if ($('#mUbi').classList.contains('on')) pintarMapa(); });
+})();
+
+// ---------- 12. IDIOMA ----------
+$('#bLang').onclick = e => { e.stopPropagation(); $('#langPop').classList.toggle('on'); };
+$('#langPop').innerHTML = LANGS.map(l => `<button data-lang="${l}" class="${l === LANG ? 'on' : ''}"><b>${l.toUpperCase()}</b>${I18N.nombres[l]}</button>`).join('');
+$$('#langPop [data-lang]').forEach(b => b.onclick = () => { setLang(b.dataset.lang); $('#langPop').classList.remove('on'); });
+addEventListener('click', e => { if (!e.target.closest('#langPop, #bLang')) $('#langPop').classList.remove('on'); });
+$('#bUbi').onclick = abrirUbicacion;
+if (LANG !== 'es') setLang(LANG); else { $('#bLangT').textContent = 'ES'; if (BROKER) renderTorre(); }
+
 window.__sr = { abrirBuscar, abrirComp, toggleCmp, abrirPanel, pintarPanel, abrirLead, marcarFx, refrescar, cerrarModales, get DB() { return DB; }, UI, entrarAmb, transicion, irPiso, selUnidad, abrirAmb, cotizar, hiFloor, setView };
 </script>
 <style>:root{--kta-mt:16px;--kta-mb:auto}</style>
