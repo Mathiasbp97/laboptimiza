@@ -174,6 +174,11 @@ input[type=range]{width:100%;accent-color:var(--ac2)}.lf{display:flex;flex-direc
 @media(max-height:500px){body.mtop #hero{display:none}}
 body:not(.mtop) #fil{opacity:0!important;pointer-events:none}
 body.mvista #dock button[data-d=mapa]:not(.on){background:var(--ac2);color:#fff}
+#dn{position:fixed;left:16px;bottom:26px;z-index:6;display:flex;gap:2px;padding:4px;border-radius:14px;opacity:0;pointer-events:none;transition:opacity .3s}
+body.v3d.mvista #dn{opacity:1;pointer-events:auto}
+#dn button{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font:600 12.5px/1 inherit;color:var(--tx2)}
+#dn button svg{width:15px;height:15px}#dn button:hover{color:#fff}#dn button.on{background:#fff;color:#10201e}
+@media(max-width:860px){#dn{left:auto;right:10px;bottom:118px}#dn button{padding:7px 10px;font-size:12px}}
 </style>
 </head>
 <body class="verMapa">
@@ -213,6 +218,7 @@ body.mvista #dock button[data-d=mapa]:not(.on){background:var(--ac2);color:#fff}
   <button data-d="casa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg>La casa</button>
   <button data-d="interior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="18" height="7" rx="2"/><path d="M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M5 17v2M19 17v2"/></svg>Interiores</button>
 </div>
+<div id="dn" class="glass" role="group" aria-label="Momento del día"><button id="dnD" class="on" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Día</button><button id="dnN" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>Noche</button></div>
 <div id="zoom" class="glass"><button id="zin" aria-label="Acercar">+</button><button id="zout" aria-label="Alejar">−</button></div>
 <div id="tip" class="glass"></div>
 
@@ -343,6 +349,7 @@ $$('#dock button').forEach(b=>b.onclick=()=>{$$('#dock button').forEach(x=>x.cla
 $('#hTg').onclick=()=>{const h=$('#hero');h.classList.toggle('ab');$('#hTg').setAttribute('aria-expanded',h.classList.contains('ab'))};$('#hBro').onclick=()=>window.pdfBrochure&&pdfBrochure();
 filtros();pintar();
 setTimeout(hint,6000);
+const dnSet=on=>{window.BVP3D&&BVP3D.noche(on);$('#dnD').classList.toggle('on',!on);$('#dnN').classList.toggle('on',on)};$('#dnD').onclick=()=>dnSet(false);$('#dnN').onclick=()=>dnSet(true);
 const q=new URLSearchParams(location.search).get('casa');if(q&&UNITS[q-1])setTimeout(()=>abrir(+q),400);
 </script>
 <!-- CONTEXTO
@@ -383,7 +390,7 @@ const E = {
   'Tu barrio, tu vida, tu parque.': ['Your neighborhood, your life, your park.', 'Seu bairro, sua vida, seu parque.', 'Jouw buurt, jouw leven, jouw park.'],
   '109 casas alrededor de un gran parque central. Tocá una casa para ver su tipología, entrega y cuotas.': ['109 homes around a large central park. Tap a home to see its type, delivery date and instalments.', '109 casas ao redor de um grande parque central. Toque uma casa para ver a tipologia, a entrega e as parcelas.', '109 woningen rond een groot centraal park. Tik op een woning voor type, oplevering en termijnen.'],
   'Tipologías': ['Home types', 'Tipologias', 'Woningtypes'], 'Cuotas s/ interés': ['Interest-free instalments', 'Parcelas sem juros', 'Renteloze termijnen'], 'Todas': ['All', 'Todas', 'Alle'],
-  'Casas': ['Homes', 'Casas', 'Woningen'], 'Elegir casa': ['Choose a home', 'Escolher casa', 'Kies een woning'], 'Vista': ['View', 'Vista', 'Uitzicht'], 'Tocá «Elegir casa» para ver la disponibilidad': ['Tap “Choose a home” to see availability', 'Toque «Escolher casa» para ver a disponibilidade', 'Tik op «Kies een woning» voor beschikbaarheid'], 'Parque': ['Park', 'Parque', 'Park'], 'La casa': ['The home', 'A casa', 'De woning'], 'Interiores': ['Interiors', 'Interiores', 'Interieur'], 'El barrio': ['The neighborhood', 'O bairro', 'De buurt'],
+  'Casas': ['Homes', 'Casas', 'Woningen'], 'Día': ['Day', 'Dia', 'Dag'], 'Noche': ['Night', 'Noite', 'Nacht'], 'Elegir casa': ['Choose a home', 'Escolher casa', 'Kies een woning'], 'Vista': ['View', 'Vista', 'Uitzicht'], 'Tocá «Elegir casa» para ver la disponibilidad': ['Tap “Choose a home” to see availability', 'Toque «Escolher casa» para ver a disponibilidade', 'Tik op «Kies een woning» voor beschikbaarheid'], 'Parque': ['Park', 'Parque', 'Park'], 'La casa': ['The home', 'A casa', 'De woning'], 'Interiores': ['Interiors', 'Interiores', 'Interieur'], 'El barrio': ['The neighborhood', 'O bairro', 'De buurt'],
   'Arrastrá para recorrer · tocá una casa': ['Drag to explore · tap a home', 'Arraste para explorar · toque uma casa', 'Sleep om rond te kijken · tik op een woning'],
   'Dormitorios': ['Bedrooms', 'Quartos', 'Slaapkamers'], 'Baños': ['Bathrooms', 'Banheiros', 'Badkamers'], 'Sup. construida': ['Built area', 'Área construída', 'Woonoppervlak'], 'Terreno': ['Lot', 'Terreno', 'Kavel'],
   'Simulá tu plan': ['Simulate your plan', 'Simule seu plano', 'Simuleer je plan'], 'Anticipo': ['Down payment', 'Entrada', 'Aanbetaling'], 'Cuotas sin intereses': ['Interest-free instalments', 'Parcelas sem juros', 'Renteloze termijnen'], 'Cuota mensual': ['Monthly instalment', 'Parcela mensal', 'Maandtermijn'],
@@ -745,6 +752,22 @@ const foto = new THREE.Mesh(new THREE.PlaneGeometry(4 * TAN * AR_F, 4 * TAN), ne
   const c = document.createElement('canvas'); c.width = 256; c.height = 256; const x = c.getContext('2d'), f = 18;
   x.fillStyle = '#000'; x.fillRect(0, 0, 256, 256); x.filter = `blur(${f / 2}px)`; x.fillStyle = '#fff'; x.fillRect(f, f, 256 - 2 * f, 256 - 2 * f);
   foto.userData.alpha = foto.material.alphaMap = new THREE.CanvasTexture(c); foto.material.needsUpdate = true; }
+/* noche: misma foto re-iluminada y alineada; transición donde primero cae la tarde y después se encienden las luces */
+const fotoN = new THREE.Mesh(foto.geometry, new THREE.ShaderMaterial({ transparent: true, depthTest: false, depthWrite: false,
+  uniforms: { mapN: { value: null }, t: { value: 0 }, op: { value: 1 } },
+  vertexShader: 'varying vec2 vU; void main(){ vU = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform sampler2D mapN; uniform float t, op; varying vec2 vU;
+    void main(){ vec4 c = texture2D(mapN, vU); float L = dot(c.rgb, vec3(.299,.587,.114));
+      float luz = smoothstep(.42, .8, L) * smoothstep(.0, .25, c.r - c.b + .1);           // luces cálidas
+      float cielo = smoothstep(.0, .35, 1. - vU.y);                                       // el cielo oscurece primero
+      float a1 = smoothstep(0., .75, t + .12 * (1. - cielo)), a2 = smoothstep(.55, 1., t);
+      gl_FragColor = vec4(c.rgb, op * mix(a1, a2, luz));
+      #include <colorspace_fragment>
+    }` }));
+fotoN.position.z = -1.99; fotoN.renderOrder = 51; fotoN.frustumCulled = false; fotoN.visible = false; camera.add(fotoN);
+let NOCHE = 0, animN = null;
+function cargarNoche(cb) { if (fotoN.material.uniforms.mapN.value) return cb && cb();
+  new THREE.TextureLoader().load('img/aerea-noche.webp', tx => { tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = renderer.capabilities.getMaxAnisotropy(); fotoN.material.uniforms.mapN.value = tx; cb && cb(); }); }
 foto.position.z = -2; foto.renderOrder = 50; foto.frustumCulled = false; foto.visible = false; camera.add(foto); scene.add(camera);
 let FOTO = 0, anim = null; const VW = { z: 1, cx: .5, cy: .5 };
 const s0 = () => (FR.fit === 'cover' ? Math.min : Math.max)(FR.W / innerWidth, FR.H / innerHeight);
@@ -760,7 +783,7 @@ function entrarFoto() { // llega el vuelo: misma imagen que el 3D, y zoom contin
   const z0 = innerHeight * s0() / HF * TAN / Math.tan(camera.fov * Math.PI / 360);
   Object.assign(VW, { z: z0, cx: .5, cy: .5 }); aplicarVista(); FOTO = 1; foto.visible = true; foto.material.opacity = 0;
   Object.values(lotMesh).forEach(m => { m.renderOrder = 60; m.visible = false; m.userData.ed.visible = false; }); document.body.classList.add('foto', 'mvista');
-  animarVista(1, .5, .5, 2200, () => { document.body.classList.add('v3d'); foto.material.opacity = 1; foto.material.alphaMap = null; foto.material.needsUpdate = true; }); }
+  animarVista(1, .5, .5, 2200, () => { setTimeout(cargarNoche, 1500); document.body.classList.add('v3d'); foto.material.opacity = 1; foto.material.alphaMap = null; foto.material.needsUpdate = true; }); }
 /* selección y API */
 const proyectar = v => { const q = v.clone().project(camera), W = innerWidth, H = innerHeight, s = s0() / VW.z;
   const x0 = VW.cx * FR.W - W * s / 2, y0 = VW.cy * FR.H - H * s / 2; return [(x0 + (q.x + 1) / 2 * W * s) / FR.W, (y0 + (1 - q.y) / 2 * H * s) / FR.H]; };
@@ -786,6 +809,9 @@ window.BVP3D = {
       const vert = MOV && H > W, fx = vert ? .5 : Math.max(.25, (W - Math.min(430, W * .55)) / 2 / W), fy = vert ? .2 : .55;
       animarVista(z, cx - (fx - .5) * W * sz / FR.W, cy - (fy - .5) * H * sz / FR.H, 1100); } },
   vista() { if (FOTO) animarVista(1, .5, .5, 1000); },
+  noche(on) { on = on === undefined ? !NOCHE : !!on; NOCHE = on ? 1 : 0; document.body.classList.toggle('noche', on);
+    cargarNoche(() => { animN = { a: fotoN.material.uniforms.t.value, b: NOCHE, s: performance.now(), ms: 2600 }; }); return on; },
+  get NOCHE() { return !!NOCHE; },
   modo(m) { modo(m); }, get MODO() { return DEST; }
 };
 /* ---------- acercamiento desde muy lejos ---------- */
@@ -825,6 +851,8 @@ document.getElementById('zin').onclick = () => { if (FOTO) animarVista(Math.min(
 document.getElementById('zout').onclick = () => { if (FOTO) animarVista(Math.max(zMin(), VW.z / 1.6), VW.cx, VW.cy, 450); };
 /* ---------- bucle ---------- */
 renderer.setAnimationLoop(() => {
+  if (animN) { const k = Math.min(1, (performance.now() - animN.s) / animN.ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; fotoN.material.uniforms.t.value = animN.a + (animN.b - animN.a) * e; if (k >= 1) animN = null; }
+  fotoN.material.uniforms.op.value = foto.material.opacity; fotoN.visible = foto.visible && fotoN.material.uniforms.t.value > .001 && !!fotoN.material.uniforms.mapN.value;
   if (vuelo) { const t = Math.min(1, (performance.now() - vuelo.s) / vuelo.ms), kk = ease(t);
     controls.target.lerpVectors(vuelo.t0, vuelo.t1, kk);
     const d0 = vuelo.p0.clone().sub(vuelo.t0), d1 = vuelo.p1.clone().sub(vuelo.t1);
