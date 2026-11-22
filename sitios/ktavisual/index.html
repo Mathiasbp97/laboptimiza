@@ -255,9 +255,68 @@ footer a:hover{color:var(--marfil)}
 .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 @media(max-width:640px){.sec{padding:84px 0}.sec-head{margin-bottom:40px}body{font-size:16px}}
+
+/* ===== v2: progreso, chip en vivo, hero con proyectos reales, tipos, explorador, presupuesto ===== */
+#prog{position:fixed;left:0;top:0;height:2px;width:0;background:var(--piedra);z-index:60;transition:width .1s linear}
+.live{display:inline-flex;align-items:center;gap:10px;padding:7px 14px 7px 10px;border:1px solid var(--line2);border-radius:999px;font-size:13px;color:var(--gris2);background:rgba(23,27,25,.5);margin-bottom:18px}
+.live b{color:var(--marfil);font-weight:500}
+.show{position:absolute;inset:34px 0 0;overflow:hidden;background:#0e110f}
+.show img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity 1.1s var(--ease),transform 7s linear}
+.show img.on{opacity:1;transform:scale(1)}
+.show .cap{position:absolute;left:14px;bottom:14px;z-index:2;display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;background:rgba(14,17,15,.72);backdrop-filter:blur(8px);font-size:12.5px;color:var(--marfil);border:1px solid var(--line)}
+.show .dots{position:absolute;right:14px;bottom:18px;z-index:2;display:flex;gap:6px}
+.show .dots i{width:18px;height:3px;border-radius:2px;background:rgba(243,239,230,.25);overflow:hidden;position:relative}
+.show .dots i.on:after{content:"";position:absolute;inset:0;background:var(--piedra);animation:dl 5s linear forwards}
+@keyframes dl{from{transform:translateX(-100%)}to{transform:none}}
+.tipos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.tipo{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;border:1px solid var(--line);display:block;color:inherit;text-decoration:none}
+.tipo img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.tipo:hover img{transform:scale(1.05)}
+.tipo:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(14,17,15,.92),rgba(14,17,15,.1) 60%)}
+.tipo .tx{position:absolute;left:24px;right:24px;bottom:22px;z-index:1}
+.tipo small{color:var(--piedra);letter-spacing:.18em;text-transform:uppercase;font-size:11.5px}
+.tipo h3{font-size:26px;margin:6px 0 4px}.tipo p{font-size:14.5px;color:var(--gris2);line-height:1.45}
+@media(max-width:900px){.tipos{grid-template-columns:1fr}.tipo{aspect-ratio:16/10}}
+.xp{display:grid;grid-template-columns:.95fr 1.25fr;gap:44px;align-items:start}
+.xp-l .g{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--piedra);padding:22px 0 10px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.xp-l .g:first-child{padding-top:0}
+.xp-l button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:16px;align-items:baseline;width:100%;padding:10px 12px;border-radius:10px;color:var(--gris2);font-size:16px;transition:background .2s,color .2s}
+.xp-l button span{font-size:12px;color:var(--gris);font-variant-numeric:tabular-nums;width:20px;flex:none}
+.xp-l button:hover{color:var(--marfil);background:rgba(243,239,230,.04)}
+.xp-l button.on{color:var(--marfil);background:rgba(216,199,163,.10)}
+.xp-l button.on span{color:var(--piedra)}
+.xp-r{position:sticky;top:100px}
+.xp-r .device{aspect-ratio:16/10}
+.xp-r .device img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .35s}
+.xp-r .inf{padding:26px 4px 0}
+.xp-r .inf small{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--piedra)}
+.xp-r .inf h3{font-size:30px;margin:8px 0 10px}.xp-r .inf p{color:var(--gris2);max-width:560px}
+.xp-r .cta{margin-top:22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--gris)}
+@media(max-width:980px){.xp{grid-template-columns:1fr}.xp-r{position:relative;top:0;order:-1}.xp-l{max-height:none}}
+.dtabs{display:flex;justify-content:center;gap:8px;margin:0 auto 22px;flex-wrap:wrap}
+.dtabs button{all:unset;cursor:pointer;padding:10px 18px;border-radius:999px;border:1px solid var(--line);font-size:14.5px;color:var(--gris2);transition:all .2s}
+.dtabs button:hover{color:var(--marfil);border-color:var(--line2)}
+.dtabs button.on{background:var(--piedra);color:#1c201d;border-color:var(--piedra);font-weight:500}
+.pres{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:start}
+.pres ul{list-style:none;margin-top:26px;display:grid;gap:14px}
+.pres li{display:flex;gap:12px;color:var(--gris2)}.pres li b{color:var(--marfil);font-weight:400}
+.pres li:before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--piedra);margin-top:9px}
+.form{border:1px solid var(--line2);border-radius:var(--r);background:var(--carbon2);padding:32px}
+.form .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form label{display:block;font-size:13px;color:var(--gris2);margin:0 0 6px}
+.form .f{margin-bottom:16px}
+.form input,.form select{width:100%;background:#121614;border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--marfil);font:400 15.5px Jost,sans-serif;outline:none;transition:border-color .2s}
+.form input:focus,.form select:focus{border-color:var(--piedra)}
+.form .chips{display:flex;flex-wrap:wrap;gap:8px}
+.form .chips button{all:unset;cursor:pointer;padding:9px 14px;border:1px solid var(--line);border-radius:999px;font-size:14px;color:var(--gris2)}
+.form .chips button.on{border-color:var(--piedra);color:var(--marfil);background:rgba(216,199,163,.12)}
+.form .btn{width:100%;justify-content:center;margin-top:8px}
+.form .ok{font-size:12.5px;color:var(--gris);margin-top:12px;text-align:center}
+@media(max-width:900px){.pres{grid-template-columns:1fr;gap:34px}.form{padding:22px}.form .row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+<div id="prog" aria-hidden="true"></div>
 
 <nav id="nav">
   <div class="wrap">
@@ -268,7 +327,7 @@ footer a:hover{color:var(--marfil)}
       <a href="#proyectos">Proyectos</a>
       <a href="#proceso">Proceso</a>
       <a href="#planes">Planes</a>
-      <a href="#faq">Preguntas</a>
+      <a href="#faq">Preguntas</a><a href="#presupuesto">Presupuesto</a>
     </div>
     <a class="btn btn-p nav-cta" href="https://wa.me/595981301718?text=Hola%20KTA%20Visual%20%F0%9F%91%8B%20Tengo%20un%20desarrollo%20y%20me%20interesa%20un%20showroom%203D." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>Hablemos</a>
   </div>
@@ -279,7 +338,8 @@ footer a:hover{color:var(--marfil)}
   <div class="grid-bg"></div>
   <div class="wrap">
     <div>
-      <span class="kicker rv">Showrooms 3D para desarrollos inmobiliarios</span>
+      <span class="live rv"><span class="pulse"></span><span>En línea: <b>Vidalta</b> · <b>LIVO</b> · <b>Barrio Vida Parque</b></span></span><br>
+      <span class="kicker rv">Showrooms 3D para edificios, barrios y loteos</span>
       <h1 class="rv d1">Vendé tu desarrollo <em>antes de construirlo.</em></h1>
       <p class="lead rv d2">Un link que tu comprador abre desde el celular: elige el piso sobre el edificio, entra al departamento y lo recorre como si ya existiera. Con precios y disponibilidad en vivo.</p>
       <div class="ctas rv d3">
@@ -294,11 +354,19 @@ footer a:hover{color:var(--marfil)}
     </div>
     <div class="rv d2" style="position:relative">
       <div class="device hero-dev">
-        <div class="bar"><i></i><i></i><i></i><span>showroom de tu proyecto</span></div>
-        <div class="screen"><img src="img/t1-torre.webp" alt="Showroom 3D: torre con selección de pisos y disponibilidad en vivo" fetchpriority="high"></div>
+        <div class="bar"><i></i><i></i><i></i><span id="showUrl">vidalta.pages.dev</span></div>
+        <div class="show" id="show">
+          <img class="on" src="img/s-vidalta.webp" data-u="vidalta.pages.dev" data-c="Vidalta · Bella Vista, Asunción" alt="Showroom de Vidalta: elegir piso sobre el edificio" fetchpriority="high">
+          <img src="img/s-bvp-dia.webp" data-u="barriovida.pages.dev" data-c="Barrio Vida Parque · vista de día" alt="Showroom de Barrio Vida Parque de día">
+          <img src="img/s-bvp-noche.webp" data-u="barriovida.pages.dev" data-c="Barrio Vida Parque · la misma vista de noche" alt="Showroom de Barrio Vida Parque de noche">
+          <img src="img/s-bvp-cenital.webp" data-u="barriovida.pages.dev" data-c="Barrio Vida Parque · elegir casa sobre el loteo" alt="Selección de casas sobre el loteo">
+          <img src="img/s-livo.webp" data-u="livo3d.pages.dev" data-c="LIVO · Botánico, Asunción" alt="Showroom de LIVO">
+          <div class="cap"><span class="pulse"></span><span id="showCap">Vidalta · Bella Vista, Asunción</span></div>
+          <div class="dots" id="showDots"></div>
+        </div>
       </div>
       <div class="float-card fc1"><small>Disponibilidad en vivo</small><b class="num">18 de 40</b><small style="display:flex;gap:6px;align-items:center;margin-top:4px"><span class="pulse"></span>sincronizado con tu planilla</small></div>
-      <div class="float-card fc2"><small>Nueva consulta</small><b>Depto 901</b><small>"Quiero reservar"</small></div>
+      <div class="float-card fc2"><small>Nueva consulta</small><b>Casa 18</b><small>"Quiero visitarla"</small></div>
     </div>
   </div>
 </section>
@@ -307,6 +375,23 @@ footer a:hover{color:var(--marfil)}
   <span>Elegí tu piso</span><span>Recorrido 3D</span><span>Precios en vivo</span><span>Cotizador de cuotas</span><span>Comparador</span><span>Consultas con nombre</span><span>Panel de ventas</span><span>Link por unidad</span>
   <span>Elegí tu piso</span><span>Recorrido 3D</span><span>Precios en vivo</span><span>Cotizador de cuotas</span><span>Comparador</span><span>Consultas con nombre</span><span>Panel de ventas</span><span>Link por unidad</span>
 </div></div>
+
+
+<!-- TIPOS -->
+<section class="sec" style="padding-bottom:20px">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="kicker">Para cada tipo de proyecto</span>
+      <h2>Edificios, barrios cerrados y loteos.</h2>
+      <p>Cada showroom se arma a medida del proyecto: no es una plantilla con tu logo.</p>
+    </div>
+    <div class="tipos">
+      <a class="tipo rv" href="https://vidalta.pages.dev" target="_blank" rel="noopener"><img loading="lazy" src="img/s-vidalta.webp" alt="Edificio: elegir piso"><div class="tx"><small>Edificios</small><h3>Elegí piso y departamento</h3><p>La torre marcada por disponibilidad, planta 3D, ambientes y vista desde cada altura.</p></div></a>
+      <a class="tipo rv d1" href="https://barriovida.pages.dev" target="_blank" rel="noopener"><img loading="lazy" src="img/s-bvp-cenital.webp" alt="Barrio: elegir casa sobre el loteo"><div class="tx"><small>Barrios cerrados</small><h3>Elegí tu casa sobre el barrio</h3><p>Foto aérea realista, lotes exactos, tipologías, etapas de entrega y simulador de cuotas.</p></div></a>
+      <a class="tipo rv d2" href="https://barriovida.pages.dev" target="_blank" rel="noopener"><img loading="lazy" src="img/s-bvp-dia.webp" alt="Loteo sobre la ubicación real"><div class="tx"><small>Loteos y masterplans</small><h3>Tu terreno en su lugar real</h3><p>Llegada desde el satélite hasta la ubicación, lote por lote con medidas y estado.</p></div></a>
+    </div>
+  </div>
+</section>
 
 <!-- PROBLEMA -->
 <section class="sec">
@@ -345,36 +430,41 @@ footer a:hover{color:var(--marfil)}
 <section class="sec" id="funciones" style="padding-top:20px">
   <div class="wrap">
     <div class="sec-head rv">
-      <span class="kicker">Funciones</span>
-      <h2>No es solo lindo. Está hecho para vender.</h2>
-      <p>Cada función responde una pregunta que hoy te hacen por WhatsApp, y te devuelve datos para cerrar más rápido.</p>
+      <span class="kicker">Todo lo que incluye</span>
+      <h2>Todo tu proyecto, dentro de un solo link.</h2>
+      <p>20 funciones pensadas para vender, y las que necesite tu proyecto. Tocá una para verla.</p>
     </div>
-    <div class="feat">
-      <article class="fcard w rv"><div class="im"><img loading="lazy" src="img/t1-torre.webp" alt="Torre con selector de pisos"></div><div class="tx"><span class="n">01</span><h3>Elegí tu piso sobre el edificio</h3><p>La torre con cada piso marcado por disponibilidad. Un toque y entrás a la planta.</p></div></article>
-      <article class="fcard w rv d1"><div class="im"><img loading="lazy" src="img/f-r10-25.webp" alt="Planta 3D del piso con departamentos"></div><div class="tx"><span class="n">02</span><h3>Planta 3D y recorrido por ambientes</h3><p>Cada departamento en 3D, con fotos de cada ambiente y la vista real desde ese piso.</p></div></article>
-      <article class="fcard rv"><div class="im"><img loading="lazy" src="img/f-r11-34.webp" alt="Simulador de cuotas"></div><div class="tx"><span class="n">03</span><h3>Cotizador de cuotas</h3><p>Anticipo, cuotas de obra y saldo. El comprador se cotiza solo y descarga su PDF.</p></div></article>
-      <article class="fcard rv d1"><div class="im"><img loading="lazy" src="img/t2-buscar.webp" alt="Buscador de departamentos con filtros"></div><div class="tx"><span class="n">04</span><h3>Buscador inteligente</h3><p>Filtra por dormitorios, precio y piso. Solo ve lo que de verdad le sirve.</p></div></article>
-      <article class="fcard rv d2"><div class="im"><img loading="lazy" src="img/t5-comp.webp" alt="Comparador de unidades"></div><div class="tx"><span class="n">05</span><h3>Comparador de unidades</h3><p>Dos o tres deptos lado a lado, con la mejor opción de cada fila resaltada.</p></div></article>
-      <article class="fcard w rv"><div class="im"><img loading="lazy" src="img/t6-lead.webp" alt="Formulario de consulta por unidad"></div><div class="tx"><span class="n">06</span><h3>Consultas que llegan con nombre y unidad</h3><p>"Me interesa el 901" con nombre, teléfono y cuándo quiere comprar. Directo a tu equipo o a WhatsApp.</p></div></article>
-      <article class="fcard w rv d1"><div class="im"><img loading="lazy" src="img/t8-panel.webp" alt="Panel de ventas"></div><div class="tx"><span class="n">07</span><h3>Panel de ventas en vivo</h3><p>Qué se mira, qué se consulta y cuánto vendiste. Datos para saber a quién llamar primero y qué precio ajustar.</p></div></article>
+    <div class="xp rv">
+      <div class="xp-l" id="xpL"><div class="g"><span>El showroom</span><span>11</span></div><button type="button" data-i="0" class="on"><span>01</span>Llegada desde el satélite</button><button type="button" data-i="1"><span>02</span>Elegí tu piso sobre el edificio</button><button type="button" data-i="2"><span>03</span>Elegí tu casa sobre el barrio</button><button type="button" data-i="3"><span>04</span>Planta 3D y recorrido por ambientes</button><button type="button" data-i="4"><span>05</span>Foto aérea realista</button><button type="button" data-i="5"><span>06</span>Modo día y noche</button><button type="button" data-i="6"><span>07</span>Buscador de unidades</button><button type="button" data-i="7"><span>08</span>Comparador de unidades</button><button type="button" data-i="8"><span>09</span>Simulador de cuotas</button><button type="button" data-i="9"><span>10</span>4 idiomas</button><button type="button" data-i="10"><span>11</span>Ficha PDF y brochure</button><div class="g"><span>Contenido</span><span>04</span></div><button type="button" data-i="11"><span>12</span>Renders fotorrealistas</button><button type="button" data-i="12"><span>13</span>Estilos de decoración</button><button type="button" data-i="13"><span>14</span>La vista desde tu piso</button><button type="button" data-i="14"><span>15</span>Proyectos reales en línea</button><div class="g"><span>Panel para tu equipo</span><span>05</span></div><button type="button" data-i="15"><span>16</span>Disponibilidad y precios en vivo</button><button type="button" data-i="16"><span>17</span>Consultas con nombre y unidad</button><button type="button" data-i="17"><span>18</span>Métricas de interés</button><button type="button" data-i="18"><span>19</span>Links por inmobiliaria</button><button type="button" data-i="19"><span>20</span>Exportar a Excel</button></div>
+      <div class="xp-r">
+        <div class="device"><div class="bar"><i></i><i></i><i></i><span>showroom de tu proyecto</span></div><div class="screen"><img id="xpImg" loading="lazy" src="img/s-bvp-dia.webp" alt=""></div></div>
+        <div class="inf"><small id="xpG">El showroom · 01</small><h3 id="xpT">Llegada desde el satélite</h3><p id="xpD">Al abrir el link, la cámara baja desde Paraguay hasta la ubicación real del proyecto y se funde con el showroom. El primer impacto que no da un PDF.</p>
+          <div class="cta"><a class="btn btn-g" href="#presupuesto">Quiero esto en mi proyecto</a><span>20 funciones · y las que necesite tu proyecto</span></div></div>
+      </div>
     </div>
   </div>
 </section>
+<script>window.XP=[{"t": "Llegada desde el satélite", "d": "Al abrir el link, la cámara baja desde Paraguay hasta la ubicación real del proyecto y se funde con el showroom. El primer impacto que no da un PDF.", "i": "img/s-bvp-dia.webp", "g": "El showroom"}, {"t": "Elegí tu piso sobre el edificio", "d": "La torre con cada piso marcado por disponibilidad. Un toque y entrás a la planta.", "i": "img/s-vidalta.webp", "g": "El showroom"}, {"t": "Elegí tu casa sobre el barrio", "d": "Vista cenital exacta del loteo: cada casa o lote tocable, con su estado, medidas y precio.", "i": "img/s-bvp-cenital.webp", "g": "El showroom"}, {"t": "Planta 3D y recorrido por ambientes", "d": "Cada unidad en 3D, con fotos de cada ambiente y la vista real desde ese piso.", "i": "img/f-r10-25.webp", "g": "El showroom"}, {"t": "Foto aérea realista", "d": "El proyecto terminado, en su entorno real, para que el comprador lo vea como va a quedar.", "i": "img/s-bvp-dia.webp", "g": "El showroom"}, {"t": "Modo día y noche", "d": "La misma vista pasa del día a la noche y se encienden las luces. Ideal para mostrar el proyecto con ambiente.", "i": "img/s-bvp-noche.webp", "g": "El showroom"}, {"t": "Buscador de unidades", "d": "Filtra por dormitorios, precio, piso, tipología u orientación. Solo ve lo que le sirve.", "i": "img/t2-buscar.webp", "g": "El showroom"}, {"t": "Comparador de unidades", "d": "Dos o tres unidades lado a lado, con la mejor opción de cada fila resaltada.", "i": "img/t5-comp.webp", "g": "El showroom"}, {"t": "Simulador de cuotas", "d": "Anticipo, cuotas y saldo según tu plan de pagos. El comprador se cotiza solo.", "i": "img/s-bvp-ficha.webp", "g": "El showroom"}, {"t": "4 idiomas", "d": "Español, inglés, portugués y neerlandés con un toque. Para inversores y compradores de afuera.", "i": "img/s-bvp-en.webp", "g": "El showroom"}, {"t": "Ficha PDF y brochure", "d": "El comprador descarga la ficha de su unidad y tu equipo genera el brochure del proyecto en segundos.", "i": "img/s-bvp-ficha.webp", "g": "El showroom"}, {"t": "Renders fotorrealistas", "d": "Si solo tenés planos, creamos las imágenes del proyecto y de cada ambiente.", "i": "img/moderno.webp", "g": "Contenido"}, {"t": "Estilos de decoración", "d": "El mismo departamento en distintos estilos para cada perfil de comprador.", "i": "img/calido.webp", "g": "Contenido"}, {"t": "La vista desde tu piso", "d": "Lo que se ve desde el balcón, según la altura de cada unidad.", "i": "img/balcon.webp", "g": "Contenido"}, {"t": "Proyectos reales en línea", "d": "Vidalta, LIVO y Barrio Vida Parque ya venden con su showroom KTA.", "i": "img/s-livo.webp", "g": "Contenido"}, {"t": "Disponibilidad y precios en vivo", "d": "Marcás una unidad como vendida y el showroom se actualiza al instante.", "i": "img/t1-torre.webp", "g": "Panel para tu equipo"}, {"t": "Consultas con nombre y unidad", "d": "\"Me interesa la casa 18\" con nombre, teléfono y cuándo quiere comprar. Directo a tu equipo o a WhatsApp.", "i": "img/t6-lead.webp", "g": "Panel para tu equipo"}, {"t": "Métricas de interés", "d": "Qué unidades se miran, cuáles se consultan y cuánto vendiste. Para saber a quién llamar primero.", "i": "img/t8-panel.webp", "g": "Panel para tu equipo"}, {"t": "Links por inmobiliaria", "d": "Cada inmobiliaria tiene su propio link: sabés quién trae cada consulta.", "i": "img/t8-panel.webp", "g": "Panel para tu equipo"}, {"t": "Exportar a Excel", "d": "Consultas y ventas listas para tu planilla o tu CRM.", "i": "img/t8-panel.webp", "g": "Panel para tu equipo"}];</script>
 
 <!-- DEMO -->
 <section class="sec demo" id="demo">
   <div class="wrap">
     <div class="sec-head rv" style="margin-left:auto;margin-right:auto;text-align:center">
       <span class="kicker">Demo en vivo</span>
-      <h2>Probalo vos mismo.</h2>
-      <p style="margin-left:auto;margin-right:auto">Este es un proyecto demostrativo, Torre Aurora. Tocá un piso, entrá a un departamento, cotizalo. Así lo ven tus compradores.</p>
+      <h2>Recorrelo por tu cuenta.</h2>
+      <p style="margin-left:auto;margin-right:auto">Showrooms publicados y funcionando. Elegí uno, tocá una unidad, cotizala. Así lo ven tus compradores.</p>
+    </div>
+    <div class="dtabs rv" id="dtabs" role="tablist">
+      <button class="on" type="button" data-u="https://barriovida.pages.dev" data-i="img/s-bvp-dia.webp">Barrio cerrado · Barrio Vida</button>
+      <button type="button" data-u="https://vidalta.pages.dev" data-i="img/s-vidalta.webp">Edificio · Vidalta</button>
+      <button type="button" data-u="https://showroom3d-demo.pages.dev" data-i="img/t1-torre.webp">Torre demo · Aurora</button>
     </div>
     <div class="device rv" id="demoDev">
-      <div class="bar"><i></i><i></i><i></i><span>showroom3d-demo.pages.dev</span></div>
-      <div class="screen" id="demoScreen"><img loading="lazy" src="img/t1-torre.webp" alt="Vista previa de la demo"></div>
+      <div class="bar"><i></i><i></i><i></i><span id="demoUrl">barriovida.pages.dev</span></div>
+      <div class="screen" id="demoScreen"><img loading="lazy" src="img/s-bvp-dia.webp" alt="Vista previa de la demo"></div>
       <div class="play" id="demoPlay" role="button" tabindex="0" aria-label="Cargar la demo interactiva"><span class="btn btn-p"><span class="pulse"></span>Tocá para recorrer la demo</span></div>
     </div>
-    <p class="note rv">¿Mejor en pantalla completa? <a href="https://showroom3d-demo.pages.dev" target="_blank" rel="noopener">Abrir la demo en otra pestaña ↗</a></p>
+    <p class="note rv">¿Mejor en pantalla completa? <a id="demoOpen" href="https://barriovida.pages.dev" target="_blank" rel="noopener">Abrir en otra pestaña ↗</a></p>
   </div>
 </section>
 
@@ -517,6 +607,37 @@ footer a:hover{color:var(--marfil)}
   </div>
 </section>
 
+<!-- PRESUPUESTO -->
+<section class="sec" id="presupuesto">
+  <div class="wrap pres">
+    <div class="rv">
+      <span class="kicker">Presupuesto</span>
+      <h2 style="font-size:clamp(32px,4vw,50px);margin-top:18px">Pedí tu propuesta en 2 minutos.</h2>
+      <p style="color:var(--gris2);margin-top:16px;max-width:480px">Contanos lo básico y te respondemos por WhatsApp con plazo y precio cerrado.</p>
+      <ul>
+        <li><span><b>Respuesta en el día</b> por WhatsApp, sin llamadas de venta.</span></li>
+        <li><span><b>Precio cerrado</b> antes de empezar, según lo que necesita tu proyecto.</span></li>
+        <li><span><b>Solo con tus planos</b>: si no tenés renders, los hacemos nosotros.</span></li>
+        <li><span><b>Tu link en días</b>, listo para mandar por WhatsApp o poner en tu web.</span></li>
+      </ul>
+    </div>
+    <form class="form rv d1" id="fPres" novalidate>
+      <div class="row">
+        <div class="f"><label for="pNom">Tu nombre</label><input id="pNom" autocomplete="name" placeholder="Nombre y apellido" required></div>
+        <div class="f"><label for="pEmp">Desarrolladora o empresa</label><input id="pEmp" autocomplete="organization" placeholder="Nombre de la empresa"></div>
+      </div>
+      <div class="f"><label>Tipo de proyecto</label><div class="chips" data-k="tipo"><button type="button" class="on">Edificio</button><button type="button">Barrio cerrado</button><button type="button">Loteo</button><button type="button">Casas / dúplex</button><button type="button">Otro</button></div></div>
+      <div class="f"><label>¿En qué etapa está?</label><div class="chips" data-k="etapa"><button type="button">Lanzamiento próximo</button><button type="button" class="on">En preventa</button><button type="button">En obra</button></div></div>
+      <div class="row">
+        <div class="f"><label for="pUni">Unidades o lotes (aprox.)</label><input id="pUni" inputmode="numeric" placeholder="Ej: 40"></div>
+        <div class="f"><label for="pCiu">Ciudad o barrio</label><input id="pCiu" placeholder="Ej: Asunción, Luque"></div>
+      </div>
+      <button class="btn btn-p" type="submit"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="18" height="18"><path d="M12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>Recibir mi propuesta</button>
+      <p class="ok">Se abre WhatsApp con tus datos listos para enviar.</p>
+    </form>
+  </div>
+</section>
+
 <!-- FINAL -->
 <section class="final">
   <div class="wrap" style="position:relative">
@@ -551,9 +672,28 @@ footer a:hover{color:var(--marfil)}
   // faq
   document.querySelectorAll('.q button').forEach(function(b){b.addEventListener('click',function(){var q=b.parentNode,o=q.classList.toggle('o');b.setAttribute('aria-expanded',o)})});
   // demo
+  var URL0='https://barriovida.pages.dev';
   var play=document.getElementById('demoPlay'),scr=document.getElementById('demoScreen');
-  function load(){if(!play)return;var f=document.createElement('iframe');f.src='https://showroom3d-demo.pages.dev';f.title='Demo interactiva del showroom 3D';f.allow='fullscreen';f.loading='eager';scr.innerHTML='';scr.appendChild(f);play.remove();play=null}
-  play.addEventListener('click',load);play.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();load()}});
+  function load(){if(!play)return;var f=document.createElement('iframe');f.src=URL0;f.title='Demo interactiva del showroom 3D';f.allow='fullscreen';f.loading='eager';scr.innerHTML='';scr.appendChild(f);play.remove();play=null}
+  play.addEventListener('click',load);
+  document.querySelectorAll('#dtabs button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('#dtabs button').forEach(function(x){x.classList.toggle('on',x===b)});URL0=b.dataset.u;document.getElementById('demoUrl').textContent=URL0.replace('https://','');document.getElementById('demoOpen').href=URL0;
+    var f=scr.querySelector('iframe');if(f){f.src=URL0}else{scr.querySelector('img').src=b.dataset.i}})});play.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();load()}});
+
+  // progreso
+  var pg=document.getElementById('prog');addEventListener('scroll',function(){var h=document.documentElement;pg.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+  // hero: proyectos reales
+  var sh=[].slice.call(document.querySelectorAll('#show img')),si=0,dots=document.getElementById('showDots');
+  sh.forEach(function(_,k){var d=document.createElement('i');if(!k)d.className='on';dots.appendChild(d)});
+  setInterval(function(){if(document.hidden)return;sh[si].classList.remove('on');dots.children[si].className='';si=(si+1)%sh.length;var im=sh[si];im.classList.add('on');dots.children[si].className='on';document.getElementById('showCap').textContent=im.dataset.c;document.getElementById('showUrl').textContent=im.dataset.u},5000);
+  // explorador
+  var xb=[].slice.call(document.querySelectorAll('#xpL button')),xi=document.getElementById('xpImg');
+  xb.forEach(function(b){b.addEventListener('click',function(){var k=+b.dataset.i,it=window.XP[k];xb.forEach(function(x){x.classList.toggle('on',x===b)});xi.style.opacity=0;setTimeout(function(){xi.src=it.i;xi.style.opacity=1},180);document.getElementById('xpG').textContent=it.g+' · '+String(k+1).padStart(2,'0');document.getElementById('xpT').textContent=it.t;document.getElementById('xpD').textContent=it.d;if(innerWidth<980)document.querySelector('.xp-r').scrollIntoView({behavior:'smooth',block:'start'})})});
+  // presupuesto
+  document.querySelectorAll('.chips').forEach(function(c){c.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;c.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)})})});
+  document.getElementById('fPres').addEventListener('submit',function(e){e.preventDefault();var v=function(i){return document.getElementById(i).value.trim()},ch=function(k){var b=document.querySelector('.chips[data-k='+k+'] .on');return b?b.textContent:''};
+    var n=document.getElementById('pNom');if(!v('pNom')){n.focus();n.style.borderColor='#B4553E';return}
+    var t='Hola KTA Visual 👋 Quiero una propuesta de showroom 3D.\n\n• Nombre: '+v('pNom')+(v('pEmp')?'\n• Empresa: '+v('pEmp'):'')+'\n• Proyecto: '+ch('tipo')+'\n• Etapa: '+ch('etapa')+(v('pUni')?'\n• Unidades/lotes: '+v('pUni'):'')+(v('pCiu')?'\n• Ubicación: '+v('pCiu'):'');
+    window.open('https://wa.me/595981301718?text='+encodeURIComponent(t),'_blank','noopener')});
   document.getElementById('yr').textContent=new Date().getFullYear();
 })();
 </script>
