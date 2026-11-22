@@ -113,7 +113,7 @@ input[type=range]{width:100%;accent-color:var(--ac2);margin:6px 0 4px}
   header .btn span{display:none}header .btn{padding:10px}
   #dock{left:10px;right:10px;transform:none;bottom:12px;justify-content:space-between}#dock button{padding:9px 8px;font-size:12px;flex:1;justify-content:center}#dock button span.l{display:none}
   #zoom{display:none}#hint{top:64px;font-size:12px;white-space:nowrap}
-  #ficha{top:auto;height:86vh;width:100%;border-left:0;border-top:1px solid var(--ln);border-radius:20px 20px 0 0;transform:translateY(102%)}
+  #ficha{top:auto;height:60vh;width:100%;border-left:0;border-top:1px solid var(--ln);border-radius:20px 20px 0 0;transform:translateY(102%)}
   .fh{height:170px;border-radius:20px 20px 0 0}
 }
 
@@ -133,6 +133,44 @@ input[type=range]{width:100%;accent-color:var(--ac2);margin:6px 0 4px}
 .h3d i{width:10px;height:10px;border-radius:50%;background:var(--ac2,#d82b8c);box-shadow:0 0 0 4px rgba(216,43,140,.3)}
 body:not(.v3d) #hero,body:not(.v3d) #dock,body:not(.v3d) #zoom,body:not(.v3d) .h3d,body:not(.v3d) #hint{opacity:0!important;transform:translateY(10px);pointer-events:none}.h3d{transition:opacity .6s}#hero,#dock{transition:opacity .8s .6s,transform .8s .6s}
 #attr{position:fixed;left:8px;bottom:4px;z-index:5;font:10px system-ui,sans-serif;color:rgba(255,255,255,.75);text-shadow:0 1px 2px #000;pointer-events:none}@media(max-width:860px){#attr{bottom:auto;top:calc(100% - 14px);font-size:8.5px}}
+
+header .ic span{display:none}@media(min-width:1180px){header .ic span{display:inline}}
+#hero{top:76px;width:auto;max-width:330px;padding:0}@media (max-width:1560px) and (min-width:861px){#hero{top:126px}}#hero .hT{display:flex;align-items:center;gap:10px;padding:10px 14px;width:100%;text-align:left}
+.hN{font-weight:800;font-size:14px}.hS{font-size:12.5px;color:var(--tx2)}.hS b{color:var(--ok)}.hT i{font-style:normal;color:var(--tx2);transition:transform .2s;margin-left:auto}
+#hero .hB{display:none;padding:0 16px 16px}#hero.ab .hB{display:block}#hero.ab .hT i{transform:rotate(180deg)}
+#fil{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:21;margin:0;padding:6px;border-radius:999px;flex-wrap:nowrap;max-width:calc(100vw - 32px);overflow-x:auto;scrollbar-width:none}
+#fil .chip{white-space:nowrap;padding:6px 11px}
+@media (max-width:1560px){#fil{top:72px}}
+@media (max-width:860px) and (orientation:portrait){#hero{left:10px;right:auto;top:auto;bottom:74px;max-width:calc(100vw - 20px)}#hero .hB{max-height:45vh;overflow:auto}#hero .hB p,#hero .kpis{display:block}#fil{top:62px;left:10px;right:10px;transform:none;border-radius:14px}}
+body:not(.v3d) #fil{opacity:0;pointer-events:none}#fil{transition:opacity .8s .6s}
+#langPop,#menuPop{position:fixed;top:66px;right:16px;z-index:90;padding:6px;display:none;min-width:200px}#langPop.on,#menuPop.on{display:block}
+#langPop button,#menuPop button{display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;border-radius:10px;font-size:14px;text-align:left}#langPop button:hover,#menuPop button:hover,#langPop button.on{background:rgba(255,255,255,.08)}#langPop b{width:26px;color:var(--tx2);font-size:12px}#langPop button.on b{color:var(--ac2)}
+#bChip{position:fixed;left:16px;bottom:16px;z-index:20;padding:8px 12px;font-size:12.5px}#bChip small{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ac2);font-weight:700}
+@media (max-width:860px){#bChip{display:none!important}}
+.modal{position:fixed;inset:0;z-index:95;background:rgba(5,8,8,.6);display:none;align-items:center;justify-content:center;padding:16px}.modal.on{display:flex}
+.mbox{width:min(880px,100%);max-height:92vh;overflow:auto;padding:20px;background:var(--bg2)}
+.mhd{flex-wrap:wrap;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:14px}.mhd h3{font-size:20px}.mhd p{font-size:13px;color:var(--tx2);margin-top:3px}
+.xb{width:34px;height:34px;border-radius:10px;border:1px solid var(--ln2);flex:none}.lab{display:block;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin:10px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}@media(max-width:640px){.fgrid{grid-template-columns:1fr}}
+.rhd{display:flex;justify-content:space-between;align-items:center;margin:16px 0 10px;font-size:13.5px}.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.rc{border:1px solid var(--ln);border-radius:12px;padding:11px;text-align:left;transition:border-color .15s}.rc:hover{border-color:var(--ac2)}.rc b{display:block}.rc small{display:block;color:var(--tx2);font-size:12px;margin-top:2px}.rc .pr{font-weight:700;margin-top:6px}
+input[type=range]{width:100%;accent-color:var(--ac2)}.lf{display:flex;flex-direction:column}.lf input{padding:11px 12px;border-radius:10px;border:1px solid var(--ln2);background:rgba(255,255,255,.04)}
+#lForm .ok{display:none;text-align:center;padding:10px}#lForm.done .lf{display:none}#lForm.done .ok{display:block}
+.pk{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.pk div{border:1px solid var(--ln);border-radius:12px;padding:12px}.pk small{font-size:11px;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}.pk b{display:block;font-size:22px;margin:4px 0}.pk em{font-style:normal;font-size:12px;color:var(--tx2)}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.pc{border:1px solid var(--ln);border-radius:12px;padding:14px}.pc h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);margin-bottom:10px;display:flex;justify-content:space-between}
+@media(max-width:760px){.pk{grid-template-columns:1fr 1fr}.pg{grid-template-columns:1fr}}
+.lt{width:100%;border-collapse:collapse;font-size:12.5px}.lt th,.lt td{padding:7px 6px;border-bottom:1px solid var(--ln);text-align:left}.lt th{color:var(--tx2);font-weight:600}
+.bar{height:6px;border-radius:9px;background:rgba(255,255,255,.07);margin-top:5px}.bar i{display:block;height:100%;border-radius:9px;background:var(--ac2)}
+#ubiG{display:grid;grid-template-columns:1fr 340px;height:min(620px,86vh)}#map{position:relative;overflow:hidden;background:#1a1d22;cursor:grab;touch-action:none}
+#mapT img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}#mCtl{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px;z-index:3}#mCtl .btn{width:38px;height:38px;justify-content:center;padding:0}
+#mAttr{position:absolute;left:8px;bottom:5px;font-size:9.5px;color:rgba(255,255,255,.8);text-shadow:0 1px 2px #000;z-index:3}
+.mpoi{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;gap:6px;align-items:center}.mpoi i{width:14px;height:14px;border-radius:50%;border:2px solid #fff;display:block}.mpoi span{font-size:11.5px;font-weight:600;background:rgba(11,13,18,.8);padding:3px 8px;border-radius:8px;white-space:nowrap}
+.mpro{position:absolute;transform:translate(-50%,-100%);z-index:2}.mpro img{height:42px;background:#fff;padding:6px 10px;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#ubiS{padding:18px;overflow:auto;display:flex;flex-direction:column}.poi{display:flex;gap:10px;align-items:center;padding:10px;border-radius:11px;border:1px solid var(--ln);margin-bottom:7px}.poi i{width:10px;height:10px;border-radius:50%}.poi small{display:block;color:var(--tx2);font-size:12px}
+@media(max-width:860px){#hdrUbi,#hdrLang,#hdrGal{display:none!important}}
+.pinp{background:var(--ac2);color:#fff;font-weight:800;font-size:12px;padding:7px 11px;border-radius:10px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.5);position:relative}.pinp:after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--ac2)}
+@media(max-width:760px){#ubiG{grid-template-columns:1fr;grid-template-rows:50vh auto;height:auto}#ubiS{max-height:40vh}}
+.fbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 </style>
 </head>
 <body class="verMapa">
@@ -142,17 +180,27 @@ body:not(.v3d) #hero,body:not(.v3d) #dock,body:not(.v3d) #zoom,body:not(.v3d) .h
 <header>
   <div class="brand glass"><img src="img/logo.png" alt="Barrio Vida Parque"><small>Showroom 3D</small></div>
   <div class="sp"></div>
+  <button class="btn gh glass ic" id="hdrBus" title="Buscar casa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Buscar</span></button>
+  <button class="btn gh glass ic" id="hdrUbi" title="Ubicación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>Ubicación</span></button>
   <a class="btn gh glass" id="hdrGal" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 5 5 3-3 5 5"/></svg><span>Galería</span></a>
   <a class="btn pri" id="hdrWa" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.4 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.4-.7-2.9-1.1-4.7-4-4.9-4.2-.1-.2-1.2-1.6-1.2-3s.7-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l2 .9c.3.2.5.2.6.4 0 .1 0 .7-.2 1.3Z"/></svg><span>Consultar</span></a>
+  <button class="btn gh glass ic" id="hdrLang" title="Idioma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><b id="langT">ES</b></button>
+  <button class="btn gh glass ic" id="hdrMenu" aria-label="Menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 </header>
+<div id="langPop" class="glass"></div>
+<div id="menuPop" class="glass">
+  <button data-m="bus">Buscar casa</button><button data-m="gal">Galería</button><button data-m="ubi">Ubicación</button><button data-m="bro">Descargar brochure (PDF)</button><button data-m="lang">Idioma · Language</button><button data-m="panel">Panel de ventas</button>
+</div>
 
 <div id="hero" class="glass">
-  <h1>Tu barrio, tu vida, tu parque.</h1>
+  <button id="hTg" class="hT" aria-expanded="false"><span class="hN">Barrio Vida Parque</span><span class="hS"><b class="num" id="kLib">–</b> disponibles</span><i>▾</i></button>
+  <div class="hB"><h1>Tu barrio, tu vida, tu parque.</h1>
   <p>109 casas alrededor de un gran parque central. Tocá una casa para ver su tipología, entrega y cuotas.</p>
-  <div class="kpis"><div class="kpi"><b class="num" id="kLib">–</b><span>Disponibles</span></div><div class="kpi"><b class="num">3</b><span>Tipologías</span></div><div class="kpi"><b class="num">60</b><span>Cuotas s/ interés</span></div></div>
-  <div class="fil" id="fil"></div>
+  <div class="kpis"><div class="kpi"><b class="num" id="kLib2">–</b><span>Disponibles</span></div><div class="kpi"><b class="num">3</b><span>Tipologías</span></div><div class="kpi"><b class="num">60</b><span>Cuotas s/ interés</span></div></div>
   <div class="lg"><span><i style="background:var(--ok)"></i>Disponible</span><span><i style="background:var(--wa)"></i>Reservada</span><span><i style="background:var(--no)"></i>Vendida</span></div>
+  <button class="btn gh" id="hBro" style="margin-top:12px;justify-content:center;width:100%">Descargar brochure (PDF)</button></div>
 </div>
+<div id="fil" class="fil glass"></div>
 <div id="hint" class="glass">Arrastrá para recorrer · tocá una casa</div>
 
 <div id="dock" class="glass">
@@ -170,6 +218,25 @@ body:not(.v3d) #hero,body:not(.v3d) #dock,body:not(.v3d) #zoom,body:not(.v3d) .h
   <button class="x" id="gx" aria-label="Cerrar">✕</button><button class="nav prev" id="gp" aria-label="Anterior">‹</button><button class="nav next" id="gn" aria-label="Siguiente">›</button>
   <div id="galTabs" class="glass"></div></div>
 <div id="toast" class="glass"></div>
+<div class="modal" id="mBus"><div class="mbox glass"><div class="mhd"><div><h3>Encontrá tu casa</h3><p>Filtrá y te mostramos solo las disponibles.</p></div><button class="xb" data-close>✕</button></div>
+  <div class="fgrid"><div><span class="lab">Tipología</span><div class="chips" id="bT"></div></div><div><span class="lab">Dormitorios</span><div class="chips" id="bD"></div></div>
+  <div><label class="lab" for="bLote">Terreno mínimo · <b id="bLoteV" class="num"></b></label><input type="range" id="bLote"></div><div><span class="lab">Etapa de entrega</span><div class="chips" id="bE"></div></div></div>
+  <div class="rhd"><span><b class="num" id="bN"></b> casas disponibles</span><button class="btn gh" id="bVer">Ver en el mapa</button></div><div class="rgrid" id="bRes"></div></div></div>
+<div class="modal" id="mUbi"><div class="mbox glass" style="width:min(1100px,100%);padding:0;overflow:hidden"><div id="ubiG"><div id="map"><div id="mapT"></div><div id="mCtl"><button class="btn gh glass" id="mZi" aria-label="Acercar">+</button><button class="btn gh glass" id="mZo" aria-label="Alejar">−</button><button class="btn gh glass" id="mCen" aria-label="Centrar">◎</button></div><div id="mAttr" data-notr>Imagen satelital © Esri, Maxar, Earthstar Geographics</div></div>
+  <div id="ubiS"><div class="mhd"><div><h3>Ubicación</h3><p id="ubiSub"></p></div><button class="xb" data-close>✕</button></div><div class="lab" style="margin-top:6px">Puntos de interés</div><p class="note" style="margin:0 0 10px">Distancia en línea recta · tiempo estimado en auto</p><div id="poiL"></div><a class="btn pri" id="mGo" target="_blank" rel="noopener" style="justify-content:center;margin-top:12px">Cómo llegar</a></div></div></div></div>
+<div class="modal" id="mLead"><div class="mbox glass" style="width:min(440px,100%)"><div class="mhd"><div><h3 id="lTit">Me interesa</h3><p id="lSub"></p></div><button class="xb" data-close>✕</button></div>
+  <form id="lForm"><div class="lf"><label class="lab" for="lNom">Nombre</label><input id="lNom" required autocomplete="name" placeholder="Tu nombre">
+  <label class="lab" for="lTel">Teléfono / WhatsApp</label><input id="lTel" required inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx">
+  <span class="lab">¿Para cuándo?</span><div class="chips" id="lCu"><button type="button" class="chip on" data-v="caliente">Quiero reservar</button><button type="button" class="chip" data-v="tibio">Este año</button><button type="button" class="chip" data-v="frio">Solo mirando</button></div>
+  <button class="btn pri" type="submit" style="justify-content:center;margin-top:12px">Quiero que me contacten</button><a class="btn gh" id="lWa" target="_blank" rel="noopener" style="justify-content:center">Prefiero escribir por WhatsApp</a></div>
+  <div class="ok"><div style="font-size:38px;color:var(--ok)">✓</div><h3>¡Listo!</h3><p class="note">Un asesor te escribe en breve con la información de la <b id="lOk"></b>.</p><button type="button" class="btn gh" data-close style="justify-content:center;margin-top:10px">Seguir mirando</button></div></form></div></div>
+<div class="modal" id="mPanel"><div class="mbox glass" style="width:min(1120px,100%)"><div class="mhd"><div><h3>Panel de ventas</h3><p>Lo que hace la gente dentro del showroom · <span id="pAct"></span></p></div><div style="display:flex;gap:8px"><button class="btn gh" id="pBro">Brochure</button><button class="btn gh" id="pXls">Exportar consultas</button><button class="xb" data-close>✕</button></div></div>
+  <div class="pk" id="pKpis"></div>
+  <div class="pg"><div class="pc"><h4>Consultas por día <span id="pTot"></span></h4><div style="height:190px"><canvas id="pChart"></canvas></div></div><div class="pc"><h4>Casas disponibles más miradas</h4><div id="pTop"></div></div></div>
+  <div class="pg"><div class="pc"><h4>Interés por tipología</h4><div id="pTipo"></div></div><div class="pc"><h4>Últimas consultas</h4><div style="max-height:240px;overflow:auto"><table class="lt"><thead><tr><th>Fecha</th><th>Nombre</th><th>Teléfono</th><th>Casa</th><th>Origen</th><th>Interés</th></tr></thead><tbody id="pLeads"></tbody></table></div></div></div>
+  <div class="pc" style="margin-top:12px"><h4>Inmobiliarias · links propios</h4><div id="pBrok" style="overflow:auto"></div></div>
+  <p class="note" style="margin-top:10px">Los datos se guardan en este dispositivo. Al conectar el servidor (Supabase), el panel junta las consultas y visitas de todos los compradores en tiempo real.</p></div></div>
+<div id="bChip" class="glass" hidden></div>
 
 <script>
 /* ======================= CONFIG (rebrandeable) ======================= */
@@ -190,7 +257,14 @@ const CONFIG = {
   // Financiación propia: cuotas sin intereses hasta 60 meses (brochure). Anticipo por defecto editable.
   plan: { anticipoMin: 10, anticipoDef: 30, cuotasMax: 60, cuotasDef: 60 },
   hotspots: [ { n: "Parque central", x: 1070, y: 430, ir: "parque" }, { n: "Acceso y seguridad 24 h", x: 1760, y: 395, ir: "casa" } ],
+  idiomas: ['es', 'en', 'pt', 'nl'],
+  pin: "1234",                       // PIN del panel de ventas (cambiar)
+  // Links para inmobiliarias: cada una comparte  …/?b=slug ; sus consultas llegan con su nombre.
+  inmobiliarias: [],
+  // Ubicación real (pin de Google Maps) y puntos de interés reales cercanos: { n, cat, lat, lon }
+  ubicacion: { lat: -25.2242142, lon: -57.4778575, zoom: 16, pois: [] },
   galeria: {
+    barrio:   [ ["img/vista-dia.webp","El barrio","Vista aérea de día"], ["img/vista-noche.webp","El barrio","Vista aérea al anochecer"], ["img/vista-frente-dia.webp","El barrio","Vista general"], ["img/vista-frente-noche.webp","El barrio","Vista general iluminada"] ],
     parque:   [ ["img/parque-a.webp","Parque central","Cancha, juegos y senderos"], ["img/parque-b.webp","Parque central","Plaza para niños"], ["img/aerea.webp","El barrio","Vista aérea"] ],
     casa:     [ ["img/portada.webp","La casa","Frente con jardín"], ["img/fachada-a.webp","La casa","Fachadas"], ["img/fachada-b.webp","La casa","Entrada con losetas y pasto"], ["img/fachada-c.webp","La casa","Calle interna"], ["img/fachada-d.webp","La casa","Frentes"], ["img/patio.webp","La casa","Patio con parrilla (obra terminada)"] ],
     interior: [ ["img/sala.webp","Interiores","Sala, comedor y cocina"], ["img/cocina.webp","Interiores","Cocina comedor con salida al patio"], ["img/quincho.webp","Interiores","Quincho y patio"], ["img/dormitorio-suite.webp","Interiores","Dormitorio en suite (obra terminada)"], ["img/dormitorio.webp","Interiores","Dormitorio (obra terminada)"], ["img/bano-suite.webp","Interiores","Baño en suite (obra terminada)"], ["img/bano-social.webp","Interiores","Baño social (obra terminada)"] ]
@@ -203,7 +277,7 @@ const POLY = {"101": [[100.0, 150], [143.5, 150], [143.5, 272], [100.0, 272]], "
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const gs=n=>"Gs. "+Math.round(n).toLocaleString(CONFIG.locale);
 const EST={libre:"Disponible",reservado:"Reservada",vendido:"Vendida"};
-const wa=t=>`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(t)}`;
+const wa=t=>{const B=window.BROKER;return B&&B.wa?`https://wa.me/${B.wa}?text=${encodeURIComponent(t)}`:`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(B?t+' ('+(window.tr?tr('Vengo por'):'Vengo por')+' '+B.n+')':t)}`};
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
 document.documentElement.style.setProperty('--ac2',CONFIG.colorAcento);
 $('#hdrWa').href=wa(`Hola! Quiero información de ${CONFIG.marca}.`);
@@ -214,7 +288,7 @@ function hint(){$('#hint').classList.add('off')}
 const F={t:"todas"};
 function pintar(){
   if(window.BVP3D)BVP3D.pintar(UNITS,F.t);else setTimeout(pintar,120);
-  $('#kLib').textContent=UNITS.filter(u=>u.estado==="libre").length;
+  $('#kLib').textContent=$('#kLib2').textContent=UNITS.filter(u=>u.estado==="libre").length;
 }
 function filtros(){const o=[["todas","Todas"],["libre","Disponibles"],["T1","Tipo 1"],["T2","Tipo 2"],["T3","Tipo 3"]];
   $('#fil').innerHTML=o.map(([k,n])=>`<button class="chip${F.t===k?' on':''}" data-f="${k}">${n}</button>`).join('');
@@ -225,7 +299,7 @@ window.tip3d=(n,e)=>{const tp=$('#tip');if(!n){tp.style.opacity=0;return}
   tp.style.left=Math.min(innerWidth-190,e.clientX+16)+'px';tp.style.top=(e.clientY+16)+'px';tp.style.opacity=1};
 /* ======================= ficha + simulador ======================= */
 let SEL=null;
-function abrir(n){const u=UNITS[n-1],T=CONFIG.tipologias[u.t];SEL=n;hint();$('#tip').style.opacity=0;
+function abrir(n){const u=UNITS[n-1],T=CONFIG.tipologias[u.t];SEL=n;hint();$('#tip').style.opacity=0;$('#hero').classList.remove('ab');window.DBV&&DBV.vista(n);
   window.BVP3D&&BVP3D.sel(n);
   $('#fh').style.backgroundImage=`url(${T.img})`;$('#fEt').textContent=u.etapa||'';$('#fN').textContent='Casa '+n;
   const vend=u.estado!=='libre';
@@ -238,18 +312,19 @@ function abrir(n){const u=UNITS[n-1],T=CONFIG.tipologias[u.t];SEL=n;hint();$('#t
      <div class="row" style="border-top:1px solid var(--ln);margin-top:8px;padding-top:12px"><span>Cuota mensual</span><span class="big num" id="sC"></span></div>
      <p class="note">Plan propio sin intereses hasta 60 meses. También podés acceder con el programa Che Róga (tasas preferenciales, sujeto a análisis crediticio). Valores de referencia; la propuesta final la confirma el equipo comercial.</p></div></div>`}
    <div class="sec"><h3>Así es la casa</h3><div class="thumbs">${[...CONFIG.galeria.casa.slice(0,2),...CONFIG.galeria.interior.slice(0,4)].map((g,i)=>`<button style="background-image:url(${g[0]})" data-g="${i<2?'casa':'interior'}" data-i="${i<2?i:i-2}" aria-label="${g[2]}"></button>`).join('')}</div></div>
-   <div class="cta"><a class="btn pri" style="justify-content:center" target="_blank" rel="noopener" href="${wa(`Hola! Me interesa la Casa ${n} de ${CONFIG.marca} (${T.n}, ${u.etapa}). ¿Me pasan más información?`)}">Consultar</a><button class="btn gh" style="justify-content:center" id="fShare">Compartir</button></div>`;
+   <div class="cta">${vend?'':`<button class="btn pri" style="justify-content:center" id="fLead">Me interesa esta casa</button>`}<div class="fbtns"><button class="btn gh" style="justify-content:center" id="fPdf">Ficha PDF</button><button class="btn gh" style="justify-content:center" id="fShare">Compartir</button></div></div>`;
+  if($('#fLead'))$('#fLead').onclick=()=>window.abrirLead&&abrirLead(n);$('#fPdf').onclick=()=>window.pdfFicha&&pdfFicha(n);
   if(!vend){const upd=()=>{const a=+$('#rA').value,c=+$('#rN').value,ant=T.precio*a/100;$('#sA').textContent=`${a}% · ${gs(ant)}`;$('#sN').textContent=c;$('#sC').textContent=gs((T.precio-ant)/c)};$('#rA').oninput=upd;$('#rN').oninput=upd;upd()}
   $$('#fb .thumbs button').forEach(b=>b.onclick=()=>galeria(b.dataset.g,+b.dataset.i));
-  $('#fShare').onclick=()=>{const url=location.origin+location.pathname+'?casa='+n;if(navigator.share)navigator.share({title:'Casa '+n+' · '+CONFIG.marca,url}).catch(()=>{});else{navigator.clipboard&&navigator.clipboard.writeText(url);toast('Link copiado')}};
+  $('#fShare').onclick=()=>{const url=location.origin+location.pathname+'?casa='+n+(window.BROKER?'&b='+BROKER.slug:'');if(navigator.share)navigator.share({title:'Casa '+n+' · '+CONFIG.marca,url}).catch(()=>{});else{navigator.clipboard&&navigator.clipboard.writeText(url);toast('Link copiado')}};
   $('#ficha').classList.add('on');$('#ficha').setAttribute('aria-hidden','false');history.replaceState(null,'','?casa='+n);
 }
-function cerrar(){$('#ficha').classList.remove('on');window.BVP3D&&BVP3D.sel(null);SEL=null;history.replaceState(null,'',location.pathname)}
+function cerrar(){const era=SEL;$('#ficha').classList.remove('on');window.BVP3D&&BVP3D.sel(null);SEL=null;history.replaceState(null,'',location.pathname+(window.BROKER?'?b='+BROKER.slug:''));if(era&&window.BVP3D)BVP3D.vista()}
 $('#fx').onclick=cerrar;addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#gal').classList.contains('on'))cerrarGal();else cerrar()}});
 
 /* ======================= galería ======================= */
 const G={k:'parque',i:0};
-const GN={parque:'Parque',casa:'La casa',interior:'Interiores'};
+const GN={barrio:'El barrio',parque:'Parque',casa:'La casa',interior:'Interiores'};
 function galeria(k,i){G.k=k;G.i=i||0;$('#gal').classList.add('on');tabsGal();verGal();hint()}
 function tabsGal(){$('#galTabs').innerHTML=Object.keys(CONFIG.galeria).map(k=>`<button data-k="${k}" class="${k===G.k?'on':''}">${GN[k]}</button>`).join('');$$('#galTabs button').forEach(b=>b.onclick=()=>{G.k=b.dataset.k;G.i=0;tabsGal();verGal()})}
 function verGal(){const L=CONFIG.galeria[G.k],g=L[G.i];const im=$('#galImg');im.style.opacity=0;const p=new Image();p.onload=()=>{im.src=g[0];$('#galBg').style.backgroundImage=`url(${g[0]})`;im.style.opacity=1};p.src=g[0];$('#galK').textContent=`${g[1]} · ${G.i+1} de ${L.length}`;$('#galT').textContent=g[2]}
@@ -257,10 +332,11 @@ function pasoGal(d){const L=CONFIG.galeria[G.k];G.i=(G.i+d+L.length)%L.length;ve
 function cerrarGal(){$('#gal').classList.remove('on');$$('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.d==='mapa'))}
 $('#gx').onclick=cerrarGal;$('#gp').onclick=()=>pasoGal(-1);$('#gn').onclick=()=>pasoGal(1);
 addEventListener('keydown',e=>{if(!$('#gal').classList.contains('on'))return;if(e.key==='ArrowRight')pasoGal(1);if(e.key==='ArrowLeft')pasoGal(-1)});
-$('#hdrGal').onclick=e=>{e.preventDefault();galeria('casa')};
+$('#hdrGal').onclick=e=>{e.preventDefault();galeria('barrio')};
 $$('#dock button').forEach(b=>b.onclick=()=>{$$('#dock button').forEach(x=>x.classList.toggle('on',x===b));if(b.dataset.d==='mapa'){cerrarGal();window.BVP3D&&BVP3D.vista()}else galeria(b.dataset.d)});
 
 /* ======================= inicio ======================= */
+$('#hTg').onclick=()=>{const h=$('#hero');h.classList.toggle('ab');$('#hTg').setAttribute('aria-expanded',h.classList.contains('ab'))};$('#hBro').onclick=()=>window.pdfBrochure&&pdfBrochure();
 filtros();pintar();
 setTimeout(hint,6000);
 const q=new URLSearchParams(location.search).get('casa');if(q&&UNITS[q-1])setTimeout(()=>abrir(+q),400);
@@ -273,6 +349,218 @@ Showroom 3D de Barrio Vida Parque (barrio cerrado, 109 casas). Archivo único + 
 - Simulador: plan propio sin intereses → cuota = (precio − anticipo) / cuotas.
 - Extensión: conectar UNITS a una API (D1) igual que Vidalta para disponibilidad en vivo y panel de ventas.
 -->
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+/* =====================================================================
+   FUNCIONES COMERCIALES: idiomas, links de inmobiliarias, formulario de consulta,
+   panel de ventas con métricas, ficha PDF, brochure, buscador y ubicación.
+   Datos del panel: localStorage (por dispositivo) hasta conectar Supabase.
+   ===================================================================== */
+(() => {
+/* ---------- datos locales ---------- */
+const KEY = 'bvp.showroom.v1';
+let DB; try { DB = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { DB = {}; }
+DB.vistas = DB.vistas || {}; DB.leads = DB.leads || []; DB.bVis = DB.bVis || {}; DB.brokers = DB.brokers || [];
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) {} };
+window.DBV = { vista(n) { DB.vistas[n] = (DB.vistas[n] || 0) + 1; save(); } };
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const abrirM = id => $(id).classList.add('on'), cerrarM = () => $$('.modal').forEach(m => m.classList.remove('on'));
+$$('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-close]')) m.classList.remove('on'); }));
+addEventListener('keydown', e => { if (e.key === 'Escape') cerrarM(); });
+
+/* ---------- IDIOMAS (ES · EN · PT · NL) ---------- */
+// Traductor sobre la pantalla: los textos están en español; E = frases completas, P = palabras sueltas.
+const C = { en: 0, pt: 1, nl: 2 }, NOM = { es: 'Español', en: 'English', pt: 'Português', nl: 'Nederlands' };
+const E = {
+  'Showroom 3D': ['3D Showroom', 'Showroom 3D', '3D-showroom'], 'Galería': ['Gallery', 'Galeria', 'Galerij'], 'Consultar': ['Contact', 'Consultar', 'Contact'], 'Buscar': ['Search', 'Buscar', 'Zoeken'], 'Ubicación': ['Location', 'Localização', 'Locatie'],
+  'Tu barrio, tu vida, tu parque.': ['Your neighborhood, your life, your park.', 'Seu bairro, sua vida, seu parque.', 'Jouw buurt, jouw leven, jouw park.'],
+  '109 casas alrededor de un gran parque central. Tocá una casa para ver su tipología, entrega y cuotas.': ['109 homes around a large central park. Tap a home to see its type, delivery date and instalments.', '109 casas ao redor de um grande parque central. Toque uma casa para ver a tipologia, a entrega e as parcelas.', '109 woningen rond een groot centraal park. Tik op een woning voor type, oplevering en termijnen.'],
+  'Tipologías': ['Home types', 'Tipologias', 'Woningtypes'], 'Cuotas s/ interés': ['Interest-free instalments', 'Parcelas sem juros', 'Renteloze termijnen'], 'Todas': ['All', 'Todas', 'Alle'],
+  'Casas': ['Homes', 'Casas', 'Woningen'], 'Parque': ['Park', 'Parque', 'Park'], 'La casa': ['The home', 'A casa', 'De woning'], 'Interiores': ['Interiors', 'Interiores', 'Interieur'], 'El barrio': ['The neighborhood', 'O bairro', 'De buurt'],
+  'Arrastrá para recorrer · tocá una casa': ['Drag to explore · tap a home', 'Arraste para explorar · toque uma casa', 'Sleep om rond te kijken · tik op een woning'],
+  'Dormitorios': ['Bedrooms', 'Quartos', 'Slaapkamers'], 'Baños': ['Bathrooms', 'Banheiros', 'Badkamers'], 'Sup. construida': ['Built area', 'Área construída', 'Woonoppervlak'], 'Terreno': ['Lot', 'Terreno', 'Kavel'],
+  'Simulá tu plan': ['Simulate your plan', 'Simule seu plano', 'Simuleer je plan'], 'Anticipo': ['Down payment', 'Entrada', 'Aanbetaling'], 'Cuotas sin intereses': ['Interest-free instalments', 'Parcelas sem juros', 'Renteloze termijnen'], 'Cuota mensual': ['Monthly instalment', 'Parcela mensal', 'Maandtermijn'],
+  'Así es la casa': ['This is the home', 'Assim é a casa', 'Zo ziet de woning eruit'], 'Compartir': ['Share', 'Compartilhar', 'Delen'], 'Ficha PDF': ['PDF sheet', 'Ficha PDF', 'Factsheet PDF'], 'Me interesa esta casa': ['I’m interested in this home', 'Tenho interesse nesta casa', 'Ik heb interesse in deze woning'],
+  'Esta casa ya no está disponible. Mirá otras de la misma tipología.': ['This home is no longer available. See others of the same type.', 'Esta casa não está mais disponível. Veja outras da mesma tipologia.', 'Deze woning is niet meer beschikbaar. Bekijk andere van hetzelfde type.'],
+  'Plan propio sin intereses hasta 60 meses. También podés acceder con el programa Che Róga (tasas preferenciales, sujeto a análisis crediticio). Valores de referencia; la propuesta final la confirma el equipo comercial.': ['Developer financing with no interest for up to 60 months. You can also apply through the Che Róga program (preferential rates, subject to credit approval). Reference values; the sales team confirms the final offer.', 'Plano próprio sem juros em até 60 meses. Também é possível acessar o programa Che Róga (taxas preferenciais, sujeito a análise de crédito). Valores de referência; a proposta final é confirmada pela equipe comercial.', 'Eigen financiering zonder rente tot 60 maanden. Ook mogelijk via het Che Róga-programma (voordelige rente, onder voorbehoud van kredietgoedkeuring). Richtwaarden; het verkoopteam bevestigt het definitieve aanbod.'],
+  'Encontrá tu casa': ['Find your home', 'Encontre sua casa', 'Vind je woning'], 'Filtrá y te mostramos solo las disponibles.': ['Filter and we show only available homes.', 'Filtre e mostramos só as disponíveis.', 'Filter en we tonen alleen beschikbare woningen.'],
+  'Tipología': ['Type', 'Tipologia', 'Type'], 'Etapa de entrega': ['Delivery stage', 'Etapa de entrega', 'Opleverfase'], 'casas disponibles': ['homes available', 'casas disponíveis', 'woningen beschikbaar'], 'Ver en el mapa': ['Show on the map', 'Ver no mapa', 'Toon op de kaart'],
+  'Puntos de interés': ['Points of interest', 'Pontos de interesse', 'Bezienswaardigheden'], 'Distancia en línea recta · tiempo estimado en auto': ['Straight-line distance · estimated drive time', 'Distância em linha reta · tempo estimado de carro', 'Hemelsbrede afstand · geschatte rijtijd'], 'Cómo llegar': ['Directions', 'Como chegar', 'Route'],
+  'Nombre': ['Name', 'Nome', 'Naam'], 'Tu nombre': ['Your name', 'Seu nome', 'Je naam'], 'Teléfono / WhatsApp': ['Phone / WhatsApp', 'Telefone / WhatsApp', 'Telefoon / WhatsApp'], '¿Para cuándo?': ['When?', 'Para quando?', 'Wanneer?'],
+  'Quiero reservar': ['I want to book', 'Quero reservar', 'Ik wil reserveren'], 'Este año': ['This year', 'Este ano', 'Dit jaar'], 'Solo mirando': ['Just looking', 'Só olhando', 'Even rondkijken'], 'Quiero que me contacten': ['Please contact me', 'Quero ser contatado', 'Neem contact met me op'],
+  'Prefiero escribir por WhatsApp': ['I’d rather write on WhatsApp', 'Prefiro escrever pelo WhatsApp', 'Liever via WhatsApp'], '¡Listo!': ['Done!', 'Pronto!', 'Klaar!'], 'Seguir mirando': ['Keep browsing', 'Continuar olhando', 'Verder kijken'],
+  'Un asesor te escribe en breve con la información de la': ['An advisor will message you shortly with the details of', 'Um consultor vai te escrever em breve com as informações da', 'Een adviseur stuurt je zo de informatie over'],
+  'Descargar brochure (PDF)': ['Download brochure (PDF)', 'Baixar brochure (PDF)', 'Brochure downloaden (PDF)'], 'Buscar casa': ['Find a home', 'Buscar casa', 'Woning zoeken'], 'Idioma · Language': ['Language', 'Idioma', 'Taal'], 'Panel de ventas': ['Sales panel', 'Painel de vendas', 'Verkooppaneel'],
+  'Parque central': ['Central park', 'Parque central', 'Centraal park'], 'Acceso y seguridad 24 h': ['Gated entrance · 24 h security', 'Acesso e segurança 24 h', 'Toegang en 24-uursbeveiliging'], 'Te atiende': ['Your agent', 'Seu corretor', 'Je makelaar'], 'Vengo por': ['I come from', 'Venho por', 'Via'],
+  'Consulta enviada al equipo de ventas': ['Request sent to the sales team', 'Consulta enviada à equipe de vendas', 'Aanvraag verstuurd naar het verkoopteam'], 'Link copiado': ['Link copied', 'Link copiado', 'Link gekopieerd'], 'Cualquiera': ['Any', 'Qualquer', 'Alle'],
+  'Cancha, juegos y senderos': ['Pitch, playground and paths', 'Quadra, brinquedos e trilhas', 'Veld, speeltuin en paden'], 'Plaza para niños': ['Kids’ playground', 'Praça infantil', 'Speelplein'], 'Vista aérea': ['Aerial view', 'Vista aérea', 'Luchtfoto'], 'Frente con jardín': ['Front garden', 'Frente com jardim', 'Voortuin'], 'Fachadas': ['Façades', 'Fachadas', 'Gevels'],
+  'Vista aérea de día': ['Aerial view by day', 'Vista aérea de dia', 'Luchtfoto overdag'], 'Vista aérea al anochecer': ['Aerial view at dusk', 'Vista aérea ao anoitecer', 'Luchtfoto bij schemering'], 'Vista general': ['Overview', 'Vista geral', 'Overzicht'], 'Vista general iluminada': ['Overview at night', 'Vista geral iluminada', 'Overzicht verlicht'],
+  'Preparando la ficha…': ['Preparing the sheet…', 'Preparando a ficha…', 'Factsheet wordt gemaakt…'], 'Armando el brochure…': ['Building the brochure…', 'Montando o brochure…', 'Brochure wordt gemaakt…'], 'Ficha descargada': ['Sheet downloaded', 'Ficha baixada', 'Factsheet gedownload'], 'Brochure descargado': ['Brochure downloaded', 'Brochure baixado', 'Brochure gedownload'],
+  'Precio de lista': ['List price', 'Preço de tabela', 'Vraagprijs'], 'Forma de pago': ['Payment plan', 'Forma de pagamento', 'Betaalplan'], 'Monto': ['Amount', 'Valor', 'Bedrag'], 'Detalle': ['Detail', 'Detalhe', 'Detail'], 'Disponibilidad y precios': ['Availability and prices', 'Disponibilidade e preços', 'Beschikbaarheid en prijzen'],
+  'Valores de referencia, sujetos a disponibilidad y aprobación. Imágenes ilustrativas. No constituye oferta vinculante.': ['Reference values, subject to availability and approval. Images for illustration only. Not a binding offer.', 'Valores de referência, sujeitos a disponibilidade e aprovação. Imagens ilustrativas. Não constitui oferta vinculante.', 'Richtwaarden, onder voorbehoud van beschikbaarheid en goedkeuring. Illustratieve beelden. Geen bindend aanbod.'],
+  'Ver esta casa en el showroom': ['See this home in the showroom', 'Ver esta casa no showroom', 'Bekijk deze woning in de showroom'], 'Recorré el barrio en 3D': ['Explore the neighborhood in 3D', 'Explore o bairro em 3D', 'Bekijk de buurt in 3D'], 'Ventas': ['Sales', 'Vendas', 'Verkoop'],
+};
+const P = [
+  ['Disponibles', ['Available', 'Disponíveis', 'Beschikbaar']], ['disponibles', ['available', 'disponíveis', 'beschikbaar']], ['Disponible', ['Available', 'Disponível', 'Beschikbaar']], ['Reservada', ['Reserved', 'Reservada', 'Gereserveerd']], ['Vendida', ['Sold', 'Vendida', 'Verkocht']],
+  ['Tipología', ['Type', 'Tipologia', 'Type']], ['Tipo', ['Type', 'Tipo', 'Type']], ['Casa', ['Home', 'Casa', 'Woning']], ['casas', ['homes', 'casas', 'woningen']], ['Etapa', ['Stage', 'Etapa', 'Fase']], ['de lote', ['lot', 'de terreno', 'kavel']],
+  ['Enero', ['January', 'Janeiro', 'Januari']], ['Feb', ['Feb', 'Fev', 'Feb']], ['Mar', ['Mar', 'Mar', 'Mrt']], ['Abr', ['Apr', 'Abr', 'Apr']], ['May', ['May', 'Mai', 'Mei']], ['Jun', ['Jun', 'Jun', 'Jun']], ['Jul', ['Jul', 'Jul', 'Jul']], ['Ago', ['Aug', 'Ago', 'Aug']], ['Sep', ['Sep', 'Set', 'Sep']], ['Oct', ['Oct', 'Out', 'Okt']], ['Nov', ['Nov', 'Nov', 'Nov']], ['Dic', ['Dec', 'Dez', 'Dec']],
+  ['Precio de lista', ['List price', 'Preço de tabela', 'Vraagprijs']], ['dormitorios', ['bedrooms', 'quartos', 'slaapkamers']], ['dorm\\.', ['bed.', 'qto.', 'slpk.']], ['terreno', ['lot', 'terreno', 'kavel']], ['min en auto', ['min by car', 'min de carro', 'min met de auto']], [' de ', [' of ', ' de ', ' van ']],
+];
+const LANGS = (CONFIG.idiomas || ['es']).filter(l => l === 'es' || l in C);
+let LANG = (() => { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q; try { const s = localStorage.getItem('bvp.lang'); if (LANGS.includes(s)) return s; } catch (e) {}
+  return 'es'; })();  // idioma base: español; el comprador elige con el botón
+const PR = P.map(([r, t]) => [new RegExp('(?<![\\p{L}])' + r + '(?![\\p{L}])', 'gu'), t]).sort((a, b) => b[0].source.length - a[0].source.length);
+window.tr = s => { if (LANG === 'es' || s == null) return s; const c = C[LANG], t = String(s), k = t.trim(); if (E[k]) return t.replace(k, E[k][c]); let o = t; for (const [re, v] of PR) o = o.replace(re, v[c]); return o; };
+const ORIG = new WeakMap(), ORA = new WeakMap(), NO = 'script,style,#ktaSello,[data-notr],#mPanel,.l3';
+function trN(n) { if (n.nodeType === 3) { if (!n.nodeValue.trim() || (n.parentElement && n.parentElement.closest(NO))) return; if (!ORIG.has(n)) ORIG.set(n, n.nodeValue); const v = tr(ORIG.get(n)); if (n.nodeValue !== v) n.nodeValue = v; return; }
+  if (n.nodeType !== 1 || n.matches(NO)) return; ['placeholder', 'aria-label', 'title'].forEach(a => { if (!n.hasAttribute(a)) return; let m = ORA.get(n); if (!m) ORA.set(n, m = {}); if (!(a in m)) m[a] = n.getAttribute(a); n.setAttribute(a, tr(m[a])); }); n.childNodes.forEach(trN); }
+new MutationObserver(ms => { if (LANG !== 'es') ms.forEach(m => m.addedNodes.forEach(trN)); }).observe(document.body, { childList: true, subtree: true });
+function setLang(l) { LANG = l; try { localStorage.setItem('bvp.lang', l); } catch (e) {} document.documentElement.lang = l; trN(document.body); if (SEL) abrir(SEL); filtros(); $('#langT').textContent = l.toUpperCase(); $$('#langPop button').forEach(b => b.classList.toggle('on', b.dataset.l === l)); }
+$('#langPop').innerHTML = LANGS.map(l => `<button data-l="${l}" class="${l === LANG ? 'on' : ''}"><b>${l.toUpperCase()}</b>${NOM[l]}</button>`).join('');
+$$('#langPop button').forEach(b => b.onclick = () => { setLang(b.dataset.l); $('#langPop').classList.remove('on'); });
+$('#hdrLang').onclick = e => { e.stopPropagation(); $('#menuPop').classList.remove('on'); $('#langPop').classList.toggle('on'); };
+$('#hdrMenu').onclick = e => { e.stopPropagation(); $('#langPop').classList.remove('on'); $('#menuPop').classList.toggle('on'); };
+addEventListener('click', e => { if (!e.target.closest('#langPop,#hdrLang,#menuPop,#hdrMenu')) { $('#langPop').classList.remove('on'); $('#menuPop').classList.remove('on'); } });
+
+/* ---------- LINKS PARA INMOBILIARIAS (?b=slug) ---------- */
+const brokers = () => [...(CONFIG.inmobiliarias || []), ...DB.brokers];
+window.BROKER = (() => { const q = new URLSearchParams(location.search).get('b'); if (q) try { sessionStorage.setItem('bvp.b', q); } catch (e) {}
+  const s = q || (() => { try { return sessionStorage.getItem('bvp.b'); } catch (e) { return null; } })(); return s ? brokers().find(b => b.slug === s) || null : null; })();
+if (BROKER) { if (!sessionStorage.getItem('bvp.bv')) { DB.bVis[BROKER.slug] = (DB.bVis[BROKER.slug] || 0) + 1; save(); try { sessionStorage.setItem('bvp.bv', 1); } catch (e) {} }
+  const c = $('#bChip'); c.hidden = false; c.innerHTML = `<small>Te atiende</small><b data-notr>${esc(BROKER.n)}</b>`; $('#hdrWa').href = wa(`Hola! Quiero información de ${CONFIG.marca}.`); }
+const origen = () => BROKER ? 'Inmobiliaria: ' + BROKER.n : 'Showroom';
+
+/* ---------- FORMULARIO DE CONSULTA ---------- */
+let leadN = null;
+window.abrirLead = n => { leadN = n; const u = UNITS[n - 1], T = CONFIG.tipologias[u.t]; $('#lForm').classList.remove('done');
+  $('#lTit').textContent = tr(`Me interesa la Casa ${n}`); $('#lSub').textContent = `${tr(T.n)} · ${u.lote} m² · ${tr(u.etapa || '')}`; $('#lOk').textContent = tr('Casa') + ' ' + n;
+  $('#lWa').href = wa(tr(`Hola! Me interesa la Casa ${n} de ${CONFIG.marca} (${T.n}, ${u.etapa}). ¿Me pasan más información?`)); abrirM('#mLead'); setTimeout(() => $('#lNom').focus(), 60); };
+$$('#lCu .chip').forEach(c => c.onclick = () => $$('#lCu .chip').forEach(x => x.classList.toggle('on', x === c)));
+$('#lForm').onsubmit = e => { e.preventDefault(); const nombre = $('#lNom').value.trim(), tel = $('#lTel').value.trim(); if (!nombre || !tel) return;
+  DB.leads.push({ fecha: new Date().toISOString(), nombre, tel, casa: leadN, origen: origen(), temp: $('#lCu .chip.on').dataset.v, lang: LANG }); save();
+  $('#lForm').classList.add('done'); $('#lNom').value = $('#lTel').value = ''; toast(tr('Consulta enviada al equipo de ventas')); };
+
+/* ---------- PANEL DE VENTAS (métricas) ---------- */
+let chart = null;
+function abrirPanel() { if (!sessionStorage.getItem('bvp.adm')) { const p = prompt('PIN del panel de ventas'); if (p !== CONFIG.pin) { if (p !== null) toast('PIN incorrecto'); return; } sessionStorage.setItem('bvp.adm', 1); } abrirM('#mPanel'); requestAnimationFrame(pintarPanel); }
+function pintarPanel() {
+  const U = UNITS, L = DB.leads, pr = u => CONFIG.tipologias[u.t].precio, sum = A => A.reduce((s, u) => s + pr(u), 0);
+  const V = U.filter(u => u.estado === 'vendido'), R = U.filter(u => u.estado === 'reservado'), D = U.filter(u => u.estado === 'libre'), d7 = Date.now() - 7 * 864e5;
+  const l7 = L.filter(l => +new Date(l.fecha) >= d7).length, cal = L.filter(l => l.temp === 'caliente').length, vis = Object.values(DB.vistas).reduce((a, b) => a + b, 0);
+  $('#pAct').textContent = new Date().toLocaleString('es-PY', { dateStyle: 'short', timeStyle: 'short' });
+  $('#pKpis').innerHTML = [['Vendido', Math.round(V.length / U.length * 100) + '%', `${V.length} vendidas · ${R.length} reservadas`], ['Stock disponible', gs(sum(D)), `${D.length} casas a precio de lista`], ['Consultas 7 días', l7, `${cal} quieren reservar`], ['Casas abiertas', vis, 'fichas vistas en el showroom']]
+    .map(([a, b, c]) => `<div><small>${a}</small><b class="num">${b}</b><em>${c}</em></div>`).join('');
+  const dias = Array.from({ length: 14 }, (_, i) => { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 13 + i); return d; });
+  const cnt = dias.map(d => L.filter(l => { const f = new Date(l.fecha); f.setHours(0, 0, 0, 0); return +f === +d; }).length); $('#pTot').textContent = cnt.reduce((a, b) => a + b, 0) + ' en 14 días';
+  if (window.Chart) { chart && chart.destroy(); chart = new Chart($('#pChart'), { type: 'bar', data: { labels: dias.map(d => d.toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit' })), datasets: [{ data: cnt, backgroundColor: '#d82b8c', borderRadius: 5, maxBarThickness: 22 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#a9b6b2', font: { size: 10 } } }, y: { beginAtZero: true, ticks: { precision: 0, color: '#a9b6b2' }, grid: { color: 'rgba(255,255,255,.06)' } } } } }); }
+  const top = D.map(u => ({ u, v: DB.vistas[u.n] || 0 })).sort((a, b) => b.v - a.v).slice(0, 6), mx = (top[0] && top[0].v) || 1;
+  $('#pTop').innerHTML = top.some(t => t.v) ? top.map(({ u, v }) => `<div style="margin-bottom:9px;font-size:13px"><div style="display:flex;justify-content:space-between"><b>Casa ${u.n} · ${CONFIG.tipologias[u.t].n}</b><span class="num" style="color:var(--tx2)">${v} vistas · ${L.filter(l => l.casa === u.n).length} cons.</span></div><div class="bar"><i style="width:${v / mx * 100}%"></i></div></div>`).join('') : '<p class="note">Todavía no hay visitas registradas en este dispositivo.</p>';
+  const tp = Object.keys(CONFIG.tipologias).map(k => { const us = U.filter(u => u.t === k); return { k, v: us.reduce((s, u) => s + (DB.vistas[u.n] || 0), 0), c: L.filter(l => us.some(u => u.n === l.casa)).length, d: us.filter(u => u.estado === 'libre').length, n: us.length }; }), tv = tp.reduce((s, x) => s + x.v, 0) || 1;
+  $('#pTipo').innerHTML = tp.map(x => `<div style="margin-bottom:10px;font-size:13px"><div style="display:flex;justify-content:space-between"><b>${CONFIG.tipologias[x.k].n}</b><span class="num" style="color:var(--tx2)">${Math.round(x.v / tv * 100)}% vistas · ${x.c} cons. · quedan ${x.d}/${x.n}</span></div><div class="bar"><i style="width:${x.v / tv * 100}%"></i></div></div>`).join('');
+  const T2 = { caliente: 'Quiere reservar', tibio: 'Este año', frio: 'Mirando' };
+  $('#pLeads').innerHTML = L.length ? L.slice().reverse().slice(0, 80).map(l => `<tr><td class="num">${new Date(l.fecha).toLocaleString('es-PY', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td><td>${esc(l.nombre)}</td><td class="num">${esc(l.tel)}</td><td>${l.casa}</td><td>${esc(l.origen)}</td><td>${T2[l.temp] || ''}</td></tr>`).join('') : '<tr><td colspan="6" style="color:var(--tx2);padding:14px 6px">Sin consultas todavía.</td></tr>';
+  const B = brokers();
+  $('#pBrok').innerHTML = `${B.length ? `<table class="lt"><thead><tr><th>Inmobiliaria</th><th>Visitas</th><th>Consultas</th><th>Quieren reservar</th><th></th></tr></thead><tbody>${B.map(b => { const ls = L.filter(l => l.origen === 'Inmobiliaria: ' + b.n);
+    return `<tr><td><b>${esc(b.n)}</b></td><td class="num">${DB.bVis[b.slug] || 0}</td><td class="num">${ls.length}</td><td class="num">${ls.filter(l => l.temp === 'caliente').length}</td><td><button class="btn gh" data-bl="${b.slug}" style="padding:6px 10px;font-size:12px">Copiar link</button></td></tr>`; }).join('')}</tbody></table>` : '<p class="note">Creá un link para cada inmobiliaria: sus clientes ven quién los atiende y cada consulta llega con su nombre.</p>'}
+    <div style="display:flex;gap:8px;margin-top:10px"><input id="bNew" placeholder="Nombre de la inmobiliaria" style="flex:1;padding:9px 11px;border-radius:10px;border:1px solid var(--ln2);background:rgba(255,255,255,.04)"><button class="btn pri" id="bAdd">Crear link</button></div>`;
+  $$('#pBrok [data-bl]').forEach(x => x.onclick = async () => { const b = B.find(y => y.slug === x.dataset.bl), u = location.origin + location.pathname + '?b=' + b.slug; try { await navigator.clipboard.writeText(u); toast('Link de ' + b.n + ' copiado'); } catch (e) { prompt('Copiá el link', u); } });
+  $('#bAdd').onclick = () => { const n = $('#bNew').value.trim(); if (!n) return toast('Escribí el nombre de la inmobiliaria'); const slug = n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    if (B.some(b => b.slug === slug)) return toast('Ya existe ese link'); DB.brokers.push({ slug, n, wa: '' }); DB.bVis[slug] = 0; save(); pintarPanel(); toast('Link de ' + n + ' creado'); };
+}
+$('#pXls').onclick = () => { if (!window.XLSX) return toast('Cargando Excel, probá en un segundo'); const ws = XLSX.utils.json_to_sheet(DB.leads.map(l => ({ Fecha: new Date(l.fecha).toLocaleString('es-PY'), Nombre: l.nombre, Telefono: l.tel, Casa: l.casa, Origen: l.origen, Interes: l.temp, Idioma: l.lang })));
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Consultas'); XLSX.writeFile(wb, 'barrio-vida-consultas.xlsx'); toast('Consultas exportadas'); };
+$('#pBro').onclick = () => pdfBrochure();
+if (new URLSearchParams(location.search).has('admin')) setTimeout(abrirPanel, 1500);
+
+/* ---------- FICHA PDF y BROCHURE ---------- */
+const IC = {}; const img = src => IC[src] || (IC[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }));
+async function cover(src, ratio, W = 1400) { const i = await img(src), r0 = i.naturalWidth / i.naturalHeight; let sw = i.naturalWidth, sh = i.naturalHeight; if (r0 > ratio) sw = sh * ratio; else sh = sw / ratio;
+  const c = document.createElement('canvas'); c.width = W; c.height = Math.round(W / ratio); c.getContext('2d').drawImage(i, (i.naturalWidth - sw) / 2, (i.naturalHeight - sh) / 2, sw, sh, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', .85); }
+const AC = [216, 43, 140], m2 = t => String(t).replace(/m²/g, 'm2');
+function base() { const doc = new jspdf.jsPDF({ unit: 'mm', format: 'a4' });
+  const banda = (t, s) => { doc.setFillColor(22, 34, 32); doc.rect(0, 0, 210, 26, 'F'); doc.setFillColor(...AC); doc.rect(0, 26, 210, 1.2, 'F'); doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.text(t, 14, 13); doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(200); doc.text(s, 14, 20); doc.setTextColor(30); };
+  const pie = () => { for (let p = 1; p <= doc.getNumberOfPages(); p++) { doc.setPage(p); doc.setFontSize(7.5); doc.setTextColor(120); doc.text(tr('Valores de referencia, sujetos a disponibilidad y aprobación. Imágenes ilustrativas. No constituye oferta vinculante.'), 14, 289); doc.text(`${CONFIG.marca} · ${new Date().toLocaleDateString('es-PY')}`, 196, 289, { align: 'right' }); } };
+  return { doc, banda, pie }; }
+const contacto = () => BROKER ? `${tr('Te atiende')}: ${BROKER.n}` : `${tr('Ventas')}: +${CONFIG.whatsapp}`;
+window.pdfFicha = async n => { if (!window.jspdf) return toast('Cargando PDF, probá en un segundo'); toast(tr('Preparando la ficha…'));
+  const u = UNITS[n - 1], T = CONFIG.tipologias[u.t], { doc, banda, pie } = base(), vend = u.estado !== 'libre', a = CONFIG.plan.anticipoDef, c = CONFIG.plan.cuotasDef, ant = T.precio * a / 100;
+  banda(`${CONFIG.marca} · ${tr('Casa')} ${n}`, `${tr(T.n)} · ${tr(u.etapa || '')}`);
+  try { doc.addImage(await cover(T.img, 182 / 95), 'JPEG', 14, 33, 182, 95); } catch (e) {}
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...AC); doc.text(vend ? tr(EST[u.estado]) : gs(T.precio), 14, 140); doc.setFont('helvetica', 'normal');
+  doc.autoTable({ startY: 146, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Casa') + ' ' + n, tr('Detalle')]], body: [[tr('Tipología'), tr(T.n)], [tr('Dormitorios'), T.dorm], [tr('Baños'), T.banos], [tr('Sup. construida'), m2(T.m2 + ' m²')], [tr('Terreno'), m2(u.lote + ' m²')], [tr('Etapa de entrega'), tr(u.etapa || '—')]] });
+  if (!vend) doc.autoTable({ startY: doc.lastAutoTable.finalY + 5, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Forma de pago'), tr('Monto')]], body: [[`${tr('Anticipo')} (${a}%)`, gs(ant)], [`${c} ${tr('Cuotas sin intereses')}`, gs((T.precio - ant) / c)], [tr('Precio de lista'), gs(T.precio)]] });
+  doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 9); doc.setTextColor(...AC);
+  doc.textWithLink(tr('Ver esta casa en el showroom'), 14, doc.lastAutoTable.finalY + 15, { url: location.origin + location.pathname + '?casa=' + n + (BROKER ? '&b=' + BROKER.slug : '') });
+  pie(); doc.save(`barrio-vida-casa-${n}.pdf`); toast(tr('Ficha descargada')); };
+window.pdfBrochure = async () => { if (!window.jspdf) return toast('Cargando PDF, probá en un segundo'); toast(tr('Armando el brochure…'));
+  const { doc, banda, pie } = base(), D = UNITS.filter(u => u.estado === 'libre');
+  try { doc.addImage(await cover('img/vista-dia.webp', 210 / 190), 'JPEG', 0, 0, 210, 190); } catch (e) {}
+  doc.setFillColor(22, 34, 32); doc.rect(0, 190, 210, 107, 'F'); doc.setFillColor(...AC); doc.rect(14, 203, 24, 1.2, 'F');
+  doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(30); doc.text(CONFIG.marca, 14, 220); doc.setFont('helvetica', 'normal'); doc.setFontSize(12); doc.setTextColor(215);
+  doc.text(doc.splitTextToSize(tr('109 casas alrededor de un gran parque central. Tocá una casa para ver su tipología, entrega y cuotas.').replace(/ Toc[aá].*$/, ''), 182), 14, 230);
+  [[tr('Disponibles'), `${D.length} / ${UNITS.length}`], [tr('Tipologías'), String(Object.keys(CONFIG.tipologias).length)], [tr('Cuotas s/ interés'), String(CONFIG.plan.cuotasMax)]].forEach(([a, b], i) => { const X = 14 + i * 62; doc.setTextColor(150); doc.setFontSize(8); doc.text(a.toUpperCase(), X, 256); doc.setTextColor(255); doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.text(b, X, 265); doc.setFont('helvetica', 'normal'); });
+  doc.setTextColor(150); doc.setFontSize(8.5); doc.text(contacto(), 14, 282);
+  doc.addPage(); banda(tr('Tipologías'), CONFIG.marca);
+  const ks = Object.keys(CONFIG.tipologias);
+  for (let i = 0; i < ks.length; i++) { const T = CONFIG.tipologias[ks[i]], Y = 34 + i * 82, us = UNITS.filter(u => u.t === ks[i]);
+    try { doc.addImage(await cover(T.img, 90 / 64, 900), 'JPEG', 14, Y, 90, 64); } catch (e) {}
+    doc.setTextColor(30); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(tr(T.n), 112, Y + 8); doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+    [`${T.dorm} ${tr('Dormitorios').toLowerCase()} · ${T.banos} ${tr('Baños').toLowerCase()}`, m2(`${tr('Sup. construida')}: ${T.m2} m²`), `${tr('Precio de lista')}: ${gs(T.precio)}`, `${us.filter(u => u.estado === 'libre').length} / ${us.length} ${tr('disponibles')}`].forEach((t, k) => doc.text(t, 112, Y + 18 + k * 7)); }
+  doc.addPage(); banda(tr('El barrio'), CONFIG.marca);
+  const F = [...CONFIG.galeria.barrio.slice(1, 3), ...CONFIG.galeria.parque.slice(0, 2), ...CONFIG.galeria.interior.slice(0, 2)];
+  for (let i = 0; i < F.length; i++) { const X = 14 + (i % 2) * 93, Y = 34 + Math.floor(i / 2) * 82; try { doc.addImage(await cover(F[i][0], 89 / 66, 900), 'JPEG', X, Y, 89, 66); } catch (e) {} doc.setFontSize(9.5); doc.setTextColor(40); doc.text(tr(F[i][2]), X, Y + 72); }
+  doc.addPage(); banda(tr('Disponibilidad y precios'), new Date().toLocaleDateString('es-PY'));
+  doc.autoTable({ startY: 34, theme: 'striped', headStyles: { fillColor: AC }, styles: { fontSize: 8.5 }, head: [[tr('Casa'), tr('Tipología'), tr('Terreno'), tr('Etapa de entrega'), tr('Precio de lista'), `${tr('Anticipo')} ${CONFIG.plan.anticipoDef}%`]],
+    body: D.map(u => { const T = CONFIG.tipologias[u.t]; return [u.n, tr(T.n), m2(u.lote + ' m²'), tr(u.etapa || ''), gs(T.precio), gs(T.precio * CONFIG.plan.anticipoDef / 100)]; }) });
+  doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 9); doc.setTextColor(...AC); doc.textWithLink(tr('Recorré el barrio en 3D'), 14, doc.lastAutoTable.finalY + 15, { url: location.origin + location.pathname + (BROKER ? '?b=' + BROKER.slug : '') });
+  pie(); doc.save('barrio-vida-parque-brochure.pdf'); toast(tr('Brochure descargado')); };
+
+/* ---------- BUSCADOR ---------- */
+const FB = { t: '', d: 0, lote: 0, e: '' };
+const lotes = UNITS.map(u => u.lote), LMIN = Math.floor(Math.min(...lotes) / 10) * 10, LMAX = Math.ceil(Math.max(...lotes) / 10) * 10;
+const etapas = [...new Set(UNITS.map(u => u.etapa).filter(Boolean))].sort((a, b) => parseInt(a.replace(/\D+/, '')) - parseInt(b.replace(/\D+/, '')));
+const filtrarB = () => UNITS.filter(u => u.estado === 'libre' && (!FB.t || u.t === FB.t) && (!FB.d || CONFIG.tipologias[u.t].dorm === FB.d) && u.lote >= FB.lote && (!FB.e || u.etapa === FB.e));
+function chips(id, ops, k) { $(id).innerHTML = ops.map(([v, n]) => `<button class="chip${FB[k] === v ? ' on' : ''}" data-v="${v}">${n}</button>`).join('');
+  $$(id + ' .chip').forEach(c => c.onclick = () => { const v = c.dataset.v; FB[k] = typeof FB[k] === 'number' ? +v : v; chips(id, ops, k); pintarB(); }); }
+function pintarB() { const R = filtrarB().sort((a, b) => b.lote - a.lote); $('#bN').textContent = R.length; $('#bLoteV').textContent = FB.lote + ' m²';
+  $('#bRes').innerHTML = R.map(u => { const T = CONFIG.tipologias[u.t]; return `<button class="rc" data-n="${u.n}"><b>${tr('Casa')} ${u.n}</b><small>${tr(T.n)} · ${T.dorm} ${tr('dorm.')} · ${u.lote} m² ${tr('de lote')}</small><small>${tr(u.etapa || '')}</small><div class="pr num">${gs(T.precio)}</div></button>`; }).join('') || `<p class="note">No hay casas con esos filtros.</p>`;
+  $$('#bRes .rc').forEach(b => b.onclick = () => { cerrarM(); abrir(+b.dataset.n); }); }
+window.abrirBuscar = () => { chips('#bT', [['', tr('Todas')], ...Object.entries(CONFIG.tipologias).map(([k, t]) => [k, tr(t.n)])], 't'); chips('#bD', [[0, tr('Cualquiera')], [2, '2'], [3, '3']], 'd');
+  chips('#bE', [['', tr('Todas')], ...etapas.map(e => [e, tr(e)])], 'e'); Object.assign($('#bLote'), { min: LMIN, max: LMAX, step: 5, value: FB.lote || LMIN }); FB.lote = +$('#bLote').value; pintarB(); abrirM('#mBus'); };
+$('#bLote').oninput = e => { FB.lote = +e.target.value; pintarB(); };
+$('#bVer').onclick = () => { cerrarM(); F.t = FB.t || 'libre'; filtros(); pintar(); window.BVP3D && BVP3D.vista(); toast(`${filtrarB().length} ${tr('casas disponibles')}`); };
+
+/* ---------- UBICACIÓN Y PUNTOS DE INTERÉS ---------- */
+const GEO = CONFIG.ubicacion, CATC = { compras: '#F59E0B', educacion: '#60A5FA', salud: '#F87171', verde: '#34D399', deporte: '#A78BFA', gastronomia: '#FB923C', transporte: '#E5E7EB' }, M = { z: GEO.zoom, cx: 0, cy: 0 };
+const w2p = (lat, lon, z) => { const n = 256 * 2 ** z, s = Math.sin(lat * Math.PI / 180); return [(lon + 180) / 360 * n, (.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * n]; };
+const dist = (a, b) => { const R = 6371, x = Math.sin((b.lat - a.lat) * Math.PI / 360) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin((b.lon - a.lon) * Math.PI / 360) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+function mapa() { const el = $('#map'), W = el.clientWidth, H = el.clientHeight, z = M.z, x0 = M.cx - W / 2, y0 = M.cy - H / 2; let h = '';
+  for (let tx = Math.floor(x0 / 256); tx <= Math.floor((x0 + W) / 256); tx++) for (let ty = Math.floor(y0 / 256); ty <= Math.floor((y0 + H) / 256); ty++) h += `<img alt="" draggable="false" src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}" style="left:${tx * 256 - x0}px;top:${ty * 256 - y0}px">`;
+  const mk = (p, c, i) => { const [x, y] = w2p(p.lat, p.lon, z); return `<div class="${c}" style="left:${x - x0}px;top:${y - y0}px">${i}</div>`; };
+  h += GEO.pois.map(p => mk(p, 'mpoi', `<i style="background:${CATC[p.cat] || '#fff'}"></i><span>${esc(tr(p.n))}</span>`)).join('') + mk(GEO, 'mpro', `<div class="pinp">${esc(CONFIG.marca)}</div>`); $('#mapT').innerHTML = h; }
+function encuadrar() { const el = $('#map'), Pt = [GEO, ...GEO.pois]; let z = 17; for (; z > 12; z--) { const xy = Pt.map(p => w2p(p.lat, p.lon, z)), xs = xy.map(a => a[0]), ys = xy.map(a => a[1]); if (Math.max(...xs) - Math.min(...xs) < el.clientWidth - 120 && Math.max(...ys) - Math.min(...ys) < el.clientHeight - 120) break; }
+  M.z = Pt.length > 1 ? z : GEO.zoom; const xy = Pt.map(p => w2p(p.lat, p.lon, M.z)); M.cx = (Math.max(...xy.map(a => a[0])) + Math.min(...xy.map(a => a[0]))) / 2; M.cy = (Math.max(...xy.map(a => a[1])) + Math.min(...xy.map(a => a[1]))) / 2; mapa(); }
+window.abrirUbicacion = () => { $('#ubiSub').textContent = CONFIG.marca;
+  const L = GEO.pois.map(p => ({ ...p, d: dist(GEO, p) })).sort((a, b) => a.d - b.d);
+  $('#poiL').innerHTML = L.length ? L.map(p => `<div class="poi"><i style="background:${CATC[p.cat] || '#fff'}"></i><div><b>${esc(tr(p.n))}</b><small class="num">${p.d < 1 ? Math.round(p.d * 1000) + ' m' : p.d.toFixed(1).replace('.', ',') + ' km'} · ${Math.max(1, Math.round(p.d / 25 * 60 + 1))} ${tr('min en auto')}</small></div></div>`).join('') : '<p class="note">El desarrollador carga acá los puntos de interés cercanos (colegios, supermercados, salud, accesos).</p>';
+  $('#mGo').href = `https://www.google.com/maps/dir/?api=1&destination=${GEO.lat},${GEO.lon}`; abrirM('#mUbi'); requestAnimationFrame(encuadrar); };
+(() => { const el = $('#map'); let d = null; el.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; d = [e.clientX, e.clientY]; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => { if (!d) return; M.cx -= e.clientX - d[0]; M.cy -= e.clientY - d[1]; d = [e.clientX, e.clientY]; mapa(); }); el.addEventListener('pointerup', () => d = null);
+  const zm = k => { const nz = Math.max(12, Math.min(19, M.z + k)); if (nz === M.z) return; const f = 2 ** (nz - M.z); M.cx *= f; M.cy *= f; M.z = nz; mapa(); };
+  el.addEventListener('wheel', e => { e.preventDefault(); zm(e.deltaY < 0 ? 1 : -1); }, { passive: false }); $('#mZi').onclick = () => zm(1); $('#mZo').onclick = () => zm(-1); $('#mCen').onclick = encuadrar; })();
+
+/* ---------- menú y botones ---------- */
+$('#hdrBus').onclick = abrirBuscar; $('#hdrUbi').onclick = abrirUbicacion;
+$$('#menuPop button').forEach(b => b.onclick = () => { $('#menuPop').classList.remove('on'); const m = b.dataset.m;
+  if (m === 'bus') abrirBuscar(); if (m === 'gal') galeria('barrio'); if (m === 'ubi') abrirUbicacion(); if (m === 'bro') pdfBrochure(); if (m === 'panel') abrirPanel(); if (m === 'lang') setTimeout(() => $('#langPop').classList.add('on'), 30); });
+if (LANG !== 'es') setLang(LANG);
+})();
+</script>
+
 <!-- Sello KTA -->
 <!-- Sello KTA Visual: marca de agua del proveedor del showroom. Posición por variables CSS (--kta-t/--kta-r/--kta-b/--kta-l y versión móvil --kta-mt/--kta-mr/--kta-mb/--kta-ml). -->
 <a id="ktaSello" href="https://ktavisual.pages.dev/?ref=barriovida" target="_blank" rel="noopener" aria-label="Showroom hecho por KTA Visual">
@@ -290,7 +578,7 @@ Showroom 3D de Barrio Vida Parque (barrio cerrado, 109 casas). Archivo único + 
 @media (max-width:760px){#ktaSello{top:var(--kta-mt,auto);right:var(--kta-mr,auto);bottom:var(--kta-mb,12px);left:var(--kta-ml,12px);padding:6px 10px 6px 8px;font-size:9.5px}#ktaSello small{display:none}}
 @media print{#ktaSello{position:static;opacity:1;background:none;color:#202522}}
 </style>
-<style>@media(max-width:860px) and (orientation:portrait){#ktaSello{top:62px;bottom:auto;left:10px;right:auto}#hint{top:104px!important}}@media(min-width:861px),(orientation:landscape){#ktaSello{bottom:12px;right:60px}}</style>
+<style>@media(max-width:860px) and (orientation:portrait){#ktaSello{top:112px;bottom:auto;left:10px;right:auto}#hint{top:150px!important}}@media(min-width:861px),(orientation:landscape){#ktaSello{bottom:12px;right:60px}}</style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -471,8 +759,10 @@ window.BVP3D = {
     lotLbl[u.n].element.className = 'l3 ' + u.estado + (off ? ' off' : ''); }); },
   sel(n) { if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
     if (n && lotMesh[n]) { lotMesh[n].material.opacity = .5; lotLbl[n].element.classList.add('sel'); if (!FOTO) return;
-      const [cx, cy] = proyectar(lotLbl[n].position), z = MOV ? 3.4 : 3; // en compu, la casa queda a la izquierda de la ficha
-      animarVista(z, cx + (MOV ? 0 : .13 / z * (innerWidth / innerHeight) / AR_F), cy + (MOV ? .1 / z : 0), 1100); } },
+      const [cx, cy] = proyectar(lotLbl[n].position), z = MOV ? 3 : 3, sz = s0() / z, W = innerWidth, H = innerHeight;
+      // la casa queda en la zona libre: a la izquierda de la ficha (compu) o arriba de la hoja inferior (celular)
+      const fx = MOV ? .5 : Math.max(.3, (W - Math.min(430, W)) / 2 / W), fy = MOV ? .2 : .5;
+      animarVista(z, cx - (fx - .5) * W * sz / WF, cy - (fy - .5) * H * sz / HF, 1100); } },
   vista() { if (FOTO) animarVista(1, .5, .5, 1100); }
 };
 /* ---------- acercamiento desde muy lejos ---------- */
