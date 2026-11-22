@@ -17,6 +17,7 @@ button,input,select{font:inherit;color:inherit}button{cursor:pointer;border:0;ba
 .glass{background:var(--card);border:1px solid var(--ln);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:16px}
 /* escena */
 #bgBlur{position:fixed;inset:-60px;background:url(img/aerea.webp) center/cover;filter:blur(40px) brightness(.45) saturate(.9)}
+body:not(.lblon) .l3{visibility:hidden}
 #scene{position:fixed;inset:0;overflow:hidden;touch-action:none;cursor:grab}
 #scene.drag{cursor:grabbing}
 #world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
@@ -443,7 +444,7 @@ const foto = new THREE.Mesh(new THREE.PlaneGeometry(4 * TAN * AR_F, 4 * TAN), ne
 { // bordes difuminados: la foto se funde con el satélite alrededor
   const c = document.createElement('canvas'); c.width = 256; c.height = 256; const x = c.getContext('2d'), f = 18;
   x.fillStyle = '#000'; x.fillRect(0, 0, 256, 256); x.filter = `blur(${f / 2}px)`; x.fillStyle = '#fff'; x.fillRect(f, f, 256 - 2 * f, 256 - 2 * f);
-  foto.material.alphaMap = new THREE.CanvasTexture(c); foto.material.needsUpdate = true; }
+  foto.userData.alpha = foto.material.alphaMap = new THREE.CanvasTexture(c); foto.material.needsUpdate = true; }
 foto.position.z = -2; foto.renderOrder = 50; foto.frustumCulled = false; foto.visible = false; camera.add(foto); scene.add(camera);
 let FOTO = 0, anim = null; const VW = { z: 1, cx: .5, cy: .5 };
 const s0 = () => Math.min(WF / innerWidth, HF / innerHeight);
@@ -459,7 +460,7 @@ function entrarFoto() { // llega el vuelo: misma imagen que el 3D, y zoom contin
   const z0 = innerHeight * s0() / HF * TAN / Math.tan(camera.fov * Math.PI / 360);
   Object.assign(VW, { z: z0, cx: .5, cy: .5 }); aplicarVista(); FOTO = 1; foto.visible = true; foto.material.opacity = 0;
   Object.values(lotMesh).forEach(m => m.renderOrder = 60); document.body.classList.add('foto');
-  animarVista(1, .5, .5, 2200, () => document.body.classList.add('v3d')); }
+  animarVista(1, .5, .5, 2200, () => { document.body.classList.add('v3d'); foto.material.opacity = 1; foto.material.alphaMap = null; foto.material.needsUpdate = true; }); }
 /* selección y API */
 const proyectar = v => { const q = v.clone().project(camera), W = innerWidth, H = innerHeight, s = s0() / VW.z;
   const x0 = VW.cx * WF - W * s / 2, y0 = VW.cy * HF - H * s / 2; return [(x0 + (q.x + 1) / 2 * W * s) / WF, (y0 + (1 - q.y) / 2 * H * s) / HF]; };
@@ -522,7 +523,7 @@ renderer.setAnimationLoop(() => {
     VW.z = anim.a.z * Math.pow(anim.b.z / anim.a.z, k); VW.cx = anim.a.cx + (anim.b.cx - anim.a.cx) * k; VW.cy = anim.a.cy + (anim.b.cy - anim.a.cy) * k; aplicarVista();
     if (t >= 1) { const f = anim.fin; anim = null; f && f(); } }
   if (FOTO && foto.material.opacity < 1) foto.material.opacity = Math.min(1, foto.material.opacity + .02);
-  const show = FOTO && VW.z >= 2.1; for (const k in lotLbl) lotLbl[k].visible = show;
+  document.body.classList.toggle('lblon', !!(FOTO && VW.z >= 2.1));
   renderer.render(scene, camera); labels.render(scene, camera);
 });
 </script>
