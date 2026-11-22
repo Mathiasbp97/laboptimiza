@@ -357,7 +357,7 @@ plan.rotation.x = -Math.PI / 2; plan.position.set((gx0 + gx1) / 2, -.05, (gz0 + 
 const ruido = (base, n, a) => { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); x.fillStyle = base; x.fillRect(0, 0, 256, 256);
   for (let i = 0; i < n; i++) { const v = Math.random() * 40 - 20; x.fillStyle = `rgba(${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${v > 0 ? 255 : 0},${a * Math.abs(v) / 20})`; x.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2); }
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t; };
-const mWall = new THREE.MeshStandardMaterial({ color: 0xf3f1ec, roughness: .9, map: ruido('#f1efe9', 9000, .12) });
+const mWall = new THREE.MeshStandardMaterial({ color: 0xe4e2dc, roughness: .9, map: ruido('#dedbd4', 9000, .12) });
 const mRoof = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, map: ruido('#a9a7a1', 14000, .25) });
 const mBrick = (() => { const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.fillStyle = '#d9cfc2'; x.fillRect(0, 0, 128, 128);
   for (let r = 0; r < 16; r++) for (let k = -1; k < 5; k++) { x.fillStyle = `hsl(${12 + Math.random() * 8},${45 + Math.random() * 15}%,${33 + Math.random() * 10}%)`; x.fillRect(k * 32 + (r % 2) * 16 + 1, r * 8 + 1, 30, 6); }
@@ -368,7 +368,14 @@ const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(
 D.houses.forEach((h, i) => { e.set(0, THREE.MathUtils.degToRad(h.a), 0); q.setFromEuler(e);
   m4.compose(v.set(h.c[0], 1.7, h.c[1]), q, s.set(h.w, 3.4, h.d)); casas.setMatrixAt(i, m4);
   m4.compose(v.set(h.c[0], 3.42, h.c[1]), q, s.set(Math.max(.5, h.w - .5), .06, Math.max(.5, h.d - .5))); techos.setMatrixAt(i, m4); });
-casas.castShadow = casas.receiveShadow = true; techos.receiveShadow = true; scene.add(casas, techos);
+casas.castShadow = casas.receiveShadow = true; scene.add(casas);
+// techos fotorrealistas: la misma imagen cenital proyectada sobre la tapa de cada casa (coincide con la foto del suelo)
+{ const pos = [], uv = [], idx = []; const U = (x, z) => [(x - gx0) / (gx1 - gx0), 1 - (z - gz0) / (gz1 - gz0)];
+  D.houses.forEach(h => { const a = THREE.MathUtils.degToRad(h.a), c = Math.cos(a), sn = Math.sin(a), n = pos.length / 3;
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([i, j]) => { const lx = i * h.w / 2, lz = j * h.d / 2, x = h.c[0] + lx * c + lz * sn, z = h.c[1] - lx * sn + lz * c; pos.push(x, 3.42, z); uv.push(...U(x, z)); });
+    idx.push(n, n + 2, n + 1, n, n + 3, n + 2); });
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+  const tm = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: tex, roughness: .95, side: THREE.DoubleSide })); tm.receiveShadow = true; scene.add(tm); }
 const lad = new THREE.InstancedMesh(gBox, mBrick, D.bricks.length);
 D.bricks.forEach((b, i) => { e.set(0, THREE.MathUtils.degToRad(b.a), 0); q.setFromEuler(e); m4.compose(v.set(b.c[0], 1.95, b.c[1]), q, s.set(Math.max(.45, b.w), 3.9, Math.max(.45, b.d))); lad.setMatrixAt(i, m4); });
 lad.castShadow = true; scene.add(lad);
@@ -423,9 +430,10 @@ const hs = (txt, p, ir) => { const el = document.createElement('div'); el.classN
 hs('Parque central', D.park, 'parque'); hs('Acceso y seguridad 24 h', D.gate, 'casa');
 /* ---------- API para el showroom ---------- */
 let SEL = null, F = 'todas';
+window.__bvp = { scene, camera, renderer, controls, lotMesh, lotLbl, satMats, THREE };
 window.BVP3D = {
   pintar(units, filtro) { F = filtro; units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; const off = filtro !== 'todas' && (filtro === 'libre' ? u.estado !== 'libre' : u.t !== filtro);
-    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .05 : (u.estado === 'libre' ? .26 : .34); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .12 : .55;
+    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .04 : (u.estado === 'libre' ? .15 : .3); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .12 : .55;
     lotLbl[u.n].element.className = 'l3 ' + u.estado + (off ? ' off' : ''); }); },
   sel(n) { if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
     if (n && lotMesh[n]) { lotMesh[n].material.opacity = .85; lotLbl[n].element.classList.add('sel'); const c = lotLbl[n].position; volar(new THREE.Vector3(c.x + (MOV ? 0 : 18), 34, c.z + 46), new THREE.Vector3(c.x + (MOV ? 0 : 9), 0, c.z), 1300); } },
