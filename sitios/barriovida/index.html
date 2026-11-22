@@ -430,72 +430,100 @@ const hs = (txt, p, ir) => { const el = document.createElement('div'); el.classN
 hs('Parque central', D.park, 'parque'); hs('Acceso y seguridad 24 h', D.gate, 'casa');
 /* ---------- API para el showroom ---------- */
 let SEL = null, F = 'todas';
-window.__bvp = { scene, camera, renderer, controls, lotMesh, lotLbl, satMats, THREE };
+/* =====================================================================
+   VISTA REALISTA (modo foto). Tras el acercamiento, el showroom queda sobre la foto realista
+   tomada exactamente desde la cámara V0. Zoom y paneo se hacen recortando la vista de esa misma
+   cámara (setViewOffset), así foto, lotes y etiquetas quedan siempre alineados y nunca se ve el 3D plano.
+   ===================================================================== */
+const V0 = { p: new THREE.Vector3(140, 70, 120), t: new THREE.Vector3(-30, 0, -30) }, FOV_F = 40, AR_F = 1672 / 941, TAN = Math.tan(FOV_F * Math.PI / 360);
+const FOV_VUELO = MOV ? 70 : 62;           // el vuelo llega más abierto y termina con un zoom hacia la foto
+const WF = 4000, HF = WF / AR_F;             // cuadro virtual de la foto
+const fotoTex = new THREE.TextureLoader().load('img/aerea-real.webp'); fotoTex.colorSpace = THREE.SRGBColorSpace; fotoTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+const foto = new THREE.Mesh(new THREE.PlaneGeometry(4 * TAN * AR_F, 4 * TAN), new THREE.MeshBasicMaterial({ map: fotoTex, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
+{ // bordes difuminados: la foto se funde con el satélite alrededor
+  const c = document.createElement('canvas'); c.width = 256; c.height = 256; const x = c.getContext('2d'), f = 18;
+  x.fillStyle = '#000'; x.fillRect(0, 0, 256, 256); x.filter = `blur(${f / 2}px)`; x.fillStyle = '#fff'; x.fillRect(f, f, 256 - 2 * f, 256 - 2 * f);
+  foto.material.alphaMap = new THREE.CanvasTexture(c); foto.material.needsUpdate = true; }
+foto.position.z = -2; foto.renderOrder = 50; foto.frustumCulled = false; foto.visible = false; camera.add(foto); scene.add(camera);
+let FOTO = 0, anim = null; const VW = { z: 1, cx: .5, cy: .5 };
+const s0 = () => Math.min(WF / innerWidth, HF / innerHeight);
+const zMin = () => 1, zMax = () => MOV ? 5 : 4.2;
+function aplicarVista() { const W = innerWidth, H = innerHeight, s = s0() / VW.z, w = W * s, h = H * s;
+  let x = VW.cx * WF - w / 2, y = VW.cy * HF - h / 2;
+  if (w <= WF) { x = Math.max(0, Math.min(WF - w, x)); VW.cx = (x + w / 2) / WF; } else x = (WF - w) / 2;
+  if (h <= HF) { y = Math.max(0, Math.min(HF - h, y)); VW.cy = (y + h / 2) / HF; } else y = (HF - h) / 2;
+  camera.fov = FOV_F; camera.aspect = AR_F; camera.setViewOffset(WF, HF, x, y, w, h); camera.updateProjectionMatrix(); }
+function animarVista(z, cx, cy, ms, fin) { anim = { a: { ...VW }, b: { z, cx: cx ?? VW.cx, cy: cy ?? VW.cy }, s: performance.now(), ms, fin }; }
+function entrarFoto() { // llega el vuelo: misma imagen que el 3D, y zoom continuo mientras aparece la foto
+  camera.position.copy(V0.p); controls.target.copy(V0.t); controls.update(); controls.enabled = false;
+  const z0 = innerHeight * s0() / HF * TAN / Math.tan(camera.fov * Math.PI / 360);
+  Object.assign(VW, { z: z0, cx: .5, cy: .5 }); aplicarVista(); FOTO = 1; foto.visible = true; foto.material.opacity = 0;
+  Object.values(lotMesh).forEach(m => m.renderOrder = 60); document.body.classList.add('foto');
+  animarVista(1, .5, .5, 2200, () => document.body.classList.add('v3d')); }
+/* selección y API */
+const proyectar = v => { const q = v.clone().project(camera), W = innerWidth, H = innerHeight, s = s0() / VW.z;
+  const x0 = VW.cx * WF - W * s / 2, y0 = VW.cy * HF - H * s / 2; return [(x0 + (q.x + 1) / 2 * W * s) / WF, (y0 + (1 - q.y) / 2 * H * s) / HF]; };
+window.__bvp = { scene, camera, renderer, controls, lotMesh, lotLbl, satMats, THREE, VW };
 window.BVP3D = {
   pintar(units, filtro) { F = filtro; units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; const off = filtro !== 'todas' && (filtro === 'libre' ? u.estado !== 'libre' : u.t !== filtro);
-    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .04 : (u.estado === 'libre' ? .15 : .3); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .12 : .55;
+    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .03 : (u.estado === 'libre' ? .16 : .3); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .1 : .6;
     lotLbl[u.n].element.className = 'l3 ' + u.estado + (off ? ' off' : ''); }); },
-  sel(n) { if (n) salirFoto(); if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
-    if (n && lotMesh[n]) { lotMesh[n].material.opacity = .85; lotLbl[n].element.classList.add('sel'); const c = lotLbl[n].position; volar(new THREE.Vector3(c.x + (MOV ? 0 : 18), 34, c.z + 46), new THREE.Vector3(c.x + (MOV ? 0 : 9), 0, c.z), 1300); } },
-  vista() { volar(V0.p, V0.t, 1600); vuelo.foto = true; }
+  sel(n) { if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
+    if (n && lotMesh[n]) { lotMesh[n].material.opacity = .5; lotLbl[n].element.classList.add('sel'); if (!FOTO) return;
+      const [cx, cy] = proyectar(lotLbl[n].position), z = MOV ? 3.4 : 3; // en compu, la casa queda a la izquierda de la ficha
+      animarVista(z, cx + (MOV ? 0 : .13 / z * (innerWidth / innerHeight) / AR_F), cy + (MOV ? .1 / z : 0), 1100); } },
+  vista() { if (FOTO) animarVista(1, .5, .5, 1100); }
 };
-/* ---------- cámara: acercamiento desde muy lejos ---------- */
-// Cámara final = la misma de la foto realista (img/aerea-real.webp): así los lotes caen exactos sobre la foto.
-const V0 = { p: new THREE.Vector3(140, 70, 120), t: new THREE.Vector3(-30, 0, -30) }, FOV_FOTO = 40, FOTO_AR = 1672 / 941;
-/* ---------- foto realista al llegar (se desvanece al mover la cámara) ---------- */
-const fotoTex = new THREE.TextureLoader().load('img/aerea-real.webp'); fotoTex.colorSpace = THREE.SRGBColorSpace;
-const foto = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: fotoTex, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
-foto.renderOrder = 50; foto.frustumCulled = false; foto.visible = false; camera.add(foto); scene.add(camera);
-let FOTO = 0, fotoObj = 0; // estado y opacidad objetivo
-function ajustarFoto() { const A = innerWidth / innerHeight;
-  camera.fov = A > FOTO_AR ? 2 * Math.atan(Math.tan(FOV_FOTO * Math.PI / 360) * FOTO_AR / A) * 180 / Math.PI : FOV_FOTO; camera.updateProjectionMatrix();
-  const h = 2 * Math.tan(camera.fov * Math.PI / 360), w = h * A; foto.scale.set(w * 2, h * 2, 1); foto.position.set(0, 0, -2);
-  if (A > FOTO_AR) { fotoTex.repeat.set(1, FOTO_AR / A); fotoTex.offset.set(0, (1 - FOTO_AR / A) / 2); } else { fotoTex.repeat.set(A / FOTO_AR, 1); fotoTex.offset.set((1 - A / FOTO_AR) / 2, 0); } }
-function entrarFoto() { ajustarFoto(); camera.position.copy(V0.p); controls.target.copy(V0.t); controls.update(); foto.visible = true; fotoObj = 1; FOTO = 1;
-  Object.values(lotMesh).forEach(m => m.renderOrder = 60); document.body.classList.add('foto'); }
-function salirFoto() { if (!FOTO) return; FOTO = 0; fotoObj = 0; Object.values(lotMesh).forEach(m => m.renderOrder = 2); document.body.classList.remove('foto'); }
-
+/* ---------- acercamiento desde muy lejos ---------- */
 let vuelo = null;
 function volar(p, t, ms, curva) { controls.maxDistance = 6000; vuelo = { p0: camera.position.clone(), t0: controls.target.clone(), p1: p.clone(), t1: t.clone(), s: performance.now(), ms, curva }; }
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-camera.position.set(900, 16000, 7000); controls.target.set(0, 0, 0);
-let pend = 1; function listo() { if (--pend > 0) return;
-  setTimeout(() => { ajustarFoto(); volar(V0.p, V0.t, 7000, true); }, 250); }
-['pointerdown', 'wheel'].forEach(ev => renderer.domElement.addEventListener(ev, () => { if (vuelo && vuelo.curva) { vuelo.s = performance.now() - vuelo.ms * .97; } controls.autoRotate = false; }, { passive: true }));
-/* ---------- interacción ---------- */
-const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null; const meshes = Object.values(lotMesh);
-renderer.domElement.addEventListener('pointerdown', ev => down = [ev.clientX, ev.clientY]);
-renderer.domElement.addEventListener('pointerup', ev => { if (down && Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) salirFoto(); if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) return;
-  ptr.set(ev.clientX / innerWidth * 2 - 1, -ev.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera);
-  const h = ray.intersectObjects([casas, ...meshes])[0]; if (!h) return;
-  let n = h.object.userData.n; if (h.object === casas) n = D.houses[h.instanceId].lot; if (n && window.abrir) abrir(n); });
-let hov = null;
-renderer.domElement.addEventListener('wheel', salirFoto, { passive: true });
-controls.addEventListener('change', () => { if (FOTO && !vuelo && camera.position.distanceTo(V0.p) > 1.5) salirFoto(); });
-renderer.domElement.addEventListener('pointermove', ev => { if (ev.buttons || matchMedia('(hover:none)').matches) return;
-  ptr.set(ev.clientX / innerWidth * 2 - 1, -ev.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera);
-  const h = ray.intersectObjects([casas, ...meshes])[0]; let n = h ? (h.object === casas ? D.houses[h.instanceId].lot : h.object.userData.n) : null;
+camera.fov = FOV_VUELO; camera.updateProjectionMatrix();
+camera.position.set(900, 16000, 7000); controls.target.set(0, 0, 0); controls.enableRotate = false; controls.enableZoom = false; controls.enablePan = false;
+let pend = 1; function listo() { if (--pend > 0) return; setTimeout(() => volar(V0.p, V0.t, 6500, true), 250); }
+renderer.domElement.addEventListener('pointerdown', () => { if (vuelo && vuelo.curva) vuelo.s = performance.now() - vuelo.ms * .97; });
+/* ---------- interacción sobre la vista realista: arrastrar = mover, rueda/pellizco = zoom, tocar = casa ---------- */
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(), meshes = Object.values(lotMesh), P = new Map(); let down = null, pinch = null;
+const loteEn = (cx, cy) => { ptr.set(cx / innerWidth * 2 - 1, -cy / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera); const h = ray.intersectObjects(meshes)[0]; return h ? h.object.userData.n : null; };
+function zoomEn(f, px, py) { if (!FOTO) return; anim = null; const s = s0() / VW.z, nz = Math.max(zMin(), Math.min(zMax(), VW.z * f)), s2 = s0() / nz;
+  const vx = VW.cx * WF + (px - innerWidth / 2) * s, vy = VW.cy * HF + (py - innerHeight / 2) * s;
+  VW.cx = (vx - (px - innerWidth / 2) * s2) / WF; VW.cy = (vy - (py - innerHeight / 2) * s2) / HF; VW.z = nz; aplicarVista(); }
+const el = renderer.domElement;
+el.addEventListener('pointerdown', ev => { P.set(ev.pointerId, [ev.clientX, ev.clientY]); el.setPointerCapture(ev.pointerId);
+  if (P.size === 1) down = [ev.clientX, ev.clientY, ev.clientX, ev.clientY]; else { const [a, b] = [...P.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) }; down = null; } });
+el.addEventListener('pointermove', ev => {
+  if (P.has(ev.pointerId)) { const prev = P.get(ev.pointerId); P.set(ev.pointerId, [ev.clientX, ev.clientY]);
+    if (pinch && P.size === 2) { const [a, b] = [...P.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); zoomEn(d / pinch.d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch.d = d; return; }
+    if (down && FOTO) { anim = null; const s = s0() / VW.z; VW.cx -= (ev.clientX - prev[0]) * s / WF; VW.cy -= (ev.clientY - prev[1]) * s / HF; aplicarVista(); el.style.cursor = 'grabbing'; }
+    return; }
+  if (matchMedia('(hover:none)').matches || !FOTO) return;
+  const n = loteEn(ev.clientX, ev.clientY);
   if (hov && hov !== n && hov !== SEL && lotMesh[hov]) lotMesh[hov].material.opacity = lotMesh[hov].userData.base;
-  hov = n; if (n && n !== SEL) lotMesh[n].material.opacity = Math.min(.9, lotMesh[n].userData.base + .3);
-  renderer.domElement.style.cursor = n ? 'pointer' : ''; window.tip3d && tip3d(n, ev); });
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); if (FOTO) ajustarFoto(); renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight); });
-document.getElementById('zin').onclick = () => { const d = camera.position.clone().sub(controls.target).multiplyScalar(.72); volar(controls.target.clone().add(d), controls.target.clone(), 500); };
-document.getElementById('zout').onclick = () => { const d = camera.position.clone().sub(controls.target).multiplyScalar(1.35); volar(controls.target.clone().add(d), controls.target.clone(), 500); };
+  hov = n; if (n && n !== SEL) lotMesh[n].material.opacity = Math.min(.55, lotMesh[n].userData.base + .25);
+  el.style.cursor = n ? 'pointer' : 'grab'; window.tip3d && tip3d(n, ev); });
+let hov = null;
+const soltar = ev => { const fue = down && Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) < 7; P.delete(ev.pointerId); if (P.size < 2) pinch = null;
+  if (fue && FOTO) { const n = loteEn(ev.clientX, ev.clientY); if (n && window.abrir) abrir(n); } if (!P.size) down = null; el.style.cursor = ''; };
+el.addEventListener('pointerup', soltar); el.addEventListener('pointercancel', soltar);
+el.addEventListener('wheel', ev => { ev.preventDefault(); zoomEn(Math.exp(-ev.deltaY * .0015), ev.clientX, ev.clientY); }, { passive: false });
+addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight); if (FOTO) aplicarVista(); else { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); } });
+document.getElementById('zin').onclick = () => { if (FOTO) animarVista(Math.min(zMax(), VW.z * 1.6), VW.cx, VW.cy, 450); };
+document.getElementById('zout').onclick = () => { if (FOTO) animarVista(Math.max(zMin(), VW.z / 1.6), VW.cx, VW.cy, 450); };
 /* ---------- bucle ---------- */
 renderer.setAnimationLoop(() => {
-  if (vuelo) { const t = Math.min(1, (performance.now() - vuelo.s) / vuelo.ms), k = vuelo.curva ? 1 - Math.pow(1 - t, 3.2) : ease(t);
-    if (vuelo.curva) { // acercamiento cinematográfico: la distancia baja en escala logarítmica
-      const kk = ease(t); controls.target.lerpVectors(vuelo.t0, vuelo.t1, kk);
-      const d0 = vuelo.p0.clone().sub(vuelo.t0), d1 = vuelo.p1.clone().sub(vuelo.t1);
-      const L = Math.exp(Math.log(d0.length()) * (1 - kk) + Math.log(d1.length()) * kk);
-      const dir = d0.normalize().lerp(d1.normalize(), Math.min(1, kk * 1.15)).normalize();
-      camera.position.copy(controls.target).addScaledVector(dir, L);
-    } else { camera.position.lerpVectors(vuelo.p0, vuelo.p1, k); controls.target.lerpVectors(vuelo.t0, vuelo.t1, k); }
-    if (t >= 1) { const fo = vuelo.curva || vuelo.foto; if (vuelo.curva) document.body.classList.add('v3d'); vuelo = null; controls.maxDistance = 900; if (fo) entrarFoto(); } }
-  if (foto.visible) { const o = foto.material.opacity + (fotoObj - foto.material.opacity) * .08; foto.material.opacity = Math.abs(o - fotoObj) < .01 ? fotoObj : o; if (!fotoObj && foto.material.opacity === 0) foto.visible = false; }
-  const dist = camera.position.distanceTo(controls.target);
-  const show = dist < (MOV ? 150 : 130); for (const k in lotLbl) lotLbl[k].visible = show;
-  controls.update(); renderer.render(scene, camera); labels.render(scene, camera);
+  if (vuelo) { const t = Math.min(1, (performance.now() - vuelo.s) / vuelo.ms), kk = ease(t);
+    controls.target.lerpVectors(vuelo.t0, vuelo.t1, kk);
+    const d0 = vuelo.p0.clone().sub(vuelo.t0), d1 = vuelo.p1.clone().sub(vuelo.t1);
+    const L = Math.exp(Math.log(d0.length()) * (1 - kk) + Math.log(d1.length()) * kk);
+    const dir = d0.normalize().lerp(d1.normalize(), Math.min(1, kk * 1.15)).normalize();
+    camera.position.copy(controls.target).addScaledVector(dir, L); controls.update();
+    if (t >= 1) { vuelo = null; entrarFoto(); } }
+  if (anim) { const t = Math.min(1, (performance.now() - anim.s) / anim.ms), k = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    VW.z = anim.a.z * Math.pow(anim.b.z / anim.a.z, k); VW.cx = anim.a.cx + (anim.b.cx - anim.a.cx) * k; VW.cy = anim.a.cy + (anim.b.cy - anim.a.cy) * k; aplicarVista();
+    if (t >= 1) { const f = anim.fin; anim = null; f && f(); } }
+  if (FOTO && foto.material.opacity < 1) foto.material.opacity = Math.min(1, foto.material.opacity + .02);
+  const show = FOTO && VW.z >= 2.1; for (const k in lotLbl) lotLbl[k].visible = show;
+  renderer.render(scene, camera); labels.render(scene, camera);
 });
 </script>
 
