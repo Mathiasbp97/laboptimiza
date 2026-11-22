@@ -171,6 +171,9 @@ input[type=range]{width:100%;accent-color:var(--ac2)}.lf{display:flex;flex-direc
 .pinp{background:var(--ac2);color:#fff;font-weight:800;font-size:12px;padding:7px 11px;border-radius:10px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.5);position:relative}.pinp:after{content:'';position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--ac2)}
 @media(max-width:760px){#ubiG{grid-template-columns:1fr;grid-template-rows:50vh auto;height:auto}#ubiS{max-height:40vh}}
 .fbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+@media(max-height:500px){body.mtop #hero{display:none}}
+body:not(.mtop) #fil{opacity:0!important;pointer-events:none}
+body.mvista #dock button[data-d=mapa]:not(.on){background:var(--ac2);color:#fff}
 </style>
 </head>
 <body class="verMapa">
@@ -201,10 +204,11 @@ input[type=range]{width:100%;accent-color:var(--ac2)}.lf{display:flex;flex-direc
   <button class="btn gh" id="hBro" style="margin-top:12px;justify-content:center;width:100%">Descargar brochure (PDF)</button></div>
 </div>
 <div id="fil" class="fil glass"></div>
-<div id="hint" class="glass">Arrastrá para recorrer · tocá una casa</div>
+<div id="hint" class="glass">Tocá «Elegir casa» para ver la disponibilidad</div>
 
 <div id="dock" class="glass">
-  <button data-d="mapa" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Casas</button>
+  <button data-d="vista" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Vista</button>
+  <button data-d="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Elegir casa</button>
   <button data-d="parque"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="5"/><path d="M12 13v8M8 21h8"/></svg>Parque</button>
   <button data-d="casa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg>La casa</button>
   <button data-d="interior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="10" width="18" height="7" rx="2"/><path d="M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M5 17v2M19 17v2"/></svg>Interiores</button>
@@ -299,7 +303,7 @@ window.tip3d=(n,e)=>{const tp=$('#tip');if(!n){tp.style.opacity=0;return}
   tp.style.left=Math.min(innerWidth-190,e.clientX+16)+'px';tp.style.top=(e.clientY+16)+'px';tp.style.opacity=1};
 /* ======================= ficha + simulador ======================= */
 let SEL=null;
-function abrir(n){const u=UNITS[n-1],T=CONFIG.tipologias[u.t];SEL=n;hint();$('#tip').style.opacity=0;$('#hero').classList.remove('ab');window.DBV&&DBV.vista(n);
+function abrir(n){$$('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.d==='mapa'));const u=UNITS[n-1],T=CONFIG.tipologias[u.t];SEL=n;hint();$('#tip').style.opacity=0;$('#hero').classList.remove('ab');window.DBV&&DBV.vista(n);
   window.BVP3D&&BVP3D.sel(n);
   $('#fh').style.backgroundImage=`url(${T.img})`;$('#fEt').textContent=u.etapa||'';$('#fN').textContent='Casa '+n;
   const vend=u.estado!=='libre';
@@ -329,11 +333,11 @@ function galeria(k,i){G.k=k;G.i=i||0;$('#gal').classList.add('on');tabsGal();ver
 function tabsGal(){$('#galTabs').innerHTML=Object.keys(CONFIG.galeria).map(k=>`<button data-k="${k}" class="${k===G.k?'on':''}">${GN[k]}</button>`).join('');$$('#galTabs button').forEach(b=>b.onclick=()=>{G.k=b.dataset.k;G.i=0;tabsGal();verGal()})}
 function verGal(){const L=CONFIG.galeria[G.k],g=L[G.i];const im=$('#galImg');im.style.opacity=0;const p=new Image();p.onload=()=>{im.src=g[0];$('#galBg').style.backgroundImage=`url(${g[0]})`;im.style.opacity=1};p.src=g[0];$('#galK').textContent=`${g[1]} · ${G.i+1} de ${L.length}`;$('#galT').textContent=g[2]}
 function pasoGal(d){const L=CONFIG.galeria[G.k];G.i=(G.i+d+L.length)%L.length;verGal()}
-function cerrarGal(){$('#gal').classList.remove('on');$$('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.d==='mapa'))}
+function cerrarGal(){$('#gal').classList.remove('on');const m=window.BVP3D&&BVP3D.MODO==='top'?'mapa':'vista';$$('#dock button').forEach(b=>b.classList.toggle('on',b.dataset.d===m))}
 $('#gx').onclick=cerrarGal;$('#gp').onclick=()=>pasoGal(-1);$('#gn').onclick=()=>pasoGal(1);
 addEventListener('keydown',e=>{if(!$('#gal').classList.contains('on'))return;if(e.key==='ArrowRight')pasoGal(1);if(e.key==='ArrowLeft')pasoGal(-1)});
 $('#hdrGal').onclick=e=>{e.preventDefault();galeria('barrio')};
-$$('#dock button').forEach(b=>b.onclick=()=>{$$('#dock button').forEach(x=>x.classList.toggle('on',x===b));if(b.dataset.d==='mapa'){cerrarGal();window.BVP3D&&BVP3D.vista()}else galeria(b.dataset.d)});
+$$('#dock button').forEach(b=>b.onclick=()=>{$$('#dock button').forEach(x=>x.classList.toggle('on',x===b));if(b.dataset.d==='mapa'){window.BVP3D&&BVP3D.modo('top');cerrarGal()}else if(b.dataset.d==='vista'){if(SEL)cerrar();window.BVP3D&&BVP3D.modo('vista');cerrarGal()}else galeria(b.dataset.d)});
 
 /* ======================= inicio ======================= */
 $('#hTg').onclick=()=>{const h=$('#hero');h.classList.toggle('ab');$('#hTg').setAttribute('aria-expanded',h.classList.contains('ab'))};$('#hBro').onclick=()=>window.pdfBrochure&&pdfBrochure();
@@ -379,7 +383,7 @@ const E = {
   'Tu barrio, tu vida, tu parque.': ['Your neighborhood, your life, your park.', 'Seu bairro, sua vida, seu parque.', 'Jouw buurt, jouw leven, jouw park.'],
   '109 casas alrededor de un gran parque central. Tocá una casa para ver su tipología, entrega y cuotas.': ['109 homes around a large central park. Tap a home to see its type, delivery date and instalments.', '109 casas ao redor de um grande parque central. Toque uma casa para ver a tipologia, a entrega e as parcelas.', '109 woningen rond een groot centraal park. Tik op een woning voor type, oplevering en termijnen.'],
   'Tipologías': ['Home types', 'Tipologias', 'Woningtypes'], 'Cuotas s/ interés': ['Interest-free instalments', 'Parcelas sem juros', 'Renteloze termijnen'], 'Todas': ['All', 'Todas', 'Alle'],
-  'Casas': ['Homes', 'Casas', 'Woningen'], 'Parque': ['Park', 'Parque', 'Park'], 'La casa': ['The home', 'A casa', 'De woning'], 'Interiores': ['Interiors', 'Interiores', 'Interieur'], 'El barrio': ['The neighborhood', 'O bairro', 'De buurt'],
+  'Casas': ['Homes', 'Casas', 'Woningen'], 'Elegir casa': ['Choose a home', 'Escolher casa', 'Kies een woning'], 'Vista': ['View', 'Vista', 'Uitzicht'], 'Tocá «Elegir casa» para ver la disponibilidad': ['Tap “Choose a home” to see availability', 'Toque «Escolher casa» para ver a disponibilidade', 'Tik op «Kies een woning» voor beschikbaarheid'], 'Parque': ['Park', 'Parque', 'Park'], 'La casa': ['The home', 'A casa', 'De woning'], 'Interiores': ['Interiors', 'Interiores', 'Interieur'], 'El barrio': ['The neighborhood', 'O bairro', 'De buurt'],
   'Arrastrá para recorrer · tocá una casa': ['Drag to explore · tap a home', 'Arraste para explorar · toque uma casa', 'Sleep om rond te kijken · tik op een woning'],
   'Dormitorios': ['Bedrooms', 'Quartos', 'Slaapkamers'], 'Baños': ['Bathrooms', 'Banheiros', 'Badkamers'], 'Sup. construida': ['Built area', 'Área construída', 'Woonoppervlak'], 'Terreno': ['Lot', 'Terreno', 'Kavel'],
   'Simulá tu plan': ['Simulate your plan', 'Simule seu plano', 'Simuleer je plan'], 'Anticipo': ['Down payment', 'Entrada', 'Aanbetaling'], 'Cuotas sin intereses': ['Interest-free instalments', 'Parcelas sem juros', 'Renteloze termijnen'], 'Cuota mensual': ['Monthly instalment', 'Parcela mensal', 'Maandtermijn'],
@@ -532,7 +536,7 @@ function pintarB() { const R = filtrarB().sort((a, b) => b.lote - a.lote); $('#b
 window.abrirBuscar = () => { chips('#bT', [['', tr('Todas')], ...Object.entries(CONFIG.tipologias).map(([k, t]) => [k, tr(t.n)])], 't'); chips('#bD', [[0, tr('Cualquiera')], [2, '2'], [3, '3']], 'd');
   chips('#bE', [['', tr('Todas')], ...etapas.map(e => [e, tr(e)])], 'e'); Object.assign($('#bLote'), { min: LMIN, max: LMAX, step: 5, value: FB.lote || LMIN }); FB.lote = +$('#bLote').value; pintarB(); abrirM('#mBus'); };
 $('#bLote').oninput = e => { FB.lote = +e.target.value; pintarB(); };
-$('#bVer').onclick = () => { cerrarM(); F.t = FB.t || 'libre'; filtros(); pintar(); window.BVP3D && BVP3D.vista(); toast(`${filtrarB().length} ${tr('casas disponibles')}`); };
+$('#bVer').onclick = () => { cerrarM(); F.t = FB.t || 'libre'; filtros(); pintar(); window.BVP3D && BVP3D.modo('top'); $$('#dock button').forEach(b => b.classList.toggle('on', b.dataset.d === 'mapa')); toast(`${filtrarB().length} ${tr('casas disponibles')}`); };
 
 /* ---------- UBICACIÓN Y PUNTOS DE INTERÉS ---------- */
 const GEO = CONFIG.ubicacion, CATC = { compras: '#F59E0B', educacion: '#60A5FA', salud: '#F87171', verde: '#34D399', deporte: '#A78BFA', gastronomia: '#FB923C', transporte: '#E5E7EB' }, M = { z: GEO.zoom, cx: 0, cy: 0 };
@@ -628,7 +632,7 @@ function capaSat(z, rad, orden) {
     const mat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 1, depthWrite: false, depthTest: false });
     const t = TL.load(`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}`, tt => { mat.map = tt; mat.color.set(0xffffff); mat.needsUpdate = true; });
     t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
-    const m = new THREE.Mesh(g, mat); m.renderOrder = -10 + orden; m.receiveShadow = true; m.frustumCulled = false; scene.add(m); satMats.push(mat);
+    const m = new THREE.Mesh(g, mat); m.renderOrder = -10 + orden; m.userData.k = 1; m.receiveShadow = true; m.frustumCulled = false; scene.add(m); satMats.push(mat);
   }
 }
 capaSat(11, 3, 0); capaSat(13, 3, 1); capaSat(15, 3, 2); capaSat(17, 3, 3); capaSat(18, 4, 4);
@@ -637,7 +641,7 @@ const tex = new THREE.TextureLoader().load('img/plan3d.webp', () => listo('plano
 tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 const plan = new THREE.Mesh(new THREE.PlaneGeometry(gx1 - gx0, gz1 - gz0), new THREE.MeshStandardMaterial({ map: tex, roughness: .96, transparent: true, depthWrite: false, depthTest: false }));
 plan.renderOrder = -1;
-plan.rotation.x = -Math.PI / 2; plan.position.set((gx0 + gx1) / 2, -.05, (gz0 + gz1) / 2); plan.receiveShadow = true; scene.add(plan);
+plan.rotation.x = -Math.PI / 2; plan.position.set((gx0 + gx1) / 2, -.05, (gz0 + gz1) / 2); plan.receiveShadow = true; plan.userData.k = 1; scene.add(plan);
 // muro perimetral
 { const S = D.site, mM = new THREE.MeshStandardMaterial({ color: 0xd9d2c4, roughness: .9 });
   for (let i = 0; i < S.length; i++) { const a = S[i], b = S[(i + 1) % S.length], L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 4) continue;
@@ -707,9 +711,9 @@ for (const [n, P] of Object.entries(D.lots)) {
   const sh = new THREE.Shape(P.map(([x, z]) => new THREE.Vector2(x, -z)));
   const geo = new THREE.ShapeGeometry(sh); geo.rotateX(-Math.PI / 2);
   const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .42, depthWrite: false }));
-  m.position.y = .08; m.renderOrder = 2; m.userData.n = +n; scene.add(m); lotMesh[n] = m;
+  m.position.y = .08; m.renderOrder = 2; m.userData.k = 1; m.userData.n = +n; scene.add(m); lotMesh[n] = m;
   const ed = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(P.map(([x, z]) => new THREE.Vector3(x, .12, z))), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .55 }));
-  scene.add(ed); m.userData.ed = ed;
+  ed.userData.k = 1; scene.add(ed); m.userData.ed = ed;
   const c = P.reduce((a, p) => [a[0] + p[0] / P.length, a[1] + p[1] / P.length], [0, 0]);
   const el = document.createElement('div'); el.className = 'l3'; el.textContent = n; el.onclick = ev => { ev.stopPropagation(); window.abrir && abrir(+n); };
   const lb = new CSS2DObject(el); lb.position.set(c[0], 4.4, c[1]); scene.add(lb); lotLbl[n] = lb;
@@ -727,6 +731,14 @@ let SEL = null, F = 'todas';
 const V0 = { p: new THREE.Vector3(140, 70, 120), t: new THREE.Vector3(-30, 0, -30) }, FOV_F = 40, AR_F = 1672 / 941, TAN = Math.tan(FOV_F * Math.PI / 360);
 const FOV_VUELO = MOV ? 70 : 62;           // el vuelo llega más abierto y termina con un zoom hacia la foto
 const WF = 4000, HF = WF / AR_F;             // cuadro virtual de la foto
+// Dos modos: 'vista' (foto realista, solo para mirar) y 'top' (vista cenital exacta del loteo, para elegir casa)
+let MODO = 'vista'; const FR = { fov: FOV_F, ar: AR_F, W: WF, H: HF, fit: 'cover' };
+const TOPC = (() => { const w = gx1 - gx0 + 14, h = gz1 - gz0 + 14, cx = (gx0 + gx1) / 2, cz = (gz0 + gz1) / 2, fov = 16, t = Math.tan(fov * Math.PI / 360);
+  return { cx, cz, w, h, fov, t }; })();
+function frameTop() { const rot = innerHeight > innerWidth, T = TOPC, ar = rot ? T.h / T.w : T.w / T.h, alto = (rot ? T.w : T.h) / 2 / T.t;
+  Object.assign(FR, { fov: T.fov, ar, W: 4000, H: 4000 / ar, fit: 'contain' });
+  camera.position.set(T.cx, alto, T.cz); camera.up.set(rot ? 1 : 0, 0, rot ? 0 : -1); camera.lookAt(T.cx, 0, T.cz); camera.updateMatrixWorld(); }
+function frameVista() { Object.assign(FR, { fov: FOV_F, ar: AR_F, W: WF, H: HF, fit: 'cover' }); camera.up.set(0, 1, 0); camera.position.copy(V0.p); camera.lookAt(V0.t); camera.updateMatrixWorld(); }
 const fotoTex = new THREE.TextureLoader().load('img/aerea-real.webp'); fotoTex.colorSpace = THREE.SRGBColorSpace; fotoTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 const foto = new THREE.Mesh(new THREE.PlaneGeometry(4 * TAN * AR_F, 4 * TAN), new THREE.MeshBasicMaterial({ map: fotoTex, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
 { // bordes difuminados: la foto se funde con el satélite alrededor
@@ -735,35 +747,46 @@ const foto = new THREE.Mesh(new THREE.PlaneGeometry(4 * TAN * AR_F, 4 * TAN), ne
   foto.userData.alpha = foto.material.alphaMap = new THREE.CanvasTexture(c); foto.material.needsUpdate = true; }
 foto.position.z = -2; foto.renderOrder = 50; foto.frustumCulled = false; foto.visible = false; camera.add(foto); scene.add(camera);
 let FOTO = 0, anim = null; const VW = { z: 1, cx: .5, cy: .5 };
-const s0 = () => Math.min(WF / innerWidth, HF / innerHeight);
-const zMin = () => 1, zMax = () => MOV ? 5 : 4.2;
+const s0 = () => (FR.fit === 'cover' ? Math.min : Math.max)(FR.W / innerWidth, FR.H / innerHeight);
+const zMin = () => 1, zMax = () => MODO === 'top' ? (MOV ? 7 : 5.5) : (MOV ? 5 : 4.2);
 function aplicarVista() { const W = innerWidth, H = innerHeight, s = s0() / VW.z, w = W * s, h = H * s;
-  let x = VW.cx * WF - w / 2, y = VW.cy * HF - h / 2;
-  if (w <= WF) { x = Math.max(0, Math.min(WF - w, x)); VW.cx = (x + w / 2) / WF; } else x = (WF - w) / 2;
-  if (h <= HF) { y = Math.max(0, Math.min(HF - h, y)); VW.cy = (y + h / 2) / HF; } else y = (HF - h) / 2;
-  camera.fov = FOV_F; camera.aspect = AR_F; camera.setViewOffset(WF, HF, x, y, w, h); camera.updateProjectionMatrix(); }
+  let x = VW.cx * FR.W - w / 2, y = VW.cy * FR.H - h / 2;
+  if (w <= FR.W) { x = Math.max(0, Math.min(FR.W - w, x)); VW.cx = (x + w / 2) / FR.W; } else x = (FR.W - w) / 2;
+  if (h <= FR.H) { y = Math.max(0, Math.min(FR.H - h, y)); VW.cy = (y + h / 2) / FR.H; } else y = (FR.H - h) / 2;
+  camera.fov = FR.fov; camera.aspect = FR.ar; camera.setViewOffset(FR.W, FR.H, x, y, w, h); camera.updateProjectionMatrix(); }
 function animarVista(z, cx, cy, ms, fin) { anim = { a: { ...VW }, b: { z, cx: cx ?? VW.cx, cy: cy ?? VW.cy }, s: performance.now(), ms, fin }; }
 function entrarFoto() { // llega el vuelo: misma imagen que el 3D, y zoom continuo mientras aparece la foto
   camera.position.copy(V0.p); controls.target.copy(V0.t); controls.update(); controls.enabled = false;
   const z0 = innerHeight * s0() / HF * TAN / Math.tan(camera.fov * Math.PI / 360);
   Object.assign(VW, { z: z0, cx: .5, cy: .5 }); aplicarVista(); FOTO = 1; foto.visible = true; foto.material.opacity = 0;
-  Object.values(lotMesh).forEach(m => m.renderOrder = 60); document.body.classList.add('foto');
+  Object.values(lotMesh).forEach(m => { m.renderOrder = 60; m.visible = false; m.userData.ed.visible = false; }); document.body.classList.add('foto', 'mvista');
   animarVista(1, .5, .5, 2200, () => { document.body.classList.add('v3d'); foto.material.opacity = 1; foto.material.alphaMap = null; foto.material.needsUpdate = true; }); }
 /* selección y API */
 const proyectar = v => { const q = v.clone().project(camera), W = innerWidth, H = innerHeight, s = s0() / VW.z;
-  const x0 = VW.cx * WF - W * s / 2, y0 = VW.cy * HF - H * s / 2; return [(x0 + (q.x + 1) / 2 * W * s) / WF, (y0 + (1 - q.y) / 2 * H * s) / HF]; };
+  const x0 = VW.cx * FR.W - W * s / 2, y0 = VW.cy * FR.H - H * s / 2; return [(x0 + (q.x + 1) / 2 * W * s) / FR.W, (y0 + (1 - q.y) / 2 * H * s) / FR.H]; };
+/* cambio de modo con fundido */
+const fade = document.createElement('div'); Object.assign(fade.style, { position: 'fixed', inset: '0', background: '#0f1514', opacity: 0, pointerEvents: 'none', transition: 'opacity .28s', zIndex: 12 }); document.body.appendChild(fade);
+let cambiando = null, DEST = 'vista';
+function modo(m, despues) { if (!FOTO) return; DEST = m; if (m === MODO) { despues ? despues() : animarVista(1, .5, .5, 900); return; }
+  fade.style.opacity = 1; clearTimeout(cambiando); cambiando = setTimeout(() => { MODO = m; anim = null;
+    const top = m === 'top'; document.body.classList.toggle('mtop', top); document.body.classList.toggle('mvista', !top);
+    scene.traverse(o => { if ((o.isMesh || o.isLine) && o !== foto) { if (o.userData.vis === undefined) o.userData.vis = o.visible; o.visible = top ? !!o.userData.k : o.userData.vis; } });
+    Object.values(lotMesh).forEach(x => { x.visible = top; x.userData.ed.visible = top; });
+    foto.visible = !top; top ? frameTop() : frameVista(); Object.assign(VW, { z: 1, cx: .5, cy: .5 }); aplicarVista();
+    requestAnimationFrame(() => { fade.style.opacity = 0; despues && despues(); }); }, 300); }
 window.__bvp = { scene, camera, renderer, controls, lotMesh, lotLbl, satMats, THREE, VW };
 window.BVP3D = {
   pintar(units, filtro) { F = filtro; units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; const off = filtro !== 'todas' && (filtro === 'libre' ? u.estado !== 'libre' : u.t !== filtro);
-    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .03 : (u.estado === 'libre' ? .16 : .3); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .1 : .6;
+    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .02 : (u.estado === 'libre' ? .05 : .32); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .1 : .6;
     lotLbl[u.n].element.className = 'l3 ' + u.estado + (off ? ' off' : ''); }); },
   sel(n) { if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
-    if (n && lotMesh[n]) { lotMesh[n].material.opacity = .5; lotLbl[n].element.classList.add('sel'); if (!FOTO) return;
-      const [cx, cy] = proyectar(lotLbl[n].position), z = MOV ? 3 : 3, sz = s0() / z, W = innerWidth, H = innerHeight;
+    if (n && lotMesh[n]) { lotMesh[n].material.opacity = .5; lotLbl[n].element.classList.add('sel'); if (!FOTO) return; if (MODO !== 'top') return modo('top', () => BVP3D.sel(n));
+      const [cx, cy] = proyectar(lotLbl[n].position), z = MOV ? 4 : 3, sz = s0() / z, W = innerWidth, H = innerHeight;
       // la casa queda en la zona libre: a la izquierda de la ficha (compu) o arriba de la hoja inferior (celular)
-      const fx = MOV ? .5 : Math.max(.3, (W - Math.min(430, W)) / 2 / W), fy = MOV ? .2 : .5;
-      animarVista(z, cx - (fx - .5) * W * sz / WF, cy - (fy - .5) * H * sz / HF, 1100); } },
-  vista() { if (FOTO) animarVista(1, .5, .5, 1100); }
+      const vert = MOV && H > W, fx = vert ? .5 : Math.max(.25, (W - Math.min(430, W * .55)) / 2 / W), fy = vert ? .2 : .55;
+      animarVista(z, cx - (fx - .5) * W * sz / FR.W, cy - (fy - .5) * H * sz / FR.H, 1100); } },
+  vista() { if (FOTO) animarVista(1, .5, .5, 1000); },
+  modo(m) { modo(m); }, get MODO() { return DEST; }
 };
 /* ---------- acercamiento desde muy lejos ---------- */
 let vuelo = null;
@@ -777,27 +800,27 @@ renderer.domElement.addEventListener('pointerdown', () => { if (vuelo && vuelo.c
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(), meshes = Object.values(lotMesh), P = new Map(); let down = null, pinch = null;
 const loteEn = (cx, cy) => { ptr.set(cx / innerWidth * 2 - 1, -cy / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera); const h = ray.intersectObjects(meshes)[0]; return h ? h.object.userData.n : null; };
 function zoomEn(f, px, py) { if (!FOTO) return; anim = null; const s = s0() / VW.z, nz = Math.max(zMin(), Math.min(zMax(), VW.z * f)), s2 = s0() / nz;
-  const vx = VW.cx * WF + (px - innerWidth / 2) * s, vy = VW.cy * HF + (py - innerHeight / 2) * s;
-  VW.cx = (vx - (px - innerWidth / 2) * s2) / WF; VW.cy = (vy - (py - innerHeight / 2) * s2) / HF; VW.z = nz; aplicarVista(); }
+  const vx = VW.cx * FR.W + (px - innerWidth / 2) * s, vy = VW.cy * FR.H + (py - innerHeight / 2) * s;
+  VW.cx = (vx - (px - innerWidth / 2) * s2) / FR.W; VW.cy = (vy - (py - innerHeight / 2) * s2) / FR.H; VW.z = nz; aplicarVista(); }
 const el = renderer.domElement;
 el.addEventListener('pointerdown', ev => { P.set(ev.pointerId, [ev.clientX, ev.clientY]); el.setPointerCapture(ev.pointerId);
   if (P.size === 1) down = [ev.clientX, ev.clientY, ev.clientX, ev.clientY]; else { const [a, b] = [...P.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) }; down = null; } });
 el.addEventListener('pointermove', ev => {
   if (P.has(ev.pointerId)) { const prev = P.get(ev.pointerId); P.set(ev.pointerId, [ev.clientX, ev.clientY]);
     if (pinch && P.size === 2) { const [a, b] = [...P.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); zoomEn(d / pinch.d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch.d = d; return; }
-    if (down && FOTO) { anim = null; const s = s0() / VW.z; VW.cx -= (ev.clientX - prev[0]) * s / WF; VW.cy -= (ev.clientY - prev[1]) * s / HF; aplicarVista(); el.style.cursor = 'grabbing'; }
+    if (down && FOTO) { anim = null; const s = s0() / VW.z; VW.cx -= (ev.clientX - prev[0]) * s / FR.W; VW.cy -= (ev.clientY - prev[1]) * s / FR.H; aplicarVista(); el.style.cursor = 'grabbing'; }
     return; }
-  if (matchMedia('(hover:none)').matches || !FOTO) return;
+  if (matchMedia('(hover:none)').matches || !FOTO || MODO !== 'top') { el.style.cursor = FOTO ? 'grab' : ''; return; }
   const n = loteEn(ev.clientX, ev.clientY);
   if (hov && hov !== n && hov !== SEL && lotMesh[hov]) lotMesh[hov].material.opacity = lotMesh[hov].userData.base;
   hov = n; if (n && n !== SEL) lotMesh[n].material.opacity = Math.min(.55, lotMesh[n].userData.base + .25);
   el.style.cursor = n ? 'pointer' : 'grab'; window.tip3d && tip3d(n, ev); });
 let hov = null;
 const soltar = ev => { const fue = down && Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) < 7; P.delete(ev.pointerId); if (P.size < 2) pinch = null;
-  if (fue && FOTO) { const n = loteEn(ev.clientX, ev.clientY); if (n && window.abrir) abrir(n); } if (!P.size) down = null; el.style.cursor = ''; };
+  if (fue && FOTO && MODO === 'top') { const n = loteEn(ev.clientX, ev.clientY); if (n && window.abrir) abrir(n); } if (!P.size) down = null; el.style.cursor = ''; };
 el.addEventListener('pointerup', soltar); el.addEventListener('pointercancel', soltar);
 el.addEventListener('wheel', ev => { ev.preventDefault(); zoomEn(Math.exp(-ev.deltaY * .0015), ev.clientX, ev.clientY); }, { passive: false });
-addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight); if (FOTO) aplicarVista(); else { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); } });
+addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight); if (FOTO) { if (MODO === 'top') frameTop(); aplicarVista(); } else { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); } });
 document.getElementById('zin').onclick = () => { if (FOTO) animarVista(Math.min(zMax(), VW.z * 1.6), VW.cx, VW.cy, 450); };
 document.getElementById('zout').onclick = () => { if (FOTO) animarVista(Math.max(zMin(), VW.z / 1.6), VW.cx, VW.cy, 450); };
 /* ---------- bucle ---------- */
@@ -813,7 +836,7 @@ renderer.setAnimationLoop(() => {
     VW.z = anim.a.z * Math.pow(anim.b.z / anim.a.z, k); VW.cx = anim.a.cx + (anim.b.cx - anim.a.cx) * k; VW.cy = anim.a.cy + (anim.b.cy - anim.a.cy) * k; aplicarVista();
     if (t >= 1) { const f = anim.fin; anim = null; f && f(); } }
   if (FOTO && foto.material.opacity < 1) foto.material.opacity = Math.min(1, foto.material.opacity + .02);
-  document.body.classList.toggle('lblon', !!(FOTO && VW.z >= 2.1));
+  document.body.classList.toggle('lblon', !!(FOTO && MODO === 'top' && VW.z >= (MOV ? 2.6 : 1.8)));
   renderer.render(scene, camera); labels.render(scene, camera);
 });
 </script>
