@@ -337,7 +337,7 @@ function capaSat(z, rad, orden) {
     g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 1, 1, 1, 0, 0, 0], 2)); g.setAttribute('normal', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
     g.setIndex([0, 2, 1, 0, 3, 2]);
     const mat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 1, depthWrite: false, depthTest: false });
-    const t = TL.load(`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}`, tt => { mat.map = tt; mat.color.set(0xffffff); mat.needsUpdate = true; if (z === 18) sembrar(tt.image, P); });
+    const t = TL.load(`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}`, tt => { mat.map = tt; mat.color.set(0xffffff); mat.needsUpdate = true; });
     t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
     const m = new THREE.Mesh(g, mat); m.renderOrder = -10 + orden; m.receiveShadow = true; m.frustumCulled = false; scene.add(m); satMats.push(mat);
   }
@@ -425,7 +425,7 @@ hs('Parque central', D.park, 'parque'); hs('Acceso y seguridad 24 h', D.gate, 'c
 let SEL = null, F = 'todas';
 window.BVP3D = {
   pintar(units, filtro) { F = filtro; units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; const off = filtro !== 'todas' && (filtro === 'libre' ? u.estado !== 'libre' : u.t !== filtro);
-    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .06 : (u.estado === 'libre' ? .5 : .38); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .12 : .55;
+    m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .05 : (u.estado === 'libre' ? .26 : .34); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .12 : .55;
     lotLbl[u.n].element.className = 'l3 ' + u.estado + (off ? ' off' : ''); }); },
   sel(n) { if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
     if (n && lotMesh[n]) { lotMesh[n].material.opacity = .85; lotLbl[n].element.classList.add('sel'); const c = lotLbl[n].position; volar(new THREE.Vector3(c.x + (MOV ? 0 : 18), 34, c.z + 46), new THREE.Vector3(c.x + (MOV ? 0 : 9), 0, c.z), 1300); } },
