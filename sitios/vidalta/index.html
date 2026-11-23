@@ -574,7 +574,7 @@ function evento(tipo, unidad) { try { fetch(CONFIG.api + '/evento', { method: 'P
     r.sort((a, b) => k(a) - k(b) || a.id.localeCompare(b.id));
     $('#bCnt').textContent = `${r.length} de ${U.length} departamentos`;
     $('#bRes').innerHTML = r.length ? r.map(u => { const t = CONFIG.tipologias[u.tip], e = est[u.estado] || est.vendido;
-      return `<button class="rc" data-id="${u.id}"><i style="background:${e[1]};color:#111">${e[0]}</i><b>Depto ${u.id}</b><span>${t.n} · ${t.dorm} dorm. · ${t.banos} baños</span><span>Piso ${u.piso} · ${u.m2} m²</span><em>${u.precio ? money(u.precio) : 'Consultar'}</em></button>`; }).join('')
+      return `<button class="rc" data-id="${u.id}"><i style="background:${e[1]};color:#111">${e[0]}</i><b>Depto ${u.id}</b><span>${t.n} · ${t.dorm} dorm. · ${t.banos} baño${t.banos > 1 ? "s" : ""}</span><span>Piso ${u.piso} · ${u.m2} m²</span><em>${u.precio ? money(u.precio) : 'Consultar'}</em></button>`; }).join('')
       : '<div class="vacio">No hay departamentos con esos filtros.<br>Probá ampliar el precio o la superficie.</div>';
   }
   window.abrirBuscador = () => { rangos(); pintarB(); M.classList.add('on'); evento('buscar', ''); };
