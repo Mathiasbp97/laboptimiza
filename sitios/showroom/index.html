@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B0D12">
-<title>Showroom</title>
+<title>Torre Aurora · Showroom 3D demo · KTA Visual</title>
+<meta name="description" content="Showroom 3D de demostración: elegí el piso sobre la torre, entrá al departamento, cotizá y consultá desde el celular.">
+<meta property="og:title" content="Torre Aurora · Showroom 3D (demo)">
+<meta property="og:description" content="Elegí el piso, recorré el departamento y cotizalo desde el celular. Proyecto demostrativo de KTA Visual.">
+<meta property="og:image" content="https://showroom3d-demo.pages.dev/og.jpg">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <!--
@@ -352,6 +357,8 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
  <h3>Opciones</h3>
  <button class="mi" data-a="panel">Panel de ventas (desarrolladora)</button>
  <button class="mi" data-a="buscar">Buscar departamento</button>
+ <button class="mi" data-a="qr">Código QR</button>
+ <button class="mi" data-a="fs">Pantalla completa</button>
  <button class="mi" data-a="amen">Ver amenities</button>
  <button class="mi" data-a="brochure">Descargar brochure (PDF)</button>
  <button class="mi" data-a="ubi">Ubicación</button>
@@ -446,6 +453,8 @@ const I18N = {
   cols: { en: 0, pt: 1, nl: 2 },
   nombres: { es: 'Español', en: 'English', pt: 'Português', nl: 'Nederlands' },
   E: {
+    'Código QR': ['QR code', 'Código QR', 'QR-code'], 'Pantalla completa': ['Full screen', 'Tela cheia', 'Volledig scherm'], 'Escaneá para recorrer el showroom': ['Scan to explore the showroom', 'Escaneie para explorar o showroom', 'Scan om de showroom te bekijken'],
+    'Piso de arriba': ['Floor above', 'Andar de cima', 'Verdieping hoger'], 'Piso de abajo': ['Floor below', 'Andar de baixo', 'Verdieping lager'], 'Me interesa': ['I’m interested', 'Tenho interesse', 'Ik heb interesse'], 'Acercar': ['Zoom in', 'Aproximar', 'Inzoomen'], 'Alejar': ['Zoom out', 'Afastar', 'Uitzoomen'], 'Panel de ventas': ['Sales panel', 'Painel de vendas', 'Verkooppaneel'], 'Generar brochure': ['Generate brochure', 'Gerar brochure', 'Brochure maken'], 'Exportar leads': ['Export leads', 'Exportar leads', 'Leads exporteren'], 'Consultas por día': ['Requests per day', 'Consultas por dia', 'Aanvragen per dag'], 'Disponibles más mirados': ['Most viewed available', 'Disponíveis mais vistos', 'Meest bekeken beschikbaar'], 'Interés por tipología': ['Interest by type', 'Interesse por tipologia', 'Interesse per type'], 'Últimas consultas': ['Latest requests', 'Últimas consultas', 'Laatste aanvragen'], 'Buscar…': ['Search…', 'Buscar…', 'Zoeken…'], 'Inmobiliarias · links propios': ['Agencies · own links', 'Imobiliárias · links próprios', 'Makelaars · eigen links'], 'Centrar en el proyecto': ['Center on the project', 'Centralizar no projeto', 'Centreren op project'],
     'Volver': ['Back', 'Voltar', 'Terug'], 'Torre': ['Tower', 'Torre', 'Toren'], 'Planta': ['Floor plan', 'Planta', 'Plattegrond'],
     'Buscar depto': ['Find a unit', 'Buscar apto', 'Zoek appartement'], 'Amenities': ['Amenities', 'Áreas comuns', 'Voorzieningen'],
     'Registrar interés': ['I’m interested', 'Tenho interesse', 'Interesse'], 'Ubicación': ['Location', 'Localização', 'Locatie'],
@@ -528,7 +537,7 @@ const I18N = {
 const LANGS = (CONFIG.idiomas || ['es']).filter(l => l === 'es' || l in I18N.cols);
 let LANG = (() => { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q;
   try { const s = localStorage.getItem('showroom.lang'); if (LANGS.includes(s)) return s; } catch (e) {}
-  const n = (navigator.language || 'es').slice(0, 2).toLowerCase(); return LANGS.includes(n) ? n : 'es'; })();
+  return 'es'; })();   // siempre arranca en español; el comprador elige otro idioma desde el menú
 const I18N_P = I18N.P.map(([re, tr]) => [new RegExp('(?<![\\p{L}])' + re + '(?![\\p{L}])', 'gu'), tr]).sort((a, b) => b[0].source.length - a[0].source.length);
 // Traduce un texto en español al idioma activo (también se usa para PDF y WhatsApp).
 function tr(s) { if (LANG === 'es' || s == null) return s; const c = I18N.cols[LANG], t = String(s), k = t.trim();
@@ -770,6 +779,8 @@ $$('#menu [data-a]').forEach(b => b.onclick = () => {
   if (a === 'ubi') abrirUbicacion();
   if (a === 'lang') setTimeout(() => $('#langPop').classList.add('on'), 30);
   if (a === 'panel') abrirPanel();
+  if (a === 'qr') ktaQR(location.href.split('#')[0], CONFIG.proyecto.nombre, tr('Escaneá para recorrer el showroom'));
+  if (a === 'fs') ktaPantallaCompleta();
   if (a === 'buscar') abrirBuscar();
   if (a === 'json') { dl(new Blob([JSON.stringify(DB, null, 1)], { type: 'application/json' }), `${KEY}.json`); toast('Datos exportados'); }
   if (a === 'imp') $('#fileIn').click();
@@ -1124,5 +1135,35 @@ window.__sr = { abrirBuscar, abrirComp, toggleCmp, abrirPanel, pintarPanel, abri
 @media print{#ktaSello{position:static;opacity:1;background:none;color:#202522}}
 </style>
 
+<script>
+/* KTA · QR imprimible y pantalla completa (sin dependencias fijas: carga qrcode-generator solo al usarlo) */
+window.ktaQR = function (url, titulo, sub) {
+  const go = () => {
+    const q = qrcode(0, 'M'); q.addData(url); q.make();
+    const svg = q.createSvgTag({ cellSize: 10, margin: 2, scalable: true });
+    const w = window.open('', '_blank');
+    if (!w) { alert('Permití las ventanas emergentes para ver el QR.'); return; }
+    const esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QR · ${esc(titulo)}</title>
+      <style>body{margin:0;font-family:Inter,system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;background:#fff;color:#111;text-align:center}
+      .c{padding:32px;max-width:520px}.q svg{width:min(78vw,380px);height:auto}h1{font-size:26px;margin:18px 0 4px}p{color:#555;margin:0 0 6px;font-size:15px}small{color:#888;word-break:break-all}
+      .b{margin-top:22px;display:flex;gap:10px;justify-content:center}.b button{padding:10px 16px;border-radius:10px;border:1px solid #ccc;background:#111;color:#fff;font:600 14px Inter,system-ui;cursor:pointer}.b button+button{background:#fff;color:#111}
+      @media print{.b{display:none}}</style></head><body><div class="c"><div class="q">${svg}</div><h1>${esc(titulo)}</h1><p>${esc(sub || 'Escaneá con la cámara del celular')}</p><small>${esc(url)}</small>
+      <div class="b"><button onclick="print()">Imprimir</button><button onclick="descargar()">Descargar imagen</button></div></div>
+      <script>function descargar(){const s=document.querySelector('.q svg'),x=new XMLSerializer().serializeToString(s),i=new Image(),c=document.createElement('canvas');c.width=c.height=1200;
+      i.onload=()=>{const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,1200,1200);g.drawImage(i,0,0,1200,1200);const a=document.createElement('a');a.download='qr.png';a.href=c.toDataURL('image/png');a.click()};
+      i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x)}<\/script></body></html>`);
+    w.document.close();
+  };
+  if (window.qrcode) return go();
+  const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js'; s.onload = go; s.onerror = () => alert('No se pudo generar el QR. Revisá la conexión.'); document.head.appendChild(s);
+};
+window.ktaPantallaCompleta = function () {
+  const d = document, e = d.documentElement;
+  if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+  else if (e.requestFullscreen) e.requestFullscreen().catch(() => {});
+  else if (e.webkitRequestFullscreen) e.webkitRequestFullscreen();
+};
+</script>
 </body>
 </html>

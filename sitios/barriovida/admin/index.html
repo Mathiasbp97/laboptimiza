@@ -92,7 +92,7 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
 <div id="app">
 <header><div class="hd"><span class="logo" id="hLogo"></span><h1 id="hTit"></h1>
   <nav class="tabs" id="tabs"><button data-t="res" class="on">Resumen</button><button data-t="uni">Unidades</button><button data-t="con">Consultas<b id="bNue" hidden></b></button><button data-t="inm">Inmobiliarias</button><button data-t="ven">Ventas</button><button data-t="eq">Equipo</button></nav>
-  <a class="btn s" id="bVer" target="_blank" rel="noopener">Ver showroom ↗</a><button class="btn s" id="bOut">Salir</button></div></header>
+  <button class="btn s" id="bQr" title="QR del showroom para imprimir">QR</button><a class="btn s" id="bVer" target="_blank" rel="noopener">Ver showroom ↗</a><button class="btn s" id="bOut">Salir</button></div></header>
 <main>
   <!-- RESUMEN -->
   <section class="sec on" id="s-res">
@@ -214,6 +214,7 @@ $('#fLogin').onsubmit = async ev => { ev.preventDefault(); const b = $('#bLog');
 function entrar() { $('#login').style.display = 'none'; $('#app').style.display = 'block'; importarSiFalta(); }
 function salir() { if (TOK) api('/logout', { m: 'POST' }).catch(() => {}); TOK = ''; localStorage.removeItem('kta.panel.tok'); location.reload(); }
 $('#bOut').onclick = salir;
+$('#bQr').onclick = () => ktaQR(new URL(PANEL.showroom, location.origin).href, PANEL.marca, 'Escaneá para recorrer el showroom');
 async function importarSiFalta() {
   if (D.unidades.length) return;
   try { const L = await fetch(PANEL.archivoUnidades, { cache: 'no-store' }).then(r => r.json());
@@ -312,9 +313,10 @@ $('#cB').addEventListener('change', async e => { const f = e.target.dataset.f; i
 /* ---- inmobiliarias ---- */
 const linkI = s => new URL(PANEL.showroom, location.origin).href.replace(/\/?$/, '/') + '?b=' + s;
 function inmob() { const L = D.inmobiliarias;
-  $('#iB').innerHTML = L.length ? L.map(i => `<tr data-s="${esc(i.slug)}"><td><b>${esc(i.nombre)}</b></td><td><span class="lnk">${esc(linkI(i.slug))}</span> <button class="btn s" data-copy>Copiar</button></td><td>${esc(i.whatsapp || '—')}</td><td class="n">${i.vistas}</td><td class="n">${i.consultas}</td><td><button class="btn s${i.activo ? '' : ' d'}" data-act>${i.activo ? 'Activa' : 'Pausada'}</button></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Creá un link para cada inmobiliaria que vende el proyecto.</td></tr>'; }
+  $('#iB').innerHTML = L.length ? L.map(i => `<tr data-s="${esc(i.slug)}"><td><b>${esc(i.nombre)}</b></td><td><span class="lnk">${esc(linkI(i.slug))}</span> <button class="btn s" data-copy>Copiar</button> <button class="btn s" data-qr>QR</button></td><td>${esc(i.whatsapp || '—')}</td><td class="n">${i.vistas}</td><td class="n">${i.consultas}</td><td><button class="btn s${i.activo ? '' : ' d'}" data-act>${i.activo ? 'Activa' : 'Pausada'}</button></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Creá un link para cada inmobiliaria que vende el proyecto.</td></tr>'; }
 $('#fInm').onsubmit = async ev => { ev.preventDefault(); try { const r = await api('/admin/inmobiliaria', { m: 'POST', b: { nombre: $('#iNomI').value, whatsapp: $('#iWaI').value } }); $('#fInm').reset(); await cargar(); navigator.clipboard && navigator.clipboard.writeText(linkI(r.slug)).catch(() => {}); toast('Link creado y copiado'); } catch (e) { toast(e.message, 1); } };
 $('#iB').addEventListener('click', async e => { const tr = e.target.closest('tr'); if (!tr) return; const s = tr.dataset.s;
+  if (e.target.dataset.qr !== undefined) { const i = D.inmobiliarias.find(x => x.slug === s); ktaQR(linkI(s), PANEL.marca, 'Te atiende ' + i.nombre + ' · escaneá para recorrer el showroom'); }
   if (e.target.dataset.copy !== undefined) { navigator.clipboard.writeText(linkI(s)).then(() => toast('Link copiado'), () => toast(linkI(s))); }
   if (e.target.dataset.act !== undefined) { const i = D.inmobiliarias.find(x => x.slug === s); try { await api('/admin/inmobiliaria/' + s, { m: 'PUT', b: { activo: !i.activo } }); await cargar(); toast(i.activo ? 'Link pausado' : 'Link activo'); } catch (er) { toast(er.message, 1); } } });
 /* ---- ventas ---- */
@@ -343,6 +345,36 @@ function xls(nombre, filas) { if (!window.XLSX) return toast('Cargando el export
 $('#xU').onclick = () => xls('Unidades', D.unidades.map(u => ({ [PANEL.unidad]: u.id, [PANEL.grupo]: u.grupo, Tipología: nomTip(u.tip), 'm²': u.m2, Estado: EST[u.estado], 'Precio de lista': precioDe(u), 'Mostrar precio': u.mostrar_precio ? 'Sí' : 'No', Vistas: vistas(u.id), Consultas: consultasU(u.id) })));
 $('#xC').onclick = () => xls('Consultas', D.consultas.map(c => ({ Fecha: c.ts.slice(0, 16).replace('T', ' '), Nombre: c.nombre, Teléfono: c.telefono, Email: c.email, [PANEL.unidad]: c.unidad, Interés: c.intencion, Origen: c.origen || 'directo', Estado: ECON[c.estado], Notas: c.notas })));
 setInterval(() => { if (TOK && document.visibilityState === 'visible' && !$('.modal.on') && !document.activeElement.matches('input,select,textarea')) cargar().catch(() => {}); }, 60000);
+</script>
+<script>
+/* KTA · QR imprimible y pantalla completa (sin dependencias fijas: carga qrcode-generator solo al usarlo) */
+window.ktaQR = function (url, titulo, sub) {
+  const go = () => {
+    const q = qrcode(0, 'M'); q.addData(url); q.make();
+    const svg = q.createSvgTag({ cellSize: 10, margin: 2, scalable: true });
+    const w = window.open('', '_blank');
+    if (!w) { alert('Permití las ventanas emergentes para ver el QR.'); return; }
+    const esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QR · ${esc(titulo)}</title>
+      <style>body{margin:0;font-family:Inter,system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;background:#fff;color:#111;text-align:center}
+      .c{padding:32px;max-width:520px}.q svg{width:min(78vw,380px);height:auto}h1{font-size:26px;margin:18px 0 4px}p{color:#555;margin:0 0 6px;font-size:15px}small{color:#888;word-break:break-all}
+      .b{margin-top:22px;display:flex;gap:10px;justify-content:center}.b button{padding:10px 16px;border-radius:10px;border:1px solid #ccc;background:#111;color:#fff;font:600 14px Inter,system-ui;cursor:pointer}.b button+button{background:#fff;color:#111}
+      @media print{.b{display:none}}</style></head><body><div class="c"><div class="q">${svg}</div><h1>${esc(titulo)}</h1><p>${esc(sub || 'Escaneá con la cámara del celular')}</p><small>${esc(url)}</small>
+      <div class="b"><button onclick="print()">Imprimir</button><button onclick="descargar()">Descargar imagen</button></div></div>
+      <script>function descargar(){const s=document.querySelector('.q svg'),x=new XMLSerializer().serializeToString(s),i=new Image(),c=document.createElement('canvas');c.width=c.height=1200;
+      i.onload=()=>{const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,1200,1200);g.drawImage(i,0,0,1200,1200);const a=document.createElement('a');a.download='qr.png';a.href=c.toDataURL('image/png');a.click()};
+      i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x)}<\/script></body></html>`);
+    w.document.close();
+  };
+  if (window.qrcode) return go();
+  const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js'; s.onload = go; s.onerror = () => alert('No se pudo generar el QR. Revisá la conexión.'); document.head.appendChild(s);
+};
+window.ktaPantallaCompleta = function () {
+  const d = document, e = d.documentElement;
+  if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+  else if (e.requestFullscreen) e.requestFullscreen().catch(() => {});
+  else if (e.webkitRequestFullscreen) e.webkitRequestFullscreen();
+};
 </script>
 </body>
 </html>
