@@ -42,16 +42,26 @@ async function log(db, email, accion, detalle) {
   await db.prepare('INSERT INTO historial (ts,email,accion,detalle) VALUES (?,?,?,?)').bind(ahora(), email, accion, typeof detalle === 'string' ? detalle : JSON.stringify(detalle)).run();
 }
 const publico = e => (e === 'senado' ? 'reservado' : e);
+// Ampliación KTA (consultas e inmobiliarias): solo crea tablas nuevas, no toca las existentes.
+const EXTRA = ["CREATE TABLE IF NOT EXISTS consultas (id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, nombre TEXT, telefono TEXT, email TEXT, unidad TEXT, intencion TEXT, origen TEXT, estado TEXT DEFAULT 'nueva', notas TEXT, updated_at TEXT)",
+  "CREATE INDEX IF NOT EXISTS ix_consultas ON consultas(ts)",
+  "CREATE TABLE IF NOT EXISTS inmobiliarias (slug TEXT PRIMARY KEY, nombre TEXT, whatsapp TEXT, activo INTEGER DEFAULT 1, creado TEXT)"];
+let LISTO = false;
+const EST_CONSULTA = ['nueva', 'contactado', 'visita', 'reserva', 'cerrada', 'descartada'];
+const txt = (v, n) => String(v ?? '').trim().slice(0, n);
+const slugify = s => txt(s, 40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 export async function onRequest(ctx) {
   const { request: req, env, params } = ctx;
   const db = env.DB;
   if (!db) return err('Falta la base de datos (binding DB)', 500);
+  if (!LISTO) { await db.batch(EXTRA.map(q => db.prepare(q))); LISTO = true; }
   const ruta = '/' + [].concat(params.path || []).join('/');
   const m = req.method;
   let body = {};
   if (m === 'POST' || m === 'PUT') { try { body = await req.json(); } catch (e) { body = {}; } }
 
+  let mm;
   try {
     // ---------- PÚBLICO ----------
     if (m === 'GET' && ruta === '/public') {
@@ -67,6 +77,22 @@ export async function onRequest(ctx) {
       if (!/^\d{3}$/.test(u)) return err('unidad inválida');
       await db.prepare('INSERT INTO eventos (ts,tipo,unidad,origen) VALUES (?,?,?,?)').bind(ahora(), tipo, u, String(body.origen || '').slice(0, 40)).run();
       return json({ ok: true });
+    }
+
+    if (m === 'POST' && ruta === '/consulta') {
+      const nombre = txt(body.nombre, 80), tel = txt(body.telefono, 30).replace(/[^\d+ ]/g, '');
+      if (!nombre || tel.replace(/\D/g, '').length < 6) return err('Faltan nombre y teléfono');
+      if (body.web) return json({ ok: true });
+      const rec = await db.prepare("SELECT COUNT(*) n FROM consultas WHERE telefono=? AND ts > datetime('now','-1 hour')").bind(tel).first();
+      if (rec && rec.n >= 5) return err('Ya recibimos tus consultas, te contactamos en breve.', 429);
+      const u = txt(body.unidad, 8), ok = /^\d{3}$/.test(u), t = ahora();
+      await db.batch([db.prepare('INSERT INTO consultas (ts,nombre,telefono,email,unidad,intencion,origen,estado,notas,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)').bind(t, nombre, tel, txt(body.email, 80), ok ? u : '', txt(body.intencion, 60), txt(body.origen, 40), 'nueva', '', t),
+        ...(ok ? [db.prepare('INSERT INTO eventos (ts,tipo,unidad,origen) VALUES (?,?,?,?)').bind(t, 'consulta', u, txt(body.origen, 40))] : [])]);
+      return json({ ok: true });
+    }
+    if (m === 'GET' && (mm = ruta.match(/^\/inmobiliaria\/([a-z0-9-]{1,40})$/))) {
+      const b = await db.prepare('SELECT nombre, whatsapp FROM inmobiliarias WHERE slug=? AND activo=1').bind(mm[1]).first();
+      return b ? json(b) : err('No encontrada', 404);
     }
 
     // ---------- ACCESO ----------
@@ -102,10 +128,11 @@ export async function onRequest(ctx) {
         db.prepare('SELECT c.* FROM cuotas c JOIN ventas v ON v.id=c.venta_id AND v.activo=1 ORDER BY c.fecha,c.n'),
         db.prepare("SELECT unidad, tipo, COUNT(*) n, MAX(ts) ultimo FROM eventos WHERE ts > datetime('now','-90 days') GROUP BY unidad,tipo"),
         db.prepare('SELECT * FROM historial ORDER BY id DESC LIMIT 300')]);
-      return json({ yo, unidades: u.results, ventas: v.results, cuotas: c.results, eventos: e.results, historial: h.results });
+      const [q, b] = await db.batch([db.prepare('SELECT * FROM consultas ORDER BY id DESC LIMIT 1000'),
+        db.prepare("SELECT i.*, (SELECT COUNT(*) FROM eventos e WHERE e.origen=i.slug AND e.tipo='vista') vistas, (SELECT COUNT(*) FROM consultas q WHERE q.origen=i.slug) consultas FROM inmobiliarias i ORDER BY creado")]);
+      return json({ yo, unidades: u.results, ventas: v.results, cuotas: c.results, eventos: e.results, historial: h.results, consultas: q.results, inmobiliarias: b.results });
     }
 
-    let mm;
     if (m === 'PUT' && (mm = ruta.match(/^\/admin\/unidad\/(\d{3})$/))) {
       const id = mm[1];
       const u = await db.prepare('SELECT * FROM unidades WHERE id=?').bind(id).first();
@@ -167,6 +194,30 @@ export async function onRequest(ctx) {
       return json({ ok: true });
     }
 
+    if (m === 'PUT' && (mm = ruta.match(/^\/admin\/consulta\/(\d+)$/))) {
+      const c = await db.prepare('SELECT * FROM consultas WHERE id=?').bind(mm[1]).first();
+      if (!c) return err('Consulta inexistente', 404);
+      const est = body.estado !== undefined ? String(body.estado) : c.estado;
+      if (!EST_CONSULTA.includes(est)) return err('Estado inválido');
+      await db.prepare('UPDATE consultas SET estado=?, notas=?, updated_at=? WHERE id=?').bind(est, body.notas !== undefined ? txt(body.notas, 1000) : c.notas, ahora(), c.id).run();
+      if (est !== c.estado) await log(db, yo.email, 'consulta', { id: c.id, nombre: c.nombre, de: c.estado, a: est });
+      return json({ ok: true });
+    }
+    if (m === 'POST' && ruta === '/admin/inmobiliaria') {
+      const nombre = txt(body.nombre, 60); if (!nombre) return err('Falta el nombre de la inmobiliaria');
+      let slug = slugify(nombre) || 'inmo'; const ex = await db.prepare('SELECT COUNT(*) n FROM inmobiliarias WHERE slug LIKE ?').bind(slug + '%').first();
+      if (ex.n) slug += '-' + (ex.n + 1);
+      await db.prepare('INSERT INTO inmobiliarias (slug,nombre,whatsapp,activo,creado) VALUES (?,?,?,1,?)').bind(slug, nombre, txt(body.whatsapp, 20).replace(/\D/g, ''), ahora()).run();
+      await log(db, yo.email, 'inmobiliaria', { slug, nombre });
+      return json({ ok: true, slug });
+    }
+    if (m === 'PUT' && (mm = ruta.match(/^\/admin\/inmobiliaria\/([a-z0-9-]{1,40})$/))) {
+      const b = await db.prepare('SELECT * FROM inmobiliarias WHERE slug=?').bind(mm[1]).first();
+      if (!b) return err('Inmobiliaria inexistente', 404);
+      await db.prepare('UPDATE inmobiliarias SET nombre=?, whatsapp=?, activo=? WHERE slug=?').bind(body.nombre !== undefined ? txt(body.nombre, 60) : b.nombre, body.whatsapp !== undefined ? txt(body.whatsapp, 20).replace(/\D/g, '') : b.whatsapp, body.activo !== undefined ? (body.activo ? 1 : 0) : b.activo, b.slug).run();
+      await log(db, yo.email, 'inmobiliaria', { slug: b.slug, cambio: body });
+      return json({ ok: true });
+    }
     if (m === 'POST' && ruta === '/admin/usuario') return await crearUsuario(db, body, yo.email);
 
     if (m === 'PUT' && ruta === '/admin/password') {

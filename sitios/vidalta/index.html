@@ -323,6 +323,18 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
   .rnav{bottom:60px;padding:4px}.rnav button{height:32px;padding:0 11px;font-size:12px}
   .rthumbs{bottom:8px!important}.rthumbs button{width:96px!important;height:44px!important;font-size:10.5px}
 }
+
+/* formulario de consulta + chip de inmobiliaria (KTA) */
+#kLead{position:fixed;inset:0;z-index:90;background:rgba(5,7,9,.62);backdrop-filter:blur(6px);display:none;place-items:center;padding:16px}#kLead.on{display:grid}
+#kLead .kb{position:relative;width:min(400px,100%);background:#15181c;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:24px;color:#eee}
+#kLead h3{font-size:19px;margin:0 0 4px}#kLead p{color:#9aa0a6;font-size:13.5px;margin:0 0 14px}
+#kLead label{display:block;font-size:12.5px;color:#9aa0a6;margin-bottom:12px}#kLead input{display:block;width:100%;margin-top:5px;padding:11px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0e1013;color:#fff;font:inherit;font-size:15px}
+#kLead .kl{display:block;font-size:12.5px;color:#9aa0a6;margin:4px 0 6px}#kLead .kc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+#kLead .kc button{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:none;color:#cfd3d8;font:inherit;font-size:13px;cursor:pointer}#kLead .kc button.on{border-color:var(--ac);color:#fff;background:rgba(255,255,255,.06)}
+#kLead .btn{width:100%;justify-content:center;margin-top:8px}#kLead a.btn{color:#fff;text-decoration:none;display:flex}#kLead .kx{position:absolute;top:10px;right:12px;background:none;border:0;color:#9aa0a6;font-size:16px;cursor:pointer}
+#kLead .ko{display:none;text-align:center;padding:10px 0}#kLead.done .kf{display:none}#kLead.done .ko{display:block}
+#kChip{position:fixed;left:16px;bottom:74px;z-index:40;padding:8px 12px;border-radius:12px;background:rgba(15,17,20,.82);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);color:#fff;font-size:13px}#kChip small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9aa0a6}
+#dFoot #dWa[aria-label]{flex:none}
 </style>
 </head>
 <body class="vT">
@@ -488,8 +500,32 @@ const money = n => (CONFIG.moneda === 'USD' ? 'USD ' : CONFIG.moneda + ' ') + Ma
 const EST = { libre: 'Disponible', reservado: 'Reservado', vendido: 'Vendido', bloqueado: 'No disponible' };
 document.documentElement.style.setProperty('--ac', CONFIG.colorAcento);
 function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2400); }
-const wa = (txt) => `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(txt)}`;
-function evento(tipo, unidad) { try { fetch(CONFIG.api + '/evento', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, unidad, origen: new URLSearchParams(location.search).get('utm_source') || document.referrer.split('/')[2] || 'directo' }), keepalive: true }); } catch (e) {} }
+/* inmobiliarias: link propio ?b=slug → su WhatsApp, su chip y sus métricas (panel → Consultas) */
+let BROKER = null;
+const B_SLUG = (() => { const q = new URLSearchParams(location.search).get('b'); try { if (q) sessionStorage.setItem('vid.b', q); return q || sessionStorage.getItem('vid.b'); } catch (e) { return q; } })();
+const wa = (txt) => BROKER && BROKER.whatsapp ? `https://wa.me/${BROKER.whatsapp}?text=${encodeURIComponent(txt)}` : `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(BROKER ? txt + ' (vengo por ' + BROKER.nombre + ')' : txt)}`;
+if (B_SLUG) fetch(CONFIG.api + '/inmobiliaria/' + encodeURIComponent(B_SLUG)).then(r => r.ok ? r.json() : null).then(b => { if (!b) return; BROKER = b;
+  const c = document.createElement('div'); c.id = 'kChip'; c.innerHTML = `<small>Te atiende</small><b>${esc(b.nombre)}</b>`; document.body.appendChild(c);
+  $('#waTop').href = wa('Hola 👋 Estoy viendo el showroom de Vidalta y quiero más información.'); }).catch(() => {});
+/* formulario «Me interesa» → panel (Consultas) */
+function abrirLead(id, t) { const m = $('#kLead'); m.dataset.u = id; $('#klT').textContent = `Me interesa el depto ${id}`; $('#klS').textContent = t ? `${t.n} · ${t.dorm} dorm.` : ''; m.classList.remove('done'); m.classList.add('on'); setTimeout(() => $('#klN').focus(), 60);
+  $('#klW').href = wa(`Hola 👋 Me interesa el departamento ${id} de Vidalta${t ? ` (${t.n}, ${t.dorm} dorm.)` : ''}. ¿Me pasan más info?`); }
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.insertAdjacentHTML('beforeend', `<div id="kLead" role="dialog" aria-modal="true" aria-labelledby="klT"><form class="kb" id="klF"><button type="button" class="kx" aria-label="Cerrar">✕</button>
+    <div class="kf"><h3 id="klT"></h3><p id="klS"></p><label>Nombre<input id="klN" required autocomplete="name" placeholder="Tu nombre"></label><label>Teléfono / WhatsApp<input id="klP" required inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx"></label>
+    <span class="kl">¿Para cuándo?</span><div class="kc"><button type="button" class="on">Quiero reservar</button><button type="button">Este año</button><button type="button">Solo mirando</button></div>
+    <input name="web" id="klH" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px">
+    <button class="btn btn-w" type="submit">Quiero que me contacten</button><a class="btn btn-g" id="klW" target="_blank" rel="noopener">Prefiero escribir por WhatsApp</a></div>
+    <div class="ko"><div style="font-size:36px">✓</div><h3>¡Listo!</h3><p>Un asesor te escribe en breve.</p><button type="button" class="btn btn-g kx2">Seguir mirando</button></div></form></div>`);
+  const m = $('#kLead'), cerrar = () => m.classList.remove('on');
+  m.addEventListener('click', e => { if (e.target === m || e.target.closest('.kx,.kx2')) cerrar(); });
+  $$('#kLead .kc button').forEach(b => b.onclick = () => $$('#kLead .kc button').forEach(x => x.classList.toggle('on', x === b)));
+  $('#klF').onsubmit = async e => { e.preventDefault(); const btn = e.submitter; btn && (btn.disabled = true);
+    try { const r = await fetch(CONFIG.api + '/consulta', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ nombre: $('#klN').value, telefono: $('#klP').value, unidad: m.dataset.u, intencion: $('#kLead .kc .on').textContent, origen: B_SLUG || '', web: $('#klH').value }) });
+      const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'No se pudo enviar'); m.classList.add('done'); $('#klN').value = $('#klP').value = ''; }
+    catch (er) { toast(er.message + '. Probá por WhatsApp.'); } btn && (btn.disabled = false); };
+});
+function evento(tipo, unidad) { try { fetch(CONFIG.api + '/evento', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, unidad, origen: B_SLUG || new URLSearchParams(location.search).get('utm_source') || document.referrer.split('/')[2] || 'directo' }), keepalive: true }); } catch (e) {} }
 
 /* ---------- datos ---------- */
 let U = [], ACT = '';
@@ -611,9 +647,10 @@ function abrirFicha(id) {
     <div class="h3">Planta</div><div class="plano" data-zoom="${t.plano}" data-cap="${esc(t.n)} · ${u.m2} m²"><img src="${t.plano}" alt="Planta ${esc(t.n)}"></div>
     <div class="gal">${t.fotos.map(f => `<img src="${f}" alt="" loading="lazy" data-zoom="${f}" data-cap="Imagen ilustrativa">`).join('')}</div>
     ${libre ? cotHTML(u) : `<div class="vend-msg">Esta unidad ya ${u.estado === 'vendido' ? 'fue vendida' : 'está reservada'}. Escribinos y te mostramos las disponibles con la misma tipología.</div>`}`;
-  $('#dFoot').innerHTML = `<a class="btn btn-w" id="dWa" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>${libre ? 'Me interesa' : 'Ver similares'}</a><button class="btn btn-g" id="dShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>Compartir</button>`;
+  $('#dFoot').innerHTML = `${libre ? '<button class="btn btn-w" id="dLead">Me interesa</button>' : ''}<a class="btn ${libre ? 'btn-g' : 'btn-w'}" id="dWa" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg>${libre ? '' : 'Ver similares'}</a><button class="btn btn-g" id="dShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>Compartir</button>`;
   $('#dWa').href = wa(libre ? `Hola 👋 Me interesa el departamento ${u.id} de Vidalta (${t.n}, ${t.dorm} dorm., ${u.m2} m²). ¿Me pasan más info?` : `Hola 👋 Vi el departamento ${u.id} de Vidalta. ¿Tienen disponible otra ${t.n}?`);
   $('#dWa').onclick = () => evento('consulta', id);
+  if ($('#dLead')) $('#dLead').onclick = () => abrirLead(id, t);
   $('#dShare').onclick = async () => { const url = location.origin + location.pathname + '#u=' + id;
     try { if (navigator.share) await navigator.share({ title: `Vidalta · Depto ${id}`, url }); else { await navigator.clipboard.writeText(url); toast('Link copiado'); } } catch (e) {} };
   $$('#dBody [data-zoom]').forEach(e => e.onclick = () => zoom(e.dataset.zoom, e.dataset.cap));
