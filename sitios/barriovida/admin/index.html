@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel de ventas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- CONTEXTO
+  KTA · Panel del showroom. Un panel y una base de datos (Cloudflare D1) por proyecto: cada desarrolladora ve solo lo suyo.
+  Archivos: admin.html (esta pantalla) + functions/api/[[path]].js (API) + kta-unidades.json (unidades iniciales del showroom).
+  Todo lo propio del proyecto sale de PANEL (abajo). La API crea las tablas sola la primera vez.
+  Pestañas: Resumen · Unidades · Consultas · Inmobiliarias · Ventas · Equipo.
+-->
+<style>
+:root{--bg:#0F1115;--bg2:#16181D;--bg3:#1d2027;--line:rgba(255,255,255,.08);--tx:#E8EAED;--tx2:#9aa0aa;--ac:#3B82F6;--ok:#10B981;--wa:#F59E0B;--no:#EF4444}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font:400 14px/1.5 Inter,system-ui,sans-serif;min-height:100vh}
+.num,td.n,.kpi b{font-variant-numeric:tabular-nums}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{background:var(--bg3);border:1px solid var(--line);padding:9px 14px;border-radius:10px;font-weight:500;font-size:13px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:rgba(255,255,255,.25)}a.btn{color:inherit;text-decoration:none;display:inline-block}.btn.p{background:var(--ac);border-color:var(--ac);color:#fff}.btn.p:hover{filter:brightness(1.08)}.btn.s{padding:6px 10px;font-size:12px}.btn.d{color:var(--no)}
+input,select,textarea{background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:9px 12px;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+label{display:block;font-size:12.5px;color:var(--tx2);margin:0 0 5px}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lbox{width:100%;max-width:380px;background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:30px}
+.lbox h1{font-size:21px;margin:14px 0 4px}.lbox p{color:var(--tx2);font-size:13.5px;margin-bottom:20px}.lbox .f{margin-bottom:14px}.lbox .btn{width:100%;padding:12px}
+.logo{display:inline-grid;place-items:center;min-width:40px;height:40px;padding:0 10px;border-radius:12px;background:var(--ac);color:#fff;font-weight:700}
+.logo img{max-height:28px}
+/* app */
+#app{display:none}
+header{position:sticky;top:0;z-index:10;background:rgba(15,17,21,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.hd{max-width:1320px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;gap:16px}
+.hd h1{font-size:15px;font-weight:600}.hd h1 small{display:block;font-weight:400;color:var(--tx2);font-size:12px}
+nav.tabs{display:flex;gap:4px;margin-left:auto;overflow:auto}
+nav.tabs button{all:unset;cursor:pointer;padding:8px 12px;border-radius:9px;color:var(--tx2);font-weight:500;font-size:13.5px;white-space:nowrap;position:relative}
+nav.tabs button:hover{color:var(--tx)}nav.tabs button.on{background:var(--bg3);color:var(--tx)}
+nav.tabs b{position:absolute;top:2px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--no);color:#fff;font-size:10px;display:grid;place-items:center;padding:0 4px}
+main{max-width:1320px;margin:0 auto;padding:22px}
+.sec{display:none}.sec.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi small{color:var(--tx2);font-size:12px;display:flex;gap:6px;align-items:center}.kpi b{display:block;font-size:24px;font-weight:700;margin-top:4px}.kpi span{font-size:12px;color:var(--tx2)}
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+.card h2{font-size:14.5px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card h2 small{color:var(--tx2);font-weight:400;font-size:12.5px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}.bar input,.bar select{width:auto}.bar input[type=search]{flex:1;min-width:180px}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:#181b21;text-align:left;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2);padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}td.n{text-align:right}
+td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.e-libre{background:var(--ok)}.e-reservado,.e-senado{background:var(--wa)}.e-vendido{background:var(--no)}.e-bloqueado{background:#6b7280}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--bg3);border:1px solid var(--line)}
+.pill.nueva{color:#93c5fd;border-color:rgba(147,197,253,.35)}.pill.reserva,.pill.cerrada{color:var(--ok)}.pill.descartada{color:var(--tx2)}
+.top li{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}.top{list-style:none}
+.prog{height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-top:6px}.prog i{display:block;height:100%;background:var(--ac)}
+.empty{padding:30px;text-align:center;color:var(--tx2)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;place-items:center;z-index:50;padding:16px}.modal.on{display:grid}
+.mbox{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:24px;width:100%;max-width:560px;max-height:92vh;overflow:auto}
+.mbox h3{font-size:17px;margin-bottom:4px}.mbox>p{color:var(--tx2);font-size:13px;margin-bottom:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.f{margin-bottom:12px}
+.mact{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:#262a33;border:1px solid var(--line);padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;z-index:60;font-size:13px}
+.toast.on{opacity:1;transform:translate(-50%,0)}.toast.err{border-color:var(--no)}
+.sk{height:14px;border-radius:6px;background:linear-gradient(90deg,#1d2027,#262a33,#1d2027);background-size:200% 100%;animation:sk 1.2s infinite;margin:8px 0}
+@keyframes sk{to{background-position:-200% 0}}
+.hint{font-size:12px;color:var(--tx2)}
+.lnk{font-size:12px;color:var(--tx2);word-break:break-all}
+@media(max-width:1000px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.hd{flex-wrap:wrap}nav.tabs{margin-left:0;width:100%}}
+@media(max-width:560px){main{padding:14px}.row{grid-template-columns:1fr}}
+@media print{header,.bar,.btn{display:none}body{background:#fff;color:#000}.card,.kpi{border-color:#ccc;background:#fff}}
+</style>
+</head>
+<body>
+<div id="login"><form class="lbox" id="fLogin" autocomplete="on">
+  <span class="logo" id="lLogo"></span><h1 id="lTit">Panel de ventas</h1><p id="lSub">Ingresá con tu usuario.</p>
+  <div class="f" id="fNom" hidden><label for="iNom">Tu nombre</label><input id="iNom" autocomplete="name"></div>
+  <div class="f"><label for="iEm">Email</label><input id="iEm" type="email" autocomplete="username" required></div>
+  <div class="f"><label for="iPw">Contraseña</label><input id="iPw" type="password" autocomplete="current-password" required minlength="10"></div>
+  <button class="btn p" id="bLog">Ingresar</button>
+</form></div>
+
+<div id="app">
+<header><div class="hd"><span class="logo" id="hLogo"></span><h1 id="hTit"></h1>
+  <nav class="tabs" id="tabs"><button data-t="res" class="on">Resumen</button><button data-t="uni">Unidades</button><button data-t="con">Consultas<b id="bNue" hidden></b></button><button data-t="inm">Inmobiliarias</button><button data-t="ven">Ventas</button><button data-t="eq">Equipo</button></nav>
+  <a class="btn s" id="bVer" target="_blank" rel="noopener">Ver showroom ↗</a><button class="btn s" id="bOut">Salir</button></div></header>
+<main>
+  <!-- RESUMEN -->
+  <section class="sec on" id="s-res">
+    <div class="kpis" id="kpis"><div class="kpi"><div class="sk"></div><div class="sk"></div></div></div>
+    <div class="grid2">
+      <div class="card"><h2>Interés en el showroom <small>últimos 30 días</small></h2><canvas id="ch" height="120"></canvas></div>
+      <div class="card"><h2>Más miradas <small>disponibles · 90 días</small></h2><ul class="top" id="top"></ul></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>Por tipología</h2><div id="tipos"></div></div>
+      <div class="card"><h2>Consultas por atender <button class="btn s" data-go="con">Ver todas</button></h2><ul class="top" id="pend"></ul></div>
+    </div>
+  </section>
+  <!-- UNIDADES -->
+  <section class="sec" id="s-uni"><div class="card">
+    <h2><span id="uTit">Unidades</span><span><button class="btn s" id="xU">Exportar Excel</button></span></h2>
+    <div class="bar"><input type="search" id="uQ" placeholder="Buscar…"><select id="uG"></select><select id="uT"></select>
+      <select id="uE"><option value="">Todos los estados</option><option value="libre">Disponible</option><option value="reservado">Reservada</option><option value="senado">Señada</option><option value="vendido">Vendida</option><option value="bloqueado">Bloqueada</option></select></div>
+    <div class="tw"><table><thead><tr><th data-k="orden" id="thU"></th><th data-k="grupo" id="thG"></th><th data-k="tip">Tipología</th><th data-k="m2">m²</th><th data-k="estado">Estado</th><th data-k="precio">Precio de lista</th><th>Mostrar precio</th><th data-k="vistas">Vistas</th><th></th></tr></thead><tbody id="uB"></tbody></table></div>
+    <p class="hint" style="margin-top:10px">Los cambios se ven en el showroom en menos de un minuto. Si el precio queda vacío, el showroom usa el precio de la tipología.</p>
+  </div></section>
+  <!-- CONSULTAS -->
+  <section class="sec" id="s-con"><div class="card">
+    <h2>Consultas <span><button class="btn s" id="xC">Exportar Excel</button></span></h2>
+    <div class="bar"><input type="search" id="cQ" placeholder="Buscar nombre, teléfono o unidad…"><select id="cE"><option value="">Todos los estados</option></select><select id="cO"><option value="">Todos los orígenes</option></select></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Nombre</th><th>Teléfono</th><th id="thCU"></th><th>Interés</th><th>Origen</th><th>Estado</th><th>Notas</th><th></th></tr></thead><tbody id="cB"></tbody></table></div>
+  </div></section>
+  <!-- INMOBILIARIAS -->
+  <section class="sec" id="s-inm"><div class="card">
+    <h2>Inmobiliarias · links propios <small>cada una con su link, su WhatsApp y sus métricas</small></h2>
+    <form class="bar" id="fInm"><input id="iNomI" placeholder="Nombre de la inmobiliaria" required style="flex:1;min-width:200px"><input id="iWaI" placeholder="WhatsApp (ej. 595981123456)" inputmode="tel" style="width:230px"><button class="btn p">Crear link</button></form>
+    <div class="tw"><table><thead><tr><th>Inmobiliaria</th><th>Link para compartir</th><th>WhatsApp</th><th>Vistas</th><th>Consultas</th><th>Estado</th></tr></thead><tbody id="iB"></tbody></table></div>
+    <p class="hint" style="margin-top:10px">Las consultas que llegan por ese link quedan marcadas con la inmobiliaria y el botón de WhatsApp del showroom le escribe a ella.</p>
+  </div></section>
+  <!-- VENTAS -->
+  <section class="sec" id="s-ven">
+    <div class="kpis" id="vk" style="grid-template-columns:repeat(4,minmax(0,1fr))"></div>
+    <div class="card"><h2>Ventas y reservas <small>para registrar una, tocá «Venta» en Unidades</small></h2>
+      <div class="tw"><table><thead><tr><th id="thVU"></th><th>Cliente</th><th>Estado</th><th>Fecha</th><th>Precio cerrado</th><th>Cobrado</th><th>Saldo</th><th></th></tr></thead><tbody id="vB"></tbody></table></div></div>
+  </section>
+  <!-- EQUIPO -->
+  <section class="sec" id="s-eq"><div class="grid2">
+    <div class="card"><h2>Usuarios del panel</h2><ul class="top" id="usr"></ul>
+      <form id="fUsr" style="margin-top:14px"><div class="row"><div class="f"><label>Nombre</label><input id="uNom" required></div><div class="f"><label>Email</label><input id="uEm" type="email" required></div></div>
+      <div class="f"><label>Contraseña inicial (mínimo 10)</label><input id="uPw" type="password" minlength="10" required></div><button class="btn p">Agregar usuario</button></form>
+      <form id="fPw" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line)"><h2>Cambiar mi contraseña</h2><div class="row"><div class="f"><label>Actual</label><input id="pA" type="password" required></div><div class="f"><label>Nueva (mínimo 10)</label><input id="pN" type="password" minlength="10" required></div></div><button class="btn">Cambiar</button></form></div>
+    <div class="card"><h2>Historial de cambios</h2><ul class="top" id="his" style="max-height:520px;overflow:auto"></ul></div>
+  </div></section>
+</main>
+</div>
+
+<div class="modal" id="mVen"><form class="mbox" id="fVen">
+  <h3 id="vTit">Registrar venta</h3><p id="vSub"></p>
+  <div class="row"><div class="f"><label>Estado</label><select id="vE"><option value="reservado">Reservada</option><option value="senado">Señada</option><option value="vendido">Vendida</option></select></div><div class="f"><label>Fecha</label><input id="vF" type="date"></div></div>
+  <div class="row"><div class="f"><label>Cliente</label><input id="vC" required></div><div class="f"><label>Documento</label><input id="vD"></div></div>
+  <div class="row"><div class="f"><label>Teléfono</label><input id="vT" inputmode="tel"></div><div class="f"><label>Email</label><input id="vM" type="email"></div></div>
+  <div class="row"><div class="f"><label>Precio cerrado</label><input id="vP" inputmode="numeric" required></div><div class="f"><label>Vendedor / inmobiliaria</label><input id="vV"></div></div>
+  <div class="row"><div class="f"><label>Anticipo %</label><input id="vA" type="number" min="0" max="100" value="30"></div><div class="f"><label>Cuotas (0 = contado)</label><input id="vN" type="number" min="0" max="240" value="0"></div></div>
+  <p class="hint" id="vPlan"></p>
+  <div class="f" style="margin-top:10px"><label>Notas</label><textarea id="vO" rows="2"></textarea></div>
+  <div class="mact"><button type="button" class="btn" data-close>Cancelar</button><button class="btn p">Guardar</button></div>
+</form></div>
+<div class="toast" id="toast"></div>
+
+<script>window.PANEL={"producto": "Panel de ventas", "marca": "Barrio Vida Parque", "logoTexto": "/img/logo.png", "colorAcento": "#d82b8c", "moneda": "PYG", "locale": "es-PY", "unidad": "Casa", "grupo": "Etapa", "tipologias": {"T1": {"n": "Tipología 1", "precio": 435000000}, "T2": {"n": "Tipología 2", "precio": 465000000}, "T3": {"n": "Tipología 3", "precio": 520000000}}, "showroom": "/", "archivoUnidades": "/kta-unidades.json", "version": "1.0.0"};</script>
+<script>
+/* ===== Configuración del proyecto (lo único que cambia entre proyectos) ===== */
+const PANEL = window.PANEL || {
+  producto:    "Panel de ventas",
+  marca:       "Proyecto",
+  logoTexto:   "P",                 // iniciales o URL de imagen
+  colorAcento: "#3B82F6",
+  moneda:      "USD",               // USD | PYG
+  locale:      "es-PY",
+  unidad:      "Unidad",            // Depto, Casa, Lote…
+  grupo:       "Piso",              // Piso, Etapa, Manzana…
+  tipologias:  {},                  // { T1: {n:"Tipología 1", precio: 435000000} }  precio de respaldo
+  showroom:    "/",
+  archivoUnidades: "/kta-unidades.json",
+  version:     "1.0.0"
+};
+/* ========================================================================== */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const money = v => v == null || v === '' ? '—' : (PANEL.moneda === 'PYG' ? 'Gs. ' : 'USD ') + Math.round(v).toLocaleString(PANEL.locale);
+const EST = { libre: 'Disponible', reservado: 'Reservada', senado: 'Señada', vendido: 'Vendida', bloqueado: 'Bloqueada' };
+const ECON = { nueva: 'Nueva', contactado: 'Contactado', visita: 'Visita agendada', reserva: 'Reservó', cerrada: 'Compró', descartada: 'Descartada' };
+const corto = v => PANEL.moneda === 'PYG' && v >= 1e8 ? 'Gs. ' + Math.round(v / 1e6).toLocaleString(PANEL.locale) + ' M' : money(v);
+const fecha = t => t ? new Date(t).toLocaleString(PANEL.locale, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+let TOK = localStorage.getItem('kta.panel.tok') || '', D = null, CH = null, SORT = { k: 'orden', d: 1 };
+function toast(m, e) { const t = $('#toast'); t.textContent = m; t.className = 'toast on' + (e ? ' err' : ''); clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 2400); }
+async function api(p, o = {}) {
+  const r = await fetch('/api' + p, { method: o.m || 'GET', headers: Object.assign({ 'content-type': 'application/json' }, TOK ? { authorization: 'Bearer ' + TOK } : {}), body: o.b ? JSON.stringify(o.b) : undefined });
+  const j = await r.json().catch(() => ({ error: 'Respuesta inválida del servidor' }));
+  if (r.status === 401 && TOK && p !== '/login') { salir(); throw new Error(j.error || 'Sesión vencida'); }
+  if (!r.ok) throw new Error(j.error || 'Error ' + r.status); return j;
+}
+/* ---- marca ---- */
+document.documentElement.style.setProperty('--ac', PANEL.colorAcento);
+document.title = PANEL.producto + ' · ' + PANEL.marca;
+const logo = /^(https?:|\/|\.)/.test(PANEL.logoTexto) ? `<img src="${esc(PANEL.logoTexto)}" alt="">` : esc(PANEL.logoTexto);
+$('#lLogo').innerHTML = $('#hLogo').innerHTML = logo;
+$('#lTit').textContent = PANEL.producto; $('#hTit').innerHTML = esc(PANEL.producto) + `<small>${esc(PANEL.marca)}</small>`;
+$('#bVer').href = PANEL.showroom; $('#thU').textContent = $('#thCU').textContent = $('#thVU').textContent = PANEL.unidad; $('#thG').textContent = PANEL.grupo; $('#uTit').textContent = PANEL.unidad === 'Casa' ? 'Casas' : PANEL.unidad + (/[aeiou]$/i.test(PANEL.unidad) ? 's' : 'es');
+Object.entries(ECON).forEach(([k, v]) => $('#cE').insertAdjacentHTML('beforeend', `<option value="${k}">${v}</option>`));
+/* ---- acceso ---- */
+let SETUP = false;
+(async () => {
+  if (TOK) { try { await cargar(); return entrar(); } catch (e) { TOK = ''; } }
+  try { const e = await api('/estado'); SETUP = e.necesitaSetup; if (SETUP) { $('#lSub').textContent = 'Primera vez: creá el usuario administrador del panel.'; $('#fNom').hidden = false; $('#bLog').textContent = 'Crear administrador'; $('#iPw').autocomplete = 'new-password'; } }
+  catch (e) { $('#lSub').textContent = 'No se pudo conectar con el servidor. ' + e.message; }
+})();
+$('#fLogin').onsubmit = async ev => { ev.preventDefault(); const b = $('#bLog'); b.disabled = true;
+  try { const cred = { email: $('#iEm').value, password: $('#iPw').value };
+    if (SETUP) await api('/setup', { m: 'POST', b: Object.assign({ nombre: $('#iNom').value }, cred) });
+    const r = await api('/login', { m: 'POST', b: cred }); TOK = r.token; localStorage.setItem('kta.panel.tok', TOK);
+    await cargar(); entrar(); if (SETUP) toast('Administrador creado. ¡Bienvenido!');
+  } catch (e) { toast(e.message, 1); } b.disabled = false; };
+function entrar() { $('#login').style.display = 'none'; $('#app').style.display = 'block'; importarSiFalta(); }
+function salir() { if (TOK) api('/logout', { m: 'POST' }).catch(() => {}); TOK = ''; localStorage.removeItem('kta.panel.tok'); location.reload(); }
+$('#bOut').onclick = salir;
+async function importarSiFalta() {
+  if (D.unidades.length) return;
+  try { const L = await fetch(PANEL.archivoUnidades, { cache: 'no-store' }).then(r => r.json());
+    if (!Array.isArray(L) || !L.length) return;
+    await api('/admin/importar', { m: 'POST', b: { unidades: L } }); await cargar(); toast(`Se cargaron ${L.length} ${PANEL.unidad.toLowerCase()}s del showroom`);
+  } catch (e) { toast('No se pudieron cargar las unidades iniciales: ' + e.message, 1); } }
+/* ---- datos ---- */
+async function cargar() { D = await api('/admin/todo'); pintar(); }
+const vistas = id => (D.eventos.find(e => e.unidad === id && e.tipo === 'vista') || {}).n || 0;
+const consultasU = id => (D.eventos.find(e => e.unidad === id && e.tipo === 'consulta') || {}).n || 0;
+const precioDe = u => u.precio_lista ?? (PANEL.tipologias[u.tip] || {}).precio ?? null;
+const nomTip = t => (PANEL.tipologias[t] || {}).n || t || '—';
+function pintar() { resumen(); unidades(); consultas(); inmob(); ventas(); equipo(); }
+/* ---- tabs ---- */
+$$('#tabs button,[data-go]').forEach(b => b.addEventListener('click', () => { const t = b.dataset.t || b.dataset.go; $$('#tabs button').forEach(x => x.classList.toggle('on', x.dataset.t === t)); $$('.sec').forEach(s => s.classList.toggle('on', s.id === 's-' + t)); scrollTo(0, 0); }));
+/* ---- resumen ---- */
+function resumen() {
+  const U = D.unidades, n = U.length, c = e => U.filter(u => u.estado === e).length;
+  const lib = c('libre'), res = c('reservado') + c('senado'), ven = c('vendido');
+  const stock = U.filter(u => u.estado === 'libre').reduce((a, u) => a + (precioDe(u) || 0), 0);
+  const hace7 = Date.now() - 7 * 864e5, c7 = D.consultas.filter(q => new Date(q.ts) > hace7).length, nue = D.consultas.filter(q => q.estado === 'nueva').length;
+  const v30 = D.porDia.filter(d => d.tipo === 'vista').reduce((a, d) => a + d.n, 0);
+  $('#bNue').hidden = !nue; $('#bNue').textContent = nue;
+  $('#kpis').innerHTML = [
+    ['Disponibles', lib, `de ${n} ${PANEL.unidad.toLowerCase()}s`], ['Reservadas', res, 'reservadas o señadas'], ['Vendidas', `${n ? Math.round(ven / n * 100) : 0}%`, `${ven} vendidas`],
+    ['Stock disponible', corto(stock), PANEL.moneda === 'PYG' ? 'millones, a precio de lista' : 'a precio de lista'], ['Consultas 7 días', c7, `${nue} sin atender`], ['Fichas vistas', v30, 'últimos 30 días']]
+    .map(([a, b, s]) => `<div class="kpi"><small>${a}</small><b class="num">${b}</b><span>${s}</span></div>`).join('');
+  const dias = [...Array(30)].map((_, i) => new Date(Date.now() - (29 - i) * 864e5).toISOString().slice(0, 10));
+  const ser = t => dias.map(d => (D.porDia.find(x => x.dia === d && x.tipo === t) || {}).n || 0);
+  if (window.Chart) { if (CH) CH.destroy(); CH = new Chart($('#ch'), { type: 'bar', data: { labels: dias.map(d => d.slice(8) + '/' + d.slice(5, 7)), datasets: [
+      { label: 'Fichas vistas', data: ser('vista'), backgroundColor: 'rgba(148,163,184,.35)', borderRadius: 4 },
+      { label: 'Consultas', data: ser('consulta'), backgroundColor: PANEL.colorAcento, borderRadius: 4 }] },
+    options: { plugins: { legend: { labels: { color: '#9aa0aa', boxWidth: 10 } } }, scales: { x: { ticks: { color: '#6b7280', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }, grid: { display: false } }, y: { ticks: { color: '#6b7280', precision: 0 }, grid: { color: 'rgba(255,255,255,.05)' } } } } }); }
+  else setTimeout(resumen, 400);
+  const top = U.filter(u => u.estado === 'libre').map(u => ({ u, v: vistas(u.id), q: consultasU(u.id) })).filter(x => x.v || x.q).sort((a, b) => b.q - a.q || b.v - a.v).slice(0, 8);
+  $('#top').innerHTML = top.length ? top.map(x => `<li><span>${PANEL.unidad} ${esc(x.u.id)} · ${esc(nomTip(x.u.tip))}</span><span class="num">${x.v} vistas · ${x.q} consultas</span></li>`).join('') : '<li class="empty">Todavía no hay visitas registradas.</li>';
+  const T = [...new Set(U.map(u => u.tip))].sort();
+  $('#tipos').innerHTML = T.map(t => { const L = U.filter(u => u.tip === t), vd = L.filter(u => u.estado !== 'libre').length;
+    return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${esc(nomTip(t))}</span><span class="num">${vd} de ${L.length} vendidas o reservadas · ${L.reduce((a, u) => a + vistas(u.id), 0)} vistas</span></div><div class="prog"><i style="width:${L.length ? vd / L.length * 100 : 0}%"></i></div></div>`; }).join('');
+  const pend = D.consultas.filter(q => q.estado === 'nueva').slice(0, 6);
+  $('#pend').innerHTML = pend.length ? pend.map(q => `<li><span><b>${esc(q.nombre)}</b> · ${q.unidad ? PANEL.unidad + ' ' + esc(q.unidad) : 'general'}${q.intencion ? ' · ' + esc(q.intencion) : ''}</span><span class="hint">${fecha(q.ts)}</span></li>`).join('') : '<li class="empty">Todas las consultas están atendidas.</li>';
+}
+/* ---- unidades ---- */
+function opts(sel, todos, vals) { const v = $(sel).value; $(sel).innerHTML = `<option value="">${todos}</option>` + vals.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join(''); $(sel).value = v; }
+function unidades() {
+  opts('#uG', 'Todos', [...new Set(D.unidades.map(u => u.grupo).filter(Boolean))]);
+  const tv = $('#uT').value; $('#uT').innerHTML = '<option value="">Todas las tipologías</option>' + [...new Set(D.unidades.map(u => u.tip))].sort().map(t => `<option value="${esc(t)}">${esc(nomTip(t))}</option>`).join(''); $('#uT').value = tv;
+  $('#uG').options[0].textContent = 'Todos: ' + PANEL.grupo.toLowerCase();
+  const q = $('#uQ').value.trim().toLowerCase(), g = $('#uG').value, t = $('#uT').value, e = $('#uE').value;
+  let L = D.unidades.filter(u => (!q || (u.id + ' ' + nomTip(u.tip) + ' ' + u.grupo).toLowerCase().includes(q)) && (!g || u.grupo === g) && (!t || u.tip === t) && (!e || u.estado === e));
+  const val = (u, k) => k === 'precio' ? precioDe(u) || 0 : k === 'vistas' ? vistas(u.id) : k === 'orden' ? (isNaN(u.id) ? u.orden : +u.id) : u[k];
+  L.sort((a, b) => { const x = val(a, SORT.k), y = val(b, SORT.k); return (x > y ? 1 : x < y ? -1 : 0) * SORT.d; });
+  $('#uB').innerHTML = L.length ? L.map(u => `<tr data-id="${esc(u.id)}"><td><b>${esc(u.id)}</b></td><td>${esc(u.grupo || '—')}</td><td>${esc(nomTip(u.tip))}</td><td class="n">${u.m2 ?? '—'}</td>
+    <td><span class="dot e-${u.estado}"></span><select data-f="estado">${Object.entries(EST).map(([k, v]) => `<option value="${k}"${k === u.estado ? ' selected' : ''}>${v}</option>`).join('')}</select></td>
+    <td><input data-f="precio_lista" inputmode="numeric" value="${u.precio_lista ?? ''}" placeholder="${(PANEL.tipologias[u.tip] || {}).precio ? Number(PANEL.tipologias[u.tip].precio).toLocaleString(PANEL.locale) : 'sin precio'}" style="width:140px"></td>
+    <td><input type="checkbox" data-f="mostrar_precio"${u.mostrar_precio ? ' checked' : ''} style="width:auto"></td><td class="n">${vistas(u.id)}</td>
+    <td><button class="btn s" data-venta>Venta</button></td></tr>`).join('') : '<tr><td colspan="9" class="empty">No hay unidades con ese filtro.</td></tr>';
+}
+['#uQ', '#uG', '#uT', '#uE'].forEach(s => $(s).addEventListener('input', unidades));
+$$('#s-uni th[data-k]').forEach(th => th.onclick = () => { SORT = { k: th.dataset.k, d: SORT.k === th.dataset.k ? -SORT.d : 1 }; unidades(); });
+$('#uB').addEventListener('change', async e => { const tr = e.target.closest('tr'), f = e.target.dataset.f; if (!f) return;
+  const id = tr.dataset.id, b = {}; b[f] = f === 'mostrar_precio' ? e.target.checked : f === 'precio_lista' ? (e.target.value.replace(/\D/g, '') || null) : e.target.value;
+  try { await api('/admin/unidad/' + encodeURIComponent(id), { m: 'PUT', b }); const u = D.unidades.find(x => x.id === id); Object.assign(u, f === 'precio_lista' ? { precio_lista: b.precio_lista === null ? null : +b.precio_lista } : f === 'mostrar_precio' ? { mostrar_precio: b[f] ? 1 : 0 } : b);
+    toast(`${PANEL.unidad} ${id} actualizada`); resumen(); if (f === 'estado') { tr.querySelector('.dot').className = 'dot e-' + b.estado; if (b.estado === 'libre') cargar(); } }
+  catch (er) { toast(er.message, 1); cargar(); } });
+$('#uB').addEventListener('click', e => { if (e.target.dataset.venta === undefined) return; abrirVenta(e.target.closest('tr').dataset.id); });
+/* ---- registrar venta ---- */
+let VID = null;
+function abrirVenta(id) { VID = id; const u = D.unidades.find(x => x.id === id); $('#vTit').textContent = `Registrar venta · ${PANEL.unidad} ${id}`; $('#vSub').textContent = `${nomTip(u.tip)} · precio de lista ${money(precioDe(u))}`;
+  $('#fVen').reset(); $('#vF').value = new Date().toISOString().slice(0, 10); $('#vP').value = precioDe(u) || ''; plan(); $('#mVen').classList.add('on'); $('#vC').focus(); }
+function cuotasPlan() { const P = +$('#vP').value.replace(/\D/g, ''), a = +$('#vA').value, n = +$('#vN').value, f0 = new Date($('#vF').value || Date.now());
+  if (!P || !n) return []; const ant = Math.round(P * a / 100), resto = P - ant, c = Math.floor(resto / n), L = [];
+  if (ant) L.push({ concepto: 'Anticipo', fecha: f0.toISOString().slice(0, 10), monto: ant });
+  for (let i = 1; i <= n; i++) { const f = new Date(f0); f.setMonth(f.getMonth() + i); L.push({ concepto: 'Cuota ' + i, fecha: f.toISOString().slice(0, 10), monto: i === n ? resto - c * (n - 1) : c }); }
+  return L; }
+function plan() { const L = cuotasPlan(); $('#vPlan').textContent = L.length ? `Plan: ${L[0].concepto === 'Anticipo' ? 'anticipo ' + money(L[0].monto) + ' + ' : ''}${L.filter(x => x.concepto !== 'Anticipo').length} cuotas de ${money(L[L.length - 1].monto)}` : 'Pago contado: sin plan de cuotas.'; }
+['#vP', '#vA', '#vN', '#vF'].forEach(s => $(s).addEventListener('input', plan));
+$$('[data-close]').forEach(b => b.onclick = () => $$('.modal').forEach(m => m.classList.remove('on')));
+$('#fVen').onsubmit = async ev => { ev.preventDefault();
+  try { await api('/admin/venta', { m: 'POST', b: { unidad_id: VID, estado: $('#vE').value, fecha: $('#vF').value, cliente: $('#vC').value, documento: $('#vD').value, telefono: $('#vT').value, email: $('#vM').value, precio_cerrado: $('#vP').value.replace(/\D/g, ''), vendedor: $('#vV').value, notas: $('#vO').value, cuotas: cuotasPlan() } });
+    $('#mVen').classList.remove('on'); toast('Venta registrada'); await cargar(); } catch (e) { toast(e.message, 1); } };
+/* ---- consultas ---- */
+function consultas() {
+  opts('#cO', 'Todos los orígenes', [...new Set(D.consultas.map(q => q.origen || 'directo'))]);
+  const q = $('#cQ').value.trim().toLowerCase(), e = $('#cE').value, o = $('#cO').value;
+  const L = D.consultas.filter(c => (!q || (c.nombre + ' ' + c.telefono + ' ' + c.unidad).toLowerCase().includes(q)) && (!e || c.estado === e) && (!o || (c.origen || 'directo') === o));
+  const nomI = s => (D.inmobiliarias.find(i => i.slug === s) || {}).nombre || s || 'Directo';
+  $('#cB').innerHTML = L.length ? L.map(c => `<tr data-id="${c.id}"><td class="hint">${fecha(c.ts)}</td><td><b>${esc(c.nombre)}</b>${c.email ? `<div class="hint">${esc(c.email)}</div>` : ''}</td><td>${esc(c.telefono)}</td><td>${esc(c.unidad || '—')}</td><td>${esc(c.intencion || '—')}</td><td>${esc(nomI(c.origen))}</td>
+    <td><select data-f="estado">${Object.entries(ECON).map(([k, v]) => `<option value="${k}"${k === c.estado ? ' selected' : ''}>${v}</option>`).join('')}</select></td>
+    <td><input data-f="notas" value="${esc(c.notas || '')}" placeholder="Agregar nota…" style="width:200px"></td>
+    <td><a class="btn s" target="_blank" rel="noopener" href="https://wa.me/${String(c.telefono).replace(/\D/g, '').replace(/^0/, '595')}?text=${encodeURIComponent(`Hola ${c.nombre.split(' ')[0]}, te escribo de ${PANEL.marca}${c.unidad ? ' por la ' + PANEL.unidad.toLowerCase() + ' ' + c.unidad : ''}.`)}">WhatsApp</a></td></tr>`).join('') : '<tr><td colspan="9" class="empty">Todavía no hay consultas. Llegan acá cuando alguien completa el formulario del showroom.</td></tr>';
+}
+['#cQ', '#cE', '#cO'].forEach(s => $(s).addEventListener('input', consultas));
+$('#cB').addEventListener('change', async e => { const f = e.target.dataset.f; if (!f) return; const id = +e.target.closest('tr').dataset.id, b = { [f]: e.target.value };
+  try { await api('/admin/consulta/' + id, { m: 'PUT', b }); Object.assign(D.consultas.find(c => c.id === id), b); toast(f === 'estado' ? 'Estado actualizado' : 'Nota guardada'); resumen(); } catch (er) { toast(er.message, 1); } });
+/* ---- inmobiliarias ---- */
+const linkI = s => new URL(PANEL.showroom, location.origin).href.replace(/\/?$/, '/') + '?b=' + s;
+function inmob() { const L = D.inmobiliarias;
+  $('#iB').innerHTML = L.length ? L.map(i => `<tr data-s="${esc(i.slug)}"><td><b>${esc(i.nombre)}</b></td><td><span class="lnk">${esc(linkI(i.slug))}</span> <button class="btn s" data-copy>Copiar</button></td><td>${esc(i.whatsapp || '—')}</td><td class="n">${i.vistas}</td><td class="n">${i.consultas}</td><td><button class="btn s${i.activo ? '' : ' d'}" data-act>${i.activo ? 'Activa' : 'Pausada'}</button></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Creá un link para cada inmobiliaria que vende el proyecto.</td></tr>'; }
+$('#fInm').onsubmit = async ev => { ev.preventDefault(); try { const r = await api('/admin/inmobiliaria', { m: 'POST', b: { nombre: $('#iNomI').value, whatsapp: $('#iWaI').value } }); $('#fInm').reset(); await cargar(); navigator.clipboard && navigator.clipboard.writeText(linkI(r.slug)).catch(() => {}); toast('Link creado y copiado'); } catch (e) { toast(e.message, 1); } };
+$('#iB').addEventListener('click', async e => { const tr = e.target.closest('tr'); if (!tr) return; const s = tr.dataset.s;
+  if (e.target.dataset.copy !== undefined) { navigator.clipboard.writeText(linkI(s)).then(() => toast('Link copiado'), () => toast(linkI(s))); }
+  if (e.target.dataset.act !== undefined) { const i = D.inmobiliarias.find(x => x.slug === s); try { await api('/admin/inmobiliaria/' + s, { m: 'PUT', b: { activo: !i.activo } }); await cargar(); toast(i.activo ? 'Link pausado' : 'Link activo'); } catch (er) { toast(er.message, 1); } } });
+/* ---- ventas ---- */
+function ventas() { const V = D.ventas, cob = v => D.cuotas.filter(c => c.venta_id === v.id && c.pagado).reduce((a, c) => a + c.monto_pagado, 0);
+  const tot = V.reduce((a, v) => a + v.precio_cerrado, 0), cobT = V.reduce((a, v) => a + cob(v), 0), hoy = new Date().toISOString().slice(0, 10);
+  const venc = D.cuotas.filter(c => !c.pagado && c.fecha && c.fecha < hoy);
+  $('#vk').innerHTML = [['Operaciones', V.length, 'reservas, señas y ventas'], ['Total vendido', corto(tot), 'precio cerrado'], ['Cobrado', corto(cobT), tot ? Math.round(cobT / tot * 100) + '% del total' : ''], ['Cuotas vencidas', venc.length, money(venc.reduce((a, c) => a + c.monto, 0)) + ' sin cobrar']]
+    .map(([a, b, s]) => `<div class="kpi"><small>${a}</small><b class="num">${b}</b><span>${s}</span></div>`).join('');
+  $('#vB').innerHTML = V.length ? V.map(v => { const c = cob(v), C = D.cuotas.filter(x => x.venta_id === v.id);
+    return `<tr data-v="${v.id}"><td><b>${esc(v.unidad_id)}</b></td><td>${esc(v.cliente)}<div class="hint">${esc(v.telefono || '')}</div></td><td><span class="dot e-${v.estado}"></span>${EST[v.estado]}</td><td class="hint">${esc(v.fecha)}</td><td class="n">${money(v.precio_cerrado)}</td><td class="n">${money(c)}</td><td class="n">${money(v.precio_cerrado - c)}</td>
+      <td>${C.length ? `<select data-cuota><option value="">Cuotas (${C.filter(x => x.pagado).length}/${C.length})</option>${C.map(x => `<option value="${x.id}">${x.pagado ? '✓' : '○'} ${esc(x.concepto)} · ${x.fecha} · ${money(x.monto)}</option>`).join('')}</select>` : ''} <button class="btn s d" data-anular>Anular</button></td></tr>`; }).join('') : '<tr><td colspan="8" class="empty">Sin ventas registradas.</td></tr>'; }
+$('#vB').addEventListener('change', async e => { if (e.target.dataset.cuota === undefined || !e.target.value) return; const c = D.cuotas.find(x => x.id === +e.target.value);
+  try { await api('/admin/cuota/' + c.id, { m: 'PUT', b: { pagado: !c.pagado } }); toast(c.pagado ? 'Cuota marcada como pendiente' : 'Cuota cobrada'); await cargar(); } catch (er) { toast(er.message, 1); } });
+$('#vB').addEventListener('click', async e => { if (e.target.dataset.anular === undefined) return; const v = D.ventas.find(x => x.id === +e.target.closest('tr').dataset.v);
+  const mot = prompt(`¿Anular la operación de ${v.cliente}? La ${PANEL.unidad.toLowerCase()} ${v.unidad_id} vuelve a estar disponible.\nMotivo:`); if (mot === null) return;
+  try { await api(`/admin/venta/${v.id}/anular`, { m: 'POST', b: { motivo: mot } }); toast('Operación anulada'); await cargar(); } catch (er) { toast(er.message, 1); } });
+/* ---- equipo ---- */
+function equipo() { $('#usr').innerHTML = D.usuarios.map(u => `<li><span><b>${esc(u.nombre || u.email)}</b> <span class="hint">${esc(u.email)}</span></span><span class="hint">${(u.creado || '').slice(0, 10)}</span></li>`).join('');
+  const A = { unidad: 'cambió una unidad', venta: 'registró una venta', anular: 'anuló una operación', cobro: 'cuota', consulta: 'consulta', inmobiliaria: 'inmobiliaria', usuario: 'usuario', importar: 'importó unidades', password: 'cambió su contraseña' };
+  $('#his').innerHTML = D.historial.length ? D.historial.map(h => { let d = h.detalle; try { const o = JSON.parse(d); d = o.id ? `${PANEL.unidad} ${o.id}: ${EST[o.de?.estado] || ''} → ${EST[o.a?.estado] || ''}${o.a && o.de && o.a.precio !== o.de.precio ? ' · precio ' + money(o.a.precio) : ''}` : o.unidad ? `${PANEL.unidad} ${o.unidad}${o.cliente ? ' · ' + o.cliente : ''}` : o.nombre ? o.nombre + (o.a ? ' → ' + (ECON[o.a] || o.a) : '') : o.email || (o.unidades ? o.unidades + ' unidades' : ''); } catch (e) {}
+    return `<li><span><b>${esc(h.email)}</b> ${esc(A[h.accion] || h.accion)}<div class="hint">${esc(d)}</div></span><span class="hint">${fecha(h.ts)}</span></li>`; }).join('') : '<li class="empty">Sin cambios todavía.</li>'; }
+$('#fUsr').onsubmit = async ev => { ev.preventDefault(); try { await api('/admin/usuario', { m: 'POST', b: { nombre: $('#uNom').value, email: $('#uEm').value, password: $('#uPw').value } }); $('#fUsr').reset(); toast('Usuario agregado'); await cargar(); } catch (e) { toast(e.message, 1); } };
+$('#fPw').onsubmit = async ev => { ev.preventDefault(); try { await api('/admin/password', { m: 'PUT', b: { actual: $('#pA').value, nueva: $('#pN').value } }); $('#fPw').reset(); toast('Contraseña cambiada'); } catch (e) { toast(e.message, 1); } };
+/* ---- exportar ---- */
+function xls(nombre, filas) { if (!window.XLSX) return toast('Cargando el exportador, probá en un segundo'); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filas), nombre.slice(0, 30)); XLSX.writeFile(wb, `${PANEL.marca} - ${nombre}.xlsx`); toast('Excel descargado'); }
+$('#xU').onclick = () => xls('Unidades', D.unidades.map(u => ({ [PANEL.unidad]: u.id, [PANEL.grupo]: u.grupo, Tipología: nomTip(u.tip), 'm²': u.m2, Estado: EST[u.estado], 'Precio de lista': precioDe(u), 'Mostrar precio': u.mostrar_precio ? 'Sí' : 'No', Vistas: vistas(u.id), Consultas: consultasU(u.id) })));
+$('#xC').onclick = () => xls('Consultas', D.consultas.map(c => ({ Fecha: c.ts.slice(0, 16).replace('T', ' '), Nombre: c.nombre, Teléfono: c.telefono, Email: c.email, [PANEL.unidad]: c.unidad, Interés: c.intencion, Origen: c.origen || 'directo', Estado: ECON[c.estado], Notas: c.notas })));
+setInterval(() => { if (TOK && document.visibilityState === 'visible' && !$('.modal.on') && !document.activeElement.matches('input,select,textarea')) cargar().catch(() => {}); }, 60000);
+</script>
+</body>
+</html>

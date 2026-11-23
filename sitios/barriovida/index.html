@@ -294,6 +294,12 @@ $('#hdrWa').href=wa(`Hola! Quiero información de ${CONFIG.marca}.`);
 
 /* ======================= vista 3D (módulo abajo) ======================= */
 function hint(){$('#hint').classList.add('off')}
+const PR=u=>u.precio??CONFIG.tipologias[u.t].precio;
+/* disponibilidad y precios en vivo desde el panel (API propia); si no responde, queda lo cargado en el archivo */
+function vivo(){fetch('/api/public',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(!d||!d.unidades||!d.unidades.length)return;let cambio=false;
+  d.unidades.forEach(x=>{const u=UNITS[+x.id-1];if(!u)return;const pr=x.precio??null;if(u.estado!==x.estado||u.precio!==pr||!!u.oculto!==!!x.oculto){cambio=true;u.estado=x.estado;u.precio=pr;u.oculto=!!x.oculto}});
+  if(cambio){pintar();if(SEL&&!document.querySelector('.modal.on'))abrir(SEL)}}).catch(()=>{})}
+vivo();setInterval(()=>{if(!document.hidden)vivo()},60000);
 /* ======================= casas ======================= */
 const F={t:"todas"};
 function pintar(){
@@ -315,8 +321,8 @@ function abrir(n){$$('#dock button').forEach(b=>b.classList.toggle('on',b.datase
   const vend=u.estado!=='libre';
   $('#fb').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><span class="pill ${u.estado}"><i></i>${EST[u.estado]}</span><span style="font-size:13px;color:var(--tx2)">${T.n}</span></div>
    <div class="grid2"><div class="dt"><span>Dormitorios</span><b>${T.dorm}</b></div><div class="dt"><span>Baños</span><b>${T.banos}</b></div><div class="dt"><span>Sup. construida</span><b class="num">${T.m2.toLocaleString('es-PY')} m²</b></div><div class="dt"><span>Terreno</span><b class="num">${u.lote.toLocaleString('es-PY')} m²</b></div></div>
-   <div class="price num">${vend?'—':gs(T.precio)}<small>${vend?'Esta casa ya no está disponible. Mirá otras de la misma tipología.':'Precio de lista · '+(u.etapa||'')}</small></div>
-   ${vend?'':`<div class="sec"><h3>Simulá tu plan</h3><div class="sim">
+   <div class="price num">${vend?'—':u.oculto?'Consultar precio':gs(PR(u))}<small>${vend?'Esta casa ya no está disponible. Mirá otras de la misma tipología.':(u.oculto?'':'Precio de lista · ')+(u.etapa||'')}</small></div>
+   ${vend||u.oculto?'':`<div class="sec"><h3>Simulá tu plan</h3><div class="sim">
      <div class="row"><span>Anticipo</span><b class="num" id="sA"></b></div><input type="range" id="rA" min="${CONFIG.plan.anticipoMin}" max="60" step="5" value="${CONFIG.plan.anticipoDef}">
      <div class="row"><span>Cuotas sin intereses</span><b class="num" id="sN"></b></div><input type="range" id="rN" min="12" max="${CONFIG.plan.cuotasMax}" step="6" value="${CONFIG.plan.cuotasDef}">
      <div class="row" style="border-top:1px solid var(--ln);margin-top:8px;padding-top:12px"><span>Cuota mensual</span><span class="big num" id="sC"></span></div>
@@ -324,7 +330,7 @@ function abrir(n){$$('#dock button').forEach(b=>b.classList.toggle('on',b.datase
    <div class="sec"><h3>Así es la casa</h3><div class="thumbs">${[...CONFIG.galeria.casa.slice(0,2),...CONFIG.galeria.interior.slice(0,4)].map((g,i)=>`<button style="background-image:url(${g[0]})" data-g="${i<2?'casa':'interior'}" data-i="${i<2?i:i-2}" aria-label="${g[2]}"></button>`).join('')}</div></div>
    <div class="cta">${vend?'':`<button class="btn pri" style="justify-content:center" id="fLead">Me interesa esta casa</button>`}<div class="fbtns"><button class="btn gh" style="justify-content:center" id="fPdf">Ficha PDF</button><button class="btn gh" style="justify-content:center" id="fShare">Compartir</button></div></div>`;
   if($('#fLead'))$('#fLead').onclick=()=>window.abrirLead&&abrirLead(n);$('#fPdf').onclick=()=>window.pdfFicha&&pdfFicha(n);
-  if(!vend){const upd=()=>{const a=+$('#rA').value,c=+$('#rN').value,ant=T.precio*a/100;$('#sA').textContent=`${a}% · ${gs(ant)}`;$('#sN').textContent=c;$('#sC').textContent=gs((T.precio-ant)/c)};$('#rA').oninput=upd;$('#rN').oninput=upd;upd()}
+  if(!vend&&!u.oculto){const P=PR(u),upd=()=>{const a=+$('#rA').value,c=+$('#rN').value,ant=P*a/100;$('#sA').textContent=`${a}% · ${gs(ant)}`;$('#sN').textContent=c;$('#sC').textContent=gs((P-ant)/c)};$('#rA').oninput=upd;$('#rN').oninput=upd;upd()}
   $$('#fb .thumbs button').forEach(b=>b.onclick=()=>galeria(b.dataset.g,+b.dataset.i));
   $('#fShare').onclick=()=>{const url=location.origin+location.pathname+'?casa='+n+(window.BROKER?'&b='+BROKER.slug:'');if(navigator.share)navigator.share({title:'Casa '+n+' · '+CONFIG.marca,url}).catch(()=>{});else{navigator.clipboard&&navigator.clipboard.writeText(url);toast('Link copiado')}};
   $('#ficha').classList.add('on');$('#ficha').setAttribute('aria-hidden','false');history.replaceState(null,'','?casa='+n);
@@ -376,7 +382,7 @@ const KEY = 'bvp.showroom.v1';
 let DB; try { DB = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { DB = {}; }
 DB.vistas = DB.vistas || {}; DB.leads = DB.leads || []; DB.bVis = DB.bVis || {}; DB.brokers = DB.brokers || [];
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) {} };
-window.DBV = { vista(n) { DB.vistas[n] = (DB.vistas[n] || 0) + 1; save(); } };
+window.DBV = { vista(n) { DB.vistas[n] = (DB.vistas[n] || 0) + 1; save(); fetch('/api/evento', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo: 'vista', unidad: String(n), origen: (window.BROKER && BROKER.slug) || '' }), keepalive: true }).catch(() => {}); } };
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const abrirM = id => $(id).classList.add('on'), cerrarM = () => $$('.modal').forEach(m => m.classList.remove('on'));
 $$('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-close]')) m.classList.remove('on'); }));
@@ -410,7 +416,7 @@ const E = {
   'Cancha, juegos y senderos': ['Pitch, playground and paths', 'Quadra, brinquedos e trilhas', 'Veld, speeltuin en paden'], 'Plaza para niños': ['Kids’ playground', 'Praça infantil', 'Speelplein'], 'Vista aérea': ['Aerial view', 'Vista aérea', 'Luchtfoto'], 'Frente con jardín': ['Front garden', 'Frente com jardim', 'Voortuin'], 'Fachadas': ['Façades', 'Fachadas', 'Gevels'],
   'Vista aérea de día': ['Aerial view by day', 'Vista aérea de dia', 'Luchtfoto overdag'], 'Vista aérea al anochecer': ['Aerial view at dusk', 'Vista aérea ao anoitecer', 'Luchtfoto bij schemering'], 'Vista general': ['Overview', 'Vista geral', 'Overzicht'], 'Vista general iluminada': ['Overview at night', 'Vista geral iluminada', 'Overzicht verlicht'],
   'Preparando la ficha…': ['Preparing the sheet…', 'Preparando a ficha…', 'Factsheet wordt gemaakt…'], 'Armando el brochure…': ['Building the brochure…', 'Montando o brochure…', 'Brochure wordt gemaakt…'], 'Ficha descargada': ['Sheet downloaded', 'Ficha baixada', 'Factsheet gedownload'], 'Brochure descargado': ['Brochure downloaded', 'Brochure baixado', 'Brochure gedownload'],
-  'Precio de lista': ['List price', 'Preço de tabela', 'Vraagprijs'], 'Forma de pago': ['Payment plan', 'Forma de pagamento', 'Betaalplan'], 'Monto': ['Amount', 'Valor', 'Bedrag'], 'Detalle': ['Detail', 'Detalhe', 'Detail'], 'Disponibilidad y precios': ['Availability and prices', 'Disponibilidade e preços', 'Beschikbaarheid en prijzen'],
+  'Precio de lista': ['List price', 'Preço de tabela', 'Vraagprijs'], 'Consultar precio': ['Price on request', 'Consulte o preço', 'Prijs op aanvraag'], 'Forma de pago': ['Payment plan', 'Forma de pagamento', 'Betaalplan'], 'Monto': ['Amount', 'Valor', 'Bedrag'], 'Detalle': ['Detail', 'Detalhe', 'Detail'], 'Disponibilidad y precios': ['Availability and prices', 'Disponibilidade e preços', 'Beschikbaarheid en prijzen'],
   'Valores de referencia, sujetos a disponibilidad y aprobación. Imágenes ilustrativas. No constituye oferta vinculante.': ['Reference values, subject to availability and approval. Images for illustration only. Not a binding offer.', 'Valores de referência, sujeitos a disponibilidade e aprovação. Imagens ilustrativas. Não constitui oferta vinculante.', 'Richtwaarden, onder voorbehoud van beschikbaarheid en goedkeuring. Illustratieve beelden. Geen bindend aanbod.'],
   'Ver esta casa en el showroom': ['See this home in the showroom', 'Ver esta casa no showroom', 'Bekijk deze woning in de showroom'], 'Recorré el barrio en 3D': ['Explore the neighborhood in 3D', 'Explore o bairro em 3D', 'Bekijk de buurt in 3D'], 'Ventas': ['Sales', 'Vendas', 'Verkoop'],
 };
@@ -443,6 +449,12 @@ window.BROKER = (() => { const q = new URLSearchParams(location.search).get('b')
 if (BROKER) { if (!sessionStorage.getItem('bvp.bv')) { DB.bVis[BROKER.slug] = (DB.bVis[BROKER.slug] || 0) + 1; save(); try { sessionStorage.setItem('bvp.bv', 1); } catch (e) {} }
   const c = $('#bChip'); c.hidden = false; c.innerHTML = `<small>Te atiende</small><b data-notr>${esc(BROKER.n)}</b>`; $('#hdrWa').href = wa(`Hola! Quiero información de ${CONFIG.marca}.`); }
 const origen = () => BROKER ? 'Inmobiliaria: ' + BROKER.n : 'Showroom';
+/* ---------- API del panel (base de datos propia del proyecto) ---------- */
+const api = (p, b) => fetch('/api' + p, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b), keepalive: true } : { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
+const slugB = () => (window.BROKER && BROKER.slug) || '';
+{ const q = new URLSearchParams(location.search).get('b') || (() => { try { return sessionStorage.getItem('bvp.b'); } catch (e) { return null; } })();
+  if (q && !window.BROKER) api('/inmobiliaria/' + encodeURIComponent(q)).then(b => { if (!b) return; window.BROKER = { slug: q, n: b.nombre, wa: b.whatsapp };
+    const c = $('#bChip'); c.hidden = false; c.innerHTML = `<small>${tr('Te atiende')}</small><b data-notr>${esc(b.nombre)}</b>`; $('#hdrWa').href = wa(`Hola! Quiero información de ${CONFIG.marca}.`); }); }
 
 /* ---------- FORMULARIO DE CONSULTA ---------- */
 let leadN = null;
@@ -452,11 +464,12 @@ window.abrirLead = n => { leadN = n; const u = UNITS[n - 1], T = CONFIG.tipologi
 $$('#lCu .chip').forEach(c => c.onclick = () => $$('#lCu .chip').forEach(x => x.classList.toggle('on', x === c)));
 $('#lForm').onsubmit = e => { e.preventDefault(); const nombre = $('#lNom').value.trim(), tel = $('#lTel').value.trim(); if (!nombre || !tel) return;
   DB.leads.push({ fecha: new Date().toISOString(), nombre, tel, casa: leadN, origen: origen(), temp: $('#lCu .chip.on').dataset.v, lang: LANG }); save();
+  api('/consulta', { nombre, telefono: tel, unidad: leadN ? String(leadN) : '', intencion: $('#lCu .chip.on').textContent.trim(), origen: slugB() });
   $('#lForm').classList.add('done'); $('#lNom').value = $('#lTel').value = ''; toast(tr('Consulta enviada al equipo de ventas')); };
 
 /* ---------- PANEL DE VENTAS (métricas) ---------- */
 let chart = null;
-function abrirPanel() { if (!sessionStorage.getItem('bvp.adm')) { const p = prompt('PIN del panel de ventas'); if (p !== CONFIG.pin) { if (p !== null) toast('PIN incorrecto'); return; } sessionStorage.setItem('bvp.adm', 1); } abrirM('#mPanel'); requestAnimationFrame(pintarPanel); }
+function abrirPanel() { if (location.protocol.startsWith('http')) { window.open('/admin/', '_blank', 'noopener'); return; } if (!sessionStorage.getItem('bvp.adm')) { const p = prompt('PIN del panel de ventas'); if (p !== CONFIG.pin) { if (p !== null) toast('PIN incorrecto'); return; } sessionStorage.setItem('bvp.adm', 1); } abrirM('#mPanel'); requestAnimationFrame(pintarPanel); }
 function pintarPanel() {
   const U = UNITS, L = DB.leads, pr = u => CONFIG.tipologias[u.t].precio, sum = A => A.reduce((s, u) => s + pr(u), 0);
   const V = U.filter(u => u.estado === 'vendido'), R = U.filter(u => u.estado === 'reservado'), D = U.filter(u => u.estado === 'libre'), d7 = Date.now() - 7 * 864e5;
@@ -485,7 +498,7 @@ function pintarPanel() {
 $('#pXls').onclick = () => { if (!window.XLSX) return toast('Cargando Excel, probá en un segundo'); const ws = XLSX.utils.json_to_sheet(DB.leads.map(l => ({ Fecha: new Date(l.fecha).toLocaleString('es-PY'), Nombre: l.nombre, Telefono: l.tel, Casa: l.casa, Origen: l.origen, Interes: l.temp, Idioma: l.lang })));
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Consultas'); XLSX.writeFile(wb, 'barrio-vida-consultas.xlsx'); toast('Consultas exportadas'); };
 $('#pBro').onclick = () => pdfBrochure();
-if (new URLSearchParams(location.search).has('admin')) setTimeout(abrirPanel, 1500);
+if (new URLSearchParams(location.search).has('admin')) location.replace('/admin/');
 
 /* ---------- FICHA PDF y BROCHURE ---------- */
 const IC = {}; const img = src => IC[src] || (IC[src] = new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; }));
@@ -498,12 +511,12 @@ function base() { const doc = new jspdf.jsPDF({ unit: 'mm', format: 'a4' });
   return { doc, banda, pie }; }
 const contacto = () => BROKER ? `${tr('Te atiende')}: ${BROKER.n}` : `${tr('Ventas')}: +${CONFIG.whatsapp}`;
 window.pdfFicha = async n => { if (!window.jspdf) return toast('Cargando PDF, probá en un segundo'); toast(tr('Preparando la ficha…'));
-  const u = UNITS[n - 1], T = CONFIG.tipologias[u.t], { doc, banda, pie } = base(), vend = u.estado !== 'libre', a = CONFIG.plan.anticipoDef, c = CONFIG.plan.cuotasDef, ant = T.precio * a / 100;
+  const u = UNITS[n - 1], T = CONFIG.tipologias[u.t], { doc, banda, pie } = base(), vend = u.estado !== 'libre', a = CONFIG.plan.anticipoDef, c = CONFIG.plan.cuotasDef, ant = PR(u) * a / 100;
   banda(`${CONFIG.marca} · ${tr('Casa')} ${n}`, `${tr(T.n)} · ${tr(u.etapa || '')}`);
   try { doc.addImage(await cover(T.img, 182 / 95), 'JPEG', 14, 33, 182, 95); } catch (e) {}
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...AC); doc.text(vend ? tr(EST[u.estado]) : gs(T.precio), 14, 140); doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...AC); doc.text(vend ? tr(EST[u.estado]) : u.oculto ? tr('Consultar precio') : gs(PR(u)), 14, 140); doc.setFont('helvetica', 'normal');
   doc.autoTable({ startY: 146, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Casa') + ' ' + n, tr('Detalle')]], body: [[tr('Tipología'), tr(T.n)], [tr('Dormitorios'), T.dorm], [tr('Baños'), T.banos], [tr('Sup. construida'), m2(T.m2 + ' m²')], [tr('Terreno'), m2(u.lote + ' m²')], [tr('Etapa de entrega'), tr(u.etapa || '—')]] });
-  if (!vend) doc.autoTable({ startY: doc.lastAutoTable.finalY + 5, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Forma de pago'), tr('Monto')]], body: [[`${tr('Anticipo')} (${a}%)`, gs(ant)], [`${c} ${tr('Cuotas sin intereses')}`, gs((T.precio - ant) / c)], [tr('Precio de lista'), gs(T.precio)]] });
+  if (!vend && !u.oculto) doc.autoTable({ startY: doc.lastAutoTable.finalY + 5, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Forma de pago'), tr('Monto')]], body: [[`${tr('Anticipo')} (${a}%)`, gs(ant)], [`${c} ${tr('Cuotas sin intereses')}`, gs((PR(u) - ant) / c)], [tr('Precio de lista'), gs(PR(u))]] });
   doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 9); doc.setTextColor(...AC);
   doc.textWithLink(tr('Ver esta casa en el showroom'), 14, doc.lastAutoTable.finalY + 15, { url: location.origin + location.pathname + '?casa=' + n + (BROKER ? '&b=' + BROKER.slug : '') });
   pie(); doc.save(`barrio-vida-casa-${n}.pdf`); toast(tr('Ficha descargada')); };
@@ -526,7 +539,7 @@ window.pdfBrochure = async () => { if (!window.jspdf) return toast('Cargando PDF
   for (let i = 0; i < F.length; i++) { const X = 14 + (i % 2) * 93, Y = 34 + Math.floor(i / 2) * 82; try { doc.addImage(await cover(F[i][0], 89 / 66, 900), 'JPEG', X, Y, 89, 66); } catch (e) {} doc.setFontSize(9.5); doc.setTextColor(40); doc.text(tr(F[i][2]), X, Y + 72); }
   doc.addPage(); banda(tr('Disponibilidad y precios'), new Date().toLocaleDateString('es-PY'));
   doc.autoTable({ startY: 34, theme: 'striped', headStyles: { fillColor: AC }, styles: { fontSize: 8.5 }, head: [[tr('Casa'), tr('Tipología'), tr('Terreno'), tr('Etapa de entrega'), tr('Precio de lista'), `${tr('Anticipo')} ${CONFIG.plan.anticipoDef}%`]],
-    body: D.map(u => { const T = CONFIG.tipologias[u.t]; return [u.n, tr(T.n), m2(u.lote + ' m²'), tr(u.etapa || ''), gs(T.precio), gs(T.precio * CONFIG.plan.anticipoDef / 100)]; }) });
+    body: D.map(u => { const T = CONFIG.tipologias[u.t]; return [u.n, tr(T.n), m2(u.lote + ' m²'), tr(u.etapa || ''), u.oculto ? tr('Consultar precio') : gs(PR(u)), u.oculto ? '—' : gs(PR(u) * CONFIG.plan.anticipoDef / 100)]; }) });
   doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 9); doc.setTextColor(...AC); doc.textWithLink(tr('Recorré el barrio en 3D'), 14, doc.lastAutoTable.finalY + 15, { url: location.origin + location.pathname + (BROKER ? '?b=' + BROKER.slug : '') });
   pie(); doc.save('barrio-vida-parque-brochure.pdf'); toast(tr('Brochure descargado')); };
 
@@ -538,7 +551,7 @@ const filtrarB = () => UNITS.filter(u => u.estado === 'libre' && (!FB.t || u.t =
 function chips(id, ops, k) { $(id).innerHTML = ops.map(([v, n]) => `<button class="chip${FB[k] === v ? ' on' : ''}" data-v="${v}">${n}</button>`).join('');
   $$(id + ' .chip').forEach(c => c.onclick = () => { const v = c.dataset.v; FB[k] = typeof FB[k] === 'number' ? +v : v; chips(id, ops, k); pintarB(); }); }
 function pintarB() { const R = filtrarB().sort((a, b) => b.lote - a.lote); $('#bN').textContent = R.length; $('#bLoteV').textContent = FB.lote + ' m²';
-  $('#bRes').innerHTML = R.map(u => { const T = CONFIG.tipologias[u.t]; return `<button class="rc" data-n="${u.n}"><b>${tr('Casa')} ${u.n}</b><small>${tr(T.n)} · ${T.dorm} ${tr('dorm.')} · ${u.lote} m² ${tr('de lote')}</small><small>${tr(u.etapa || '')}</small><div class="pr num">${gs(T.precio)}</div></button>`; }).join('') || `<p class="note">No hay casas con esos filtros.</p>`;
+  $('#bRes').innerHTML = R.map(u => { const T = CONFIG.tipologias[u.t]; return `<button class="rc" data-n="${u.n}"><b>${tr('Casa')} ${u.n}</b><small>${tr(T.n)} · ${T.dorm} ${tr('dorm.')} · ${u.lote} m² ${tr('de lote')}</small><small>${tr(u.etapa || '')}</small><div class="pr num">${(u.oculto ? tr('Consultar precio') : gs(PR(u)))}</div></button>`; }).join('') || `<p class="note">No hay casas con esos filtros.</p>`;
   $$('#bRes .rc').forEach(b => b.onclick = () => { cerrarM(); abrir(+b.dataset.n); }); }
 window.abrirBuscar = () => { chips('#bT', [['', tr('Todas')], ...Object.entries(CONFIG.tipologias).map(([k, t]) => [k, tr(t.n)])], 't'); chips('#bD', [[0, tr('Cualquiera')], [2, '2'], [3, '3']], 'd');
   chips('#bE', [['', tr('Todas')], ...etapas.map(e => [e, tr(e)])], 'e'); Object.assign($('#bLote'), { min: LMIN, max: LMAX, step: 5, value: FB.lote || LMIN }); FB.lote = +$('#bLote').value; pintarB(); abrirM('#mBus'); };
