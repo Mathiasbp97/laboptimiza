@@ -85,10 +85,13 @@ def main():
     h = json.load(open('contenido/historias.json')); hoy = ahora.date()
     if ahora.time() >= dt.time(10, 15):
         cuentas = {'d': h['cuentas']['domvra'], 'l': h['cuentas']['laboptimiza']}
-        for sid in h['dias'].get(hoy.isoformat(), []):
+        lista = h['dias'].get(hoy.isoformat(), [])
+        for n, sid in enumerate(lista):
             ig = cuentas[sid[0]]; k = f'hist:{hoy}:{sid}'
             if k in hechos: continue
-            if historia_hoy(ig, hoy): hechos[k] = {'res': 'ya había historia hoy'}; cambios = True; continue
+            previas = [x for x in lista[:n] if x[0] == sid[0]]   # varias historias de la misma cuenta el mismo día: solo la primera mira si ya había una
+            if not previas and historia_hoy(ig, hoy): hechos[k] = {'res': 'ya había historia hoy'}; cambios = True; continue
+            if previas and any(f'hist:{hoy}:{x}' not in hechos for x in previas): continue
             c = api(f'{ig}/media', {'media_type': 'STORIES', 'image_url': h['base'] + sid + '.jpg'})
             if 'id' not in c: print(sid, 'error', c.get('error')); continue
             esperar(c['id'], 120); link, err = publicar(ig, c['id']); print('historia', sid, '->', link or err)

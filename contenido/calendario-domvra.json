@@ -81,7 +81,7 @@
   },
   {
    "id": "r11-cuanto-pago",
-   "cuando": "2026-11-26T12:30-03:00",
+   "cuando": "2026-12-03T12:30-03:00",
    "tipo": "REELS",
    "archivo": "r11-cuanto-pago-por-mes.mp4",
    "thumb_offset": 1500,
@@ -126,6 +126,14 @@
    "archivo": "r16-compu-y-celular.mp4",
    "thumb_offset": "1200",
    "texto": "¿Dónde mira tu comprador? En todos lados 👀\n\n9:40, en la oficina, desde la compu.\n23:40, en el sofá, desde el celular.\n\nEl mismo link: elige piso, ve qué está disponible, calcula sus cuotas y recorre las amenities en 360°. Cualquier lugar, cualquier hora.\n\nTu showroom, abierto 24/7.\nComentá SHOWROOM y te mando la demo 👇\n\n#showroom3d #desarrolloinmobiliario #inmobiliariaparaguay #asuncion #preventa #ktavisual"
+  },
+  {
+   "id": "r17-livo-presentacion",
+   "cuando": "2026-11-26T12:30-03:00",
+   "tipo": "REELS",
+   "archivo": "r17-livo-presentacion.mp4",
+   "thumb_offset": "900",
+   "texto": "Nuevo proyecto ✨ LIVO Botánico, Loma Pytã.\n\nSu showroom 3D ya se puede recorrer, desde la compu o el celular: elegís el piso sobre la fachada, ves qué departamentos están disponibles, entrás a la planta 3D y consultás el precio al instante.\n\n👉 livo3d.pages.dev\n\nShowroom 3D por KTA Visual.\n¿Tenés un proyecto en preventa? Comentá SHOWROOM y te mando la demo 👇\n\n#showroom3d #desarrolloinmobiliario #inmobiliariaparaguay #asuncion #preventa #ktavisual"
   }
  ],
  "pausados": [
