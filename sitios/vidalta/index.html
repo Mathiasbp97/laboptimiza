@@ -337,6 +337,18 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 #dFoot #dWa[aria-label]{flex:none}
 a.btn{text-decoration:none}
 .kTools{display:flex;gap:6px;margin-left:auto;margin-right:8px}.kT{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(15,17,21,.55);backdrop-filter:blur(10px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .15s}.kT:hover{background:rgba(255,255,255,.14)}.kT svg{width:18px;height:18px}@media(max-width:640px){#kQr{display:none}}@media print{.kTools{display:none}}
+#kBusM{position:fixed;inset:0;z-index:85;background:rgba(5,7,9,.62);backdrop-filter:blur(6px);display:none;place-items:center;padding:16px}#kBusM.on{display:grid}
+#kBusM .bb{width:min(880px,100%);max-height:calc(100dvh - 32px);display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--ln);border-radius:18px;overflow:hidden}
+#kBusM .bh{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 6px}#kBusM .bh b{font-size:18px}#kBusM .bh small{display:block;color:var(--tx3);font-size:12.5px;font-weight:400}
+#kBusM .bf{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:10px 20px 14px;border-bottom:1px solid var(--ln)}
+#kBusM .bf label{font-size:12px;color:var(--tx2);display:flex;flex-direction:column;gap:6px}#kBusM .bf output{color:var(--tx);font-variant-numeric:tabular-nums;font-weight:600}
+#kBusM input[type=range]{accent-color:var(--ac);width:100%}#kBusM select{background:var(--bg3);color:var(--tx);border:1px solid var(--ln2);border-radius:9px;padding:8px;font:inherit;font-size:13px}
+#kBusM .chips{display:flex;gap:6px;flex-wrap:wrap}#kBusM .chips button{padding:6px 11px;border-radius:999px;border:1px solid var(--ln2);color:var(--tx2);font-size:12.5px;background:none;cursor:pointer}#kBusM .chips button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+#kBusM .br{overflow:auto;padding:14px 20px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+#kBusM .rc{text-align:left;background:var(--bg3);border:1px solid var(--ln);border-radius:12px;padding:12px;cursor:pointer;color:var(--tx);transition:border-color .15s,transform .15s}#kBusM .rc:hover{border-color:var(--ac);transform:translateY(-1px)}
+#kBusM .rc b{font-size:15px}#kBusM .rc span{display:block;font-size:12.5px;color:var(--tx2)}#kBusM .rc em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums;display:block;margin-top:6px}#kBusM .rc i{float:right;font-style:normal;font-size:11px;padding:2px 7px;border-radius:999px}
+#kBusM .vacio{grid-column:1/-1;text-align:center;color:var(--tx2);padding:30px 0}
+@media(max-width:700px){#kBusM{padding:0}#kBusM .bb{max-height:100dvh;height:100dvh;border-radius:0}#kBusM .bf{grid-template-columns:1fr 1fr}#kBusM .br{grid-template-columns:1fr;gap:8px}#kBusM .rc{padding:10px 12px}}
 </style>
 </head>
 <body class="vT">
@@ -377,10 +389,21 @@ a.btn{text-decoration:none}
     <button data-go="amen">Amenities</button>
     <button data-go="ubi">Ubicación 360°</button>
   </nav>
-  <div class="kTools"><button class="kT" id="kQr" title="Código QR del showroom" aria-label="Código QR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button><button class="kT" id="kFs" title="Pantalla completa" aria-label="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg></button></div>
+  <div class="kTools"><button class="kT" id="kBus" title="Buscar departamento" aria-label="Buscar departamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button><button class="kT" id="kQr" title="Código QR del showroom" aria-label="Código QR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button><button class="kT" id="kFs" title="Pantalla completa" aria-label="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg></button></div>
   <a class="btn btn-w" id="waTop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg><span>Consultar</span></a>
 </header>
 
+<div id="kBusM" role="dialog" aria-modal="true" aria-label="Buscar departamento"><div class="bb">
+ <div class="bh"><div><b>Encontrá tu departamento</b><small id="bCnt"></small></div><button class="x" id="bX" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+ <div class="bf">
+  <label>Dormitorios<div class="chips" id="bDorm"></div></label>
+  <label>Precio hasta <output id="bPo"></output><input type="range" id="bP"></label>
+  <label>Superficie desde <output id="bMo"></output><input type="range" id="bM"></label>
+  <label>Ordenar<select id="bO"><option value="precio">Menor precio</option><option value="-m2">Más grande</option><option value="pm2">Menor precio por m²</option><option value="-piso">Piso más alto</option></select></label>
+  <label style="grid-column:1/-1;flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="bD" checked style="accent-color:var(--ac)"> Solo disponibles</label>
+ </div>
+ <div class="br" id="bRes"></div>
+</div></div>
 <main id="stage">
   <!-- TORRE -->
   <section class="view on" id="vTorre">
@@ -529,6 +552,40 @@ document.addEventListener('DOMContentLoaded', () => {
     catch (er) { toast(er.message + '. Probá por WhatsApp.'); } btn && (btn.disabled = false); };
 });
 function evento(tipo, unidad) { try { fetch(CONFIG.api + '/evento', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, unidad, origen: B_SLUG || new URLSearchParams(location.search).get('utm_source') || document.referrer.split('/')[2] || 'directo' }), keepalive: true }); } catch (e) {} }
+
+
+/* ---------- buscador ---------- */
+(function () {
+  const M = $('#kBusM'), B = { dorm: 0 };
+  const est = { libre: ['Disponible', 'var(--ok)'], reservado: ['Reservado', 'var(--res)'], vendido: ['Vendido', 'var(--ven)'] };
+  function rangos() {
+    const ps = U.map(u => u.precio).filter(Boolean), ms = U.map(u => u.m2);
+    const P = $('#bP'), Mm = $('#bM');
+    if (ps.length) { P.min = Math.floor(Math.min(...ps) / 1000) * 1000; P.max = Math.ceil(Math.max(...ps) / 1000) * 1000; P.step = 1000; if (!P.dataset.t) P.value = P.max; } else P.disabled = true;
+    Mm.min = Math.min(...ms); Mm.max = Math.max(...ms); if (!Mm.dataset.t) Mm.value = Mm.min;
+  }
+  function pintarB() {
+    const P = +$('#bP').value, Mm = +$('#bM').value, soloD = $('#bD').checked, o = $('#bO').value;
+    $('#bPo').textContent = $('#bP').disabled ? '—' : money(P); $('#bMo').textContent = Mm + ' m²';
+    const dorms = [...new Set(Object.values(CONFIG.tipologias).map(t => t.dorm))].sort();
+    $('#bDorm').innerHTML = [[0, 'Todos'], ...dorms.map(d => [d, d + ' dorm.'])].map(([d, t]) => `<button type="button" data-d="${d}" class="${B.dorm === d ? 'on' : ''}">${t}</button>`).join('');
+    let r = U.filter(u => (!B.dorm || CONFIG.tipologias[u.tip].dorm === B.dorm) && u.m2 >= Mm && (!u.precio || $('#bP').disabled || u.precio <= P) && (!soloD || u.estado === 'libre'));
+    const k = { precio: u => u.precio || 1e12, '-m2': u => -u.m2, pm2: u => u.precio ? u.precio / u.m2 : 1e12, '-piso': u => -u.piso }[o];
+    r.sort((a, b) => k(a) - k(b) || a.id.localeCompare(b.id));
+    $('#bCnt').textContent = `${r.length} de ${U.length} departamentos`;
+    $('#bRes').innerHTML = r.length ? r.map(u => { const t = CONFIG.tipologias[u.tip], e = est[u.estado] || est.vendido;
+      return `<button class="rc" data-id="${u.id}"><i style="background:${e[1]};color:#111">${e[0]}</i><b>Depto ${u.id}</b><span>${t.n} · ${t.dorm} dorm. · ${t.banos} baños</span><span>Piso ${u.piso} · ${u.m2} m²</span><em>${u.precio ? money(u.precio) : 'Consultar'}</em></button>`; }).join('')
+      : '<div class="vacio">No hay departamentos con esos filtros.<br>Probá ampliar el precio o la superficie.</div>';
+  }
+  window.abrirBuscador = () => { rangos(); pintarB(); M.classList.add('on'); evento('buscar', ''); };
+  const cerrar = () => M.classList.remove('on');
+  $('#kBus').onclick = abrirBuscador; $('#bX').onclick = cerrar; M.onclick = e => { if (e.target === M) cerrar(); };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+  $('#bP').oninput = () => { $('#bP').dataset.t = 1; pintarB(); }; $('#bM').oninput = () => { $('#bM').dataset.t = 1; pintarB(); };
+  $('#bD').onchange = pintarB; $('#bO').onchange = pintarB;
+  $('#bDorm').onclick = e => { const b = e.target.closest('button'); if (!b) return; B.dorm = +b.dataset.d; pintarB(); };
+  $('#bRes').onclick = e => { const b = e.target.closest('.rc'); if (!b) return; const u = U.find(x => x.id === b.dataset.id); cerrar(); irPiso(u.piso); setTimeout(() => abrirFicha(u.id), 700); };
+})();
 
 /* ---------- datos ---------- */
 let U = [], ACT = '';
