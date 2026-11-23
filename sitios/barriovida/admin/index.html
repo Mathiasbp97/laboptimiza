@@ -78,6 +78,9 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
 @media(max-width:1000px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}.hd{flex-wrap:wrap}nav.tabs{margin-left:0;width:100%}}
 @media(max-width:560px){main{padding:14px}.row{grid-template-columns:1fr}}
 @media print{header,.bar,.btn{display:none}body{background:#fff;color:#000}.card,.kpi{border-color:#ccc;background:#fff}}
+.ajprev{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;font-size:13.5px}
+.ajprev .k{display:flex;justify-content:space-between;gap:10px;padding:3px 0}.ajprev .k b{font-variant-numeric:tabular-nums}
+.ajprev table{width:100%;margin-top:8px;font-size:12.5px}.ajprev td{padding:3px 0;font-variant-numeric:tabular-nums}.ajprev td:last-child{text-align:right}
 </style>
 </head>
 <body>
@@ -108,7 +111,7 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
   </section>
   <!-- UNIDADES -->
   <section class="sec" id="s-uni"><div class="card">
-    <h2><span id="uTit">Unidades</span><span><button class="btn s" id="xU">Exportar Excel</button></span></h2>
+    <h2><span id="uTit">Unidades</span><span><button class="btn s" id="bAj" title="Subir o bajar precios de varias unidades a la vez">Ajustar precios %</button> <button class="btn s" id="xU">Exportar Excel</button></span></h2>
     <div class="bar"><input type="search" id="uQ" placeholder="Buscar…"><select id="uG"></select><select id="uT"></select>
       <select id="uE"><option value="">Todos los estados</option><option value="libre">Disponible</option><option value="reservado">Reservada</option><option value="senado">Señada</option><option value="vendido">Vendida</option><option value="bloqueado">Bloqueada</option></select></div>
     <div class="tw"><table><thead><tr><th data-k="orden" id="thU"></th><th data-k="grupo" id="thG"></th><th data-k="tip">Tipología</th><th data-k="m2">m²</th><th data-k="estado">Estado</th><th data-k="precio">Precio de lista</th><th>Mostrar precio</th><th data-k="vistas">Vistas</th><th></th></tr></thead><tbody id="uB"></tbody></table></div>
@@ -154,6 +157,14 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
   <p class="hint" id="vPlan"></p>
   <div class="f" style="margin-top:10px"><label>Notas</label><textarea id="vO" rows="2"></textarea></div>
   <div class="mact"><button type="button" class="btn" data-close>Cancelar</button><button class="btn p">Guardar</button></div>
+</form></div>
+<div class="modal" id="mAj"><form class="mbox" id="fAj">
+  <h3>Ajuste masivo de precios</h3><p id="ajSub"></p>
+  <div class="row"><div class="f"><label>Variación (%)</label><input id="ajP" type="number" step="0.1" value="10" required><small class="hint">Negativo para bajar. Ej: 10 = +10 %, -5 = −5 %</small></div>
+  <div class="f"><label>Redondear a</label><select id="ajR"></select></div></div>
+  <label style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" id="ajD" checked style="width:auto"> Solo unidades disponibles (no toca reservadas ni vendidas)</label>
+  <div class="ajprev" id="ajPrev"></div>
+  <div class="mact"><button type="button" class="btn" data-close>Cancelar</button><button class="btn p" id="ajOk">Aplicar</button></div>
 </form></div>
 <div class="toast" id="toast"></div>
 
@@ -222,6 +233,24 @@ async function importarSiFalta() {
     await api('/admin/importar', { m: 'POST', b: { unidades: L } }); await cargar(); toast(`Se cargaron ${L.length} ${PANEL.unidad.toLowerCase()}s del showroom`);
   } catch (e) { toast('No se pudieron cargar las unidades iniciales: ' + e.message, 1); } }
 /* ---- datos ---- */
+function filtradasU() { const q = $('#uQ').value.trim().toLowerCase(), g = $('#uG').value, t = $('#uT').value, e = $('#uE').value;
+  return D.unidades.filter(u => (!q || (u.id + ' ' + nomTip(u.tip) + ' ' + u.grupo).toLowerCase().includes(q)) && (!g || u.grupo === g) && (!t || u.tip === t) && (!e || u.estado === e)); }
+function ajCalc() {
+  const pct = Number($('#ajP').value) || 0, r = Number($('#ajR').value) || 1, soloD = $('#ajD').checked;
+  const L = filtradasU().filter(u => (!soloD || u.estado === 'libre') && precioDe(u) != null);
+  const C = L.map(u => { const a = precioDe(u); return { id: u.id, antes: a, precio: Math.max(0, Math.round(a * (1 + pct / 100) / r) * r) }; });
+  return { pct, C };
+}
+function ajPintar() {
+  const { pct, C } = ajCalc(), ta = C.reduce((s, c) => s + c.antes, 0), td = C.reduce((s, c) => s + c.precio, 0);
+  const g = $('#uG').value, t = $('#uT').value, e = $('#uE').value, q = $('#uQ').value.trim();
+  const fil = [g && PANEL.grupo + ' ' + g, t && nomTip(t), e && EST[e], q && '«' + q + '»'].filter(Boolean).join(' · ');
+  $('#ajSub').textContent = 'Se aplica a las unidades que estás viendo en la tabla' + (fil ? ' (' + fil + ')' : ' (todas)') + '. Para limitarlo, usá los filtros antes de abrir esto.';
+  $('#ajPrev').innerHTML = C.length ? `<div class="k"><span>Unidades afectadas</span><b>${C.length}</b></div><div class="k"><span>Total de lista antes</span><b>${money(ta)}</b></div><div class="k"><span>Total de lista después</span><b>${money(td)} (${td >= ta ? '+' : '−'}${money(Math.abs(td - ta))})</b></div>
+    <table>${C.slice(0, 4).map(c => `<tr><td>${esc(PANEL.unidad)} ${esc(c.id)}</td><td>${money(c.antes)} → <b>${money(c.precio)}</b></td></tr>`).join('')}${C.length > 4 ? `<tr><td colspan="2" style="color:#8a8f96">y ${C.length - 4} más…</td></tr>` : ''}</table>`
+    : 'No hay unidades con precio para ajustar con estos filtros.';
+  $('#ajOk').disabled = !C.length || !pct; $('#ajOk').textContent = pct ? `Aplicar ${pct > 0 ? '+' : ''}${pct} % a ${C.length}` : 'Aplicar';
+}
 async function cargar() { D = await api('/admin/todo'); pintar(); }
 const vistas = id => (D.eventos.find(e => e.unidad === id && e.tipo === 'vista') || {}).n || 0;
 const consultasU = id => (D.eventos.find(e => e.unidad === id && e.tipo === 'consulta') || {}).n || 0;
@@ -263,8 +292,7 @@ function unidades() {
   opts('#uG', 'Todos', [...new Set(D.unidades.map(u => u.grupo).filter(Boolean))]);
   const tv = $('#uT').value; $('#uT').innerHTML = '<option value="">Todas las tipologías</option>' + [...new Set(D.unidades.map(u => u.tip))].sort().map(t => `<option value="${esc(t)}">${esc(nomTip(t))}</option>`).join(''); $('#uT').value = tv;
   $('#uG').options[0].textContent = 'Todos: ' + PANEL.grupo.toLowerCase();
-  const q = $('#uQ').value.trim().toLowerCase(), g = $('#uG').value, t = $('#uT').value, e = $('#uE').value;
-  let L = D.unidades.filter(u => (!q || (u.id + ' ' + nomTip(u.tip) + ' ' + u.grupo).toLowerCase().includes(q)) && (!g || u.grupo === g) && (!t || u.tip === t) && (!e || u.estado === e));
+  let L = filtradasU();
   const val = (u, k) => k === 'precio' ? precioDe(u) || 0 : k === 'vistas' ? vistas(u.id) : k === 'orden' ? (isNaN(u.id) ? u.orden : +u.id) : u[k];
   L.sort((a, b) => { const x = val(a, SORT.k), y = val(b, SORT.k); return (x > y ? 1 : x < y ? -1 : 0) * SORT.d; });
   $('#uB').innerHTML = L.length ? L.map(u => `<tr data-id="${esc(u.id)}"><td><b>${esc(u.id)}</b></td><td>${esc(u.grupo || '—')}</td><td>${esc(nomTip(u.tip))}</td><td class="n">${u.m2 ?? '—'}</td>
@@ -342,6 +370,14 @@ $('#fUsr').onsubmit = async ev => { ev.preventDefault(); try { await api('/admin
 $('#fPw').onsubmit = async ev => { ev.preventDefault(); try { await api('/admin/password', { m: 'PUT', b: { actual: $('#pA').value, nueva: $('#pN').value } }); $('#fPw').reset(); toast('Contraseña cambiada'); } catch (e) { toast(e.message, 1); } };
 /* ---- exportar ---- */
 function xls(nombre, filas) { if (!window.XLSX) return toast('Cargando el exportador, probá en un segundo'); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filas), nombre.slice(0, 30)); XLSX.writeFile(wb, `${PANEL.marca} - ${nombre}.xlsx`); toast('Excel descargado'); }
+$('#ajR').innerHTML = (PANEL.moneda === 'PYG' ? [[1, 'Sin redondeo'], [1000, 'Gs. 1.000'], [100000, 'Gs. 100.000'], [1000000, 'Gs. 1.000.000']] : [[1, 'Sin redondeo'], [10, 'USD 10'], [100, 'USD 100'], [1000, 'USD 1.000']]).map(([v, t], i) => `<option value="${v}"${i === 2 ? ' selected' : ''}>${t}</option>`).join('');
+$('#bAj').onclick = () => { ajPintar(); $('#mAj').classList.add('on'); $('#ajP').focus(); };
+['#ajP', '#ajR', '#ajD'].forEach(k => $(k).addEventListener('input', ajPintar));
+$('#fAj').onsubmit = async ev => { ev.preventDefault(); const { pct, C } = ajCalc(); if (!C.length || !pct) return;
+  if (!confirm(`¿Cambiar el precio de ${C.length} unidades (${pct > 0 ? '+' : ''}${pct} %)? Queda registrado en el historial.`)) return;
+  $('#ajOk').disabled = true;
+  try { await api('/admin/precios', { m: 'POST', b: { cambios: C.map(c => ({ id: c.id, precio: c.precio })), detalle: `${pct > 0 ? '+' : ''}${pct} % · redondeo ${$('#ajR').selectedOptions[0].text}` } });
+    $('#mAj').classList.remove('on'); toast(`Precios actualizados en ${C.length} unidades`); await cargar(); } catch (e) { toast(e.message, 1); $('#ajOk').disabled = false; } };
 $('#xU').onclick = () => xls('Unidades', D.unidades.map(u => ({ [PANEL.unidad]: u.id, [PANEL.grupo]: u.grupo, Tipología: nomTip(u.tip), 'm²': u.m2, Estado: EST[u.estado], 'Precio de lista': precioDe(u), 'Mostrar precio': u.mostrar_precio ? 'Sí' : 'No', Vistas: vistas(u.id), Consultas: consultasU(u.id) })));
 $('#xC').onclick = () => xls('Consultas', D.consultas.map(c => ({ Fecha: c.ts.slice(0, 16).replace('T', ' '), Nombre: c.nombre, Teléfono: c.telefono, Email: c.email, [PANEL.unidad]: c.unidad, Interés: c.intencion, Origen: c.origen || 'directo', Estado: ECON[c.estado], Notas: c.notas })));
 setInterval(() => { if (TOK && document.visibilityState === 'visible' && !$('.modal.on') && !document.activeElement.matches('input,select,textarea')) cargar().catch(() => {}); }, 60000);

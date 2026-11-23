@@ -15,6 +15,7 @@
 // Admin (Bearer token)
 //   GET  /api/admin/todo
 //   POST /api/admin/importar           {unidades:[{id,grupo,orden,tip,m2,estado,precio_lista}], reemplazar?}
+//   POST /api/admin/precios            {cambios:[{id,precio}], detalle}  ajuste masivo
 //   PUT  /api/admin/unidad/:id         {estado?, precio_lista?, mostrar_precio?, nota?}
 //   POST /api/admin/venta              {unidad_id, estado, cliente, precio_cerrado, cuotas:[...]}
 //   POST /api/admin/venta/:id/anular
@@ -162,6 +163,20 @@ export async function onRequest(ctx) {
       }
       for (let i = 0; i < q.length; i += 90) await db.batch(q.slice(i, i + 90));
       await log(db, yo.email, 'importar', { unidades: L.length, reemplazo: !!body.reemplazar });
+      return json({ ok: true, n: L.length });
+    }
+
+    if (m === 'POST' && ruta === '/admin/precios') {
+      const L = Array.isArray(body.cambios) ? body.cambios : [];
+      if (!L.length || L.length > 3000) return err('No hay precios para actualizar');
+      const t = ahora(), q = [];
+      for (const x of L) {
+        const id = txt(x.id, 16), pr = Math.round(Number(x.precio));
+        if (!ID.test(id) || !(pr >= 0)) return err('Precio inválido en la unidad ' + id);
+        q.push(db.prepare('UPDATE unidades SET precio_lista=?, updated_at=? WHERE id=?').bind(pr, t, id));
+      }
+      for (let i = 0; i < q.length; i += 90) await db.batch(q.slice(i, i + 90));
+      await log(db, yo.email, 'ajuste masivo de precios', { unidades: L.length, detalle: txt(body.detalle, 200) });
       return json({ ok: true, n: L.length });
     }
 

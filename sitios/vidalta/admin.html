@@ -186,6 +186,13 @@ canvas{max-height:300px}
   .units{grid-template-columns:repeat(4,minmax(0,1fr))}.ut{min-height:58px;padding:7px}.ut small:last-child{display:none}.frow{grid-template-columns:40px 1fr}
 }
 @media print{.top,.tools,#dr,.btn{display:none!important}body{background:#fff;color:#000}.card{border-color:#ccc;background:#fff}}
+#mAj{position:fixed;inset:0;z-index:95;background:rgba(5,7,9,.6);backdrop-filter:blur(4px);display:none;place-items:center;padding:16px}#mAj.on{display:grid}
+#mAj .bx{width:min(500px,100%);background:var(--bg2);border:1px solid var(--ln);border-radius:16px;padding:22px}
+#mAj h3{margin:0 0 4px}#mAj .sub{display:block;margin-bottom:14px}#mAj .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#mAj input[type=number],#mAj select{width:100%}#mAj input[type=checkbox]{width:auto;flex:none}
+#ajPrev{margin-top:12px;background:rgba(255,255,255,.03);border:1px solid var(--ln);border-radius:12px;padding:12px 14px;font-size:13.5px}
+#ajPrev .k{display:flex;justify-content:space-between;padding:3px 0}#ajPrev b{font-variant-numeric:tabular-nums}#ajPrev table{width:100%;margin-top:8px;font-size:12.5px}#ajPrev td:last-child{text-align:right}
+#mAj .ac{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
 </style>
 </head>
 <body>
@@ -270,7 +277,7 @@ canvas{max-height:300px}
       <div class="card" style="margin-bottom:16px"><div class="ph"><div><h3>Tablero por piso</h3><span class="sub">Tocá una unidad para editarla o cargar la venta</span></div><div class="legend"><span><i style="background:var(--ok)"></i>Libre</span><span><i style="background:var(--res)"></i>Reservado</span><span><i style="background:var(--sen)"></i>Señado</span><span><i style="background:var(--ven)"></i>Vendido</span><span><i style="background:var(--blk)"></i>Bloqueado</span><span><i style="background:var(--ven);border-radius:50%;width:7px;height:7px"></i>Cuota vencida</span></div></div>
         <div class="pb"><div class="board" id="board"></div></div></div>
       <div class="card"><div class="ph wrap"><h3>Listado de unidades</h3><div class="tools"><input id="qU" placeholder="Buscar unidad o cliente…"><select id="fE"><option value="">Todos los estados</option><option value="libre">Libre</option><option value="reservado">Reservado</option><option value="senado">Señado</option><option value="vendido">Vendido</option><option value="bloqueado">Bloqueado</option></select>
-        <select id="fT"><option value="">Todas las tipologías</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select></div></div>
+        <select id="fT"><option value="">Todas las tipologías</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option></select><button class="btn btn-g sm" id="bAj" title="Subir o bajar precios de lista de varias unidades a la vez">Ajustar precios %</button></div></div>
         <div class="tw"><table id="tU" class="resp"></table></div></div>
     </div>
 
@@ -317,6 +324,11 @@ canvas{max-height:300px}
 </section>
 
 <div id="dr"><div class="bk" id="drBk"></div><div class="pn"><div class="hd"><div id="drT"></div><button class="x" id="drX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div class="bd" id="drB"></div><div class="ft" id="drF"></div></div></div>
+<div id="mAj" role="dialog" aria-modal="true"><form class="bx" id="fAj"><h3>Ajuste masivo de precios</h3><span class="sub" id="ajSub"></span>
+<div class="g2"><div><label class="f">Variación (%)</label><input id="ajP" type="number" step="0.1" value="10"><span class="sub" style="font-size:12px">Negativo para bajar (ej. -5)</span></div>
+<div><label class="f">Redondear a</label><select id="ajR"><option value="1">Sin redondeo</option><option value="10">USD 10</option><option value="100" selected>USD 100</option><option value="1000">USD 1.000</option></select></div></div>
+<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13.5px"><input type="checkbox" id="ajD" checked> Solo unidades libres (no toca reservadas, señadas ni vendidas)</label>
+<div id="ajPrev"></div><div class="ac"><button type="button" class="btn btn-g sm" id="ajX">Cancelar</button><button class="btn sm" id="ajOk" style="background:var(--ac);color:#fff">Aplicar</button></div></form></div>
 <div id="toast"></div>
 
 <!-- CONTEXTO
@@ -607,6 +619,28 @@ async function guardar() {
 }
 async function anular() { const v = ED.v; const motivo = prompt(`¿Anular la venta de la unidad ${v.unidad_id} a ${v.cliente}? La unidad vuelve a Libre.\nMotivo:`); if (motivo === null) return;
   try { await api(`/admin/venta/${v.id}/anular`, { method: 'POST', body: { motivo } }); toast('Venta anulada'); cerrarDr(); await cargar(); } catch (e) { toast(e.message, 1); } }
+
+/* ---------- ajuste masivo de precios ---------- */
+function ajFiltradas() { const q = $('#qU').value.trim().toLowerCase(), fe = $('#fE').value, ft = $('#fT').value;
+  return DB.unidades.filter(u => { const v = DB.ventaDe[u.id], cl = v ? v.cliente : ''; return (!fe || u.estado === fe) && (!ft || u.tip === ft) && (!q || (u.id + ' ' + cl).toLowerCase().includes(q)); }); }
+function ajCalc() { const pct = Number($('#ajP').value) || 0, r = Number($('#ajR').value) || 1, soloD = $('#ajD').checked;
+  const C = ajFiltradas().filter(u => (!soloD || u.estado === 'libre') && u.precio_lista > 0).map(u => ({ id: u.id, antes: u.precio_lista, precio: Math.max(0, Math.round(u.precio_lista * (1 + pct / 100) / r) * r) }));
+  return { pct, C }; }
+function ajPintar() { const { pct, C } = ajCalc(), ta = C.reduce((s, c) => s + c.antes, 0), td = C.reduce((s, c) => s + c.precio, 0);
+  const fil = [$('#fT').value && 'tipología ' + $('#fT').value, $('#fE').value && EST[$('#fE').value], $('#qU').value.trim() && '«' + $('#qU').value.trim() + '»'].filter(Boolean).join(' · ');
+  $('#ajSub').textContent = 'Se aplica a las unidades del listado' + (fil ? ' filtrado (' + fil + ')' : ' (todas)') + '. Para limitarlo, filtrá antes de abrir esto.';
+  $('#ajPrev').innerHTML = C.length ? `<div class="k"><span>Unidades afectadas</span><b>${C.length}</b></div><div class="k"><span>Total de lista antes</span><b>${money(ta)}</b></div><div class="k"><span>Total de lista después</span><b>${money(td)} (${td >= ta ? '+' : '−'}${money(Math.abs(td - ta))})</b></div>
+    <table>${C.slice(0, 4).map(c => `<tr><td>Depto ${c.id}</td><td>${money(c.antes)} → <b>${money(c.precio)}</b></td></tr>`).join('')}${C.length > 4 ? `<tr><td colspan="2" style="opacity:.6">y ${C.length - 4} más…</td></tr>` : ''}</table>` : 'No hay unidades con precio para ajustar con estos filtros.';
+  $('#ajOk').disabled = !C.length || !pct; $('#ajOk').textContent = pct ? `Aplicar ${pct > 0 ? '+' : ''}${pct} % a ${C.length}` : 'Aplicar'; }
+$('#bAj').onclick = () => { ajPintar(); $('#mAj').classList.add('on'); };
+$('#ajX').onclick = () => $('#mAj').classList.remove('on');
+['#ajP', '#ajR', '#ajD'].forEach(k => $(k).addEventListener('input', ajPintar));
+$('#fAj').onsubmit = async ev => { ev.preventDefault(); const { pct, C } = ajCalc(); if (!C.length || !pct) return;
+  if (!confirm(`¿Cambiar el precio de lista de ${C.length} unidades (${pct > 0 ? '+' : ''}${pct} %)? Queda registrado en Actividad.`)) return;
+  $('#ajOk').disabled = true;
+  try { await api('/admin/precios', { method: 'POST', body: { cambios: C.map(c => ({ id: c.id, precio: c.precio })), detalle: `${pct > 0 ? '+' : ''}${pct} % · redondeo ${$('#ajR').selectedOptions[0].text}` } });
+    $('#mAj').classList.remove('on'); toast(`Precios actualizados en ${C.length} unidades`); await cargar(); } catch (e) { toast(e.message, 1); $('#ajOk').disabled = false; } };
+
 async function cargarSilencioso() { try { DB = await api('/admin/todo'); derivar(); pintarKpis(); pintarBoard(); pintarTablaU(); } catch (e) {} }
 
 /* ---------- cobranzas ---------- */

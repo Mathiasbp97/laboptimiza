@@ -10,6 +10,7 @@
 //   POST /api/login               {email,password} -> {token}
 //   POST /api/logout
 //   GET  /api/admin/todo          unidades, ventas, cuotas, eventos, historial
+//   POST /api/admin/precios        {cambios:[{id,precio}], detalle}  ajuste masivo
 //   PUT  /api/admin/unidad/:id    {estado?, precio_lista?, mostrar_precio?, nota?}
 //   POST /api/admin/venta         {unidad_id, estado, cliente, ..., cuotas:[...]}  (crea o reemplaza la venta activa)
 //   POST /api/admin/venta/:id/anular
@@ -147,6 +148,17 @@ export async function onRequest(ctx) {
       if (est === 'libre' && u.estado !== 'libre') await db.prepare('UPDATE ventas SET activo=0, updated_at=? WHERE unidad_id=? AND activo=1').bind(ahora(), id).run();
       await log(db, yo.email, 'unidad', { id, de: { estado: u.estado, precio: u.precio_lista }, a: { estado: est, precio }, nota: body.nota || '' });
       return json({ ok: true });
+    }
+
+    if (m === 'POST' && ruta === '/admin/precios') {
+      const L = Array.isArray(body.cambios) ? body.cambios : [];
+      if (!L.length || L.length > 500) return err('No hay precios para actualizar');
+      const t = ahora(), q = [];
+      for (const x of L) { const id = String(x.id), pr = Math.round(Number(x.precio)); if (!/^\d{3}$/.test(id) || !(pr >= 0)) return err('Precio inválido en la unidad ' + id);
+        q.push(db.prepare('UPDATE unidades SET precio_lista=?, updated_at=? WHERE id=?').bind(pr, t, id)); }
+      await db.batch(q);
+      await log(db, yo.email, 'ajuste masivo de precios', { unidades: L.length, detalle: String(body.detalle || '').slice(0, 200) });
+      return json({ ok: true, n: L.length });
     }
 
     if (m === 'POST' && ruta === '/admin/venta') {
