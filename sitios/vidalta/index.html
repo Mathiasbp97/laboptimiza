@@ -335,6 +335,8 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
 #kLead .ko{display:none;text-align:center;padding:10px 0}#kLead.done .kf{display:none}#kLead.done .ko{display:block}
 #kChip{position:fixed;left:16px;bottom:74px;z-index:40;padding:8px 12px;border-radius:12px;background:rgba(15,17,20,.82);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);color:#fff;font-size:13px}#kChip small{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9aa0a6}
 #dFoot #dWa[aria-label]{flex:none}
+a.btn{text-decoration:none}
+.kTools{display:flex;gap:6px;margin-left:auto;margin-right:8px}.kT{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(15,17,21,.55);backdrop-filter:blur(10px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .15s}.kT:hover{background:rgba(255,255,255,.14)}.kT svg{width:18px;height:18px}@media(max-width:640px){#kQr{display:none}}@media print{.kTools{display:none}}
 </style>
 </head>
 <body class="vT">
@@ -375,6 +377,7 @@ nav.tabs button.on,nav.tabs button:hover{background:rgba(242,239,233,.1);color:v
     <button data-go="amen">Amenities</button>
     <button data-go="ubi">Ubicación 360°</button>
   </nav>
+  <div class="kTools"><button class="kT" id="kQr" title="Código QR del showroom" aria-label="Código QR"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></button><button class="kT" id="kFs" title="Pantalla completa" aria-label="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3M21 8V5a2 2 0 00-2-2h-3M3 16v3a2 2 0 002 2h3M16 21h3a2 2 0 002-2v-3"/></svg></button></div>
   <a class="btn btn-w" id="waTop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 21.8c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4C2.7 15.6 2.2 13.8 2.2 12 2.2 6.6 6.6 2.2 12 2.2S21.8 6.6 21.8 12 17.4 21.8 12 21.8zM12 0C5.4 0 0 5.4 0 12c0 2.1.6 4.2 1.6 6L0 24l6.2-1.6c1.8 1 3.8 1.5 5.8 1.5 6.6 0 12-5.4 12-12S18.6 0 12 0z"/></svg><span>Consultar</span></a>
 </header>
 
@@ -953,5 +956,38 @@ addEventListener('resize', ajustarTorre); ajustarTorre();
 
 
 
+<script>
+/* KTA · QR imprimible y pantalla completa (sin dependencias fijas: carga qrcode-generator solo al usarlo) */
+window.ktaQR = function (url, titulo, sub) {
+  const go = () => {
+    const q = qrcode(0, 'M'); q.addData(url); q.make();
+    const svg = q.createSvgTag({ cellSize: 10, margin: 2, scalable: true });
+    const w = window.open('', '_blank');
+    if (!w) { alert('Permití las ventanas emergentes para ver el QR.'); return; }
+    const esc = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QR · ${esc(titulo)}</title>
+      <style>body{margin:0;font-family:Inter,system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;background:#fff;color:#111;text-align:center}
+      .c{padding:32px;max-width:520px}.q svg{width:min(78vw,380px);height:auto}h1{font-size:26px;margin:18px 0 4px}p{color:#555;margin:0 0 6px;font-size:15px}small{color:#888;word-break:break-all}
+      .b{margin-top:22px;display:flex;gap:10px;justify-content:center}.b button{padding:10px 16px;border-radius:10px;border:1px solid #ccc;background:#111;color:#fff;font:600 14px Inter,system-ui;cursor:pointer}.b button+button{background:#fff;color:#111}
+      @media print{.b{display:none}}</style></head><body><div class="c"><div class="q">${svg}</div><h1>${esc(titulo)}</h1><p>${esc(sub || 'Escaneá con la cámara del celular')}</p><small>${esc(url)}</small>
+      <div class="b"><button onclick="print()">Imprimir</button><button onclick="descargar()">Descargar imagen</button></div></div>
+      <script>function descargar(){const s=document.querySelector('.q svg'),x=new XMLSerializer().serializeToString(s),i=new Image(),c=document.createElement('canvas');c.width=c.height=1200;
+      i.onload=()=>{const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,1200,1200);g.drawImage(i,0,0,1200,1200);const a=document.createElement('a');a.download='qr.png';a.href=c.toDataURL('image/png');a.click()};
+      i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(x)}<\/script></body></html>`);
+    w.document.close();
+  };
+  if (window.qrcode) return go();
+  const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js'; s.onload = go; s.onerror = () => alert('No se pudo generar el QR. Revisá la conexión.'); document.head.appendChild(s);
+};
+window.ktaPantallaCompleta = function () {
+  const d = document, e = d.documentElement;
+  if (d.fullscreenElement || d.webkitFullscreenElement) (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+  else if (e.requestFullscreen) e.requestFullscreen().catch(() => {});
+  else if (e.webkitRequestFullscreen) e.webkitRequestFullscreen();
+};
+document.getElementById('kQr').onclick=()=>ktaQR(location.origin+location.pathname+(typeof B_SLUG!=='undefined'&&B_SLUG?'?b='+B_SLUG:''),'Vidalta','Escaneá para recorrer el showroom');
+document.getElementById('kFs').onclick=ktaPantallaCompleta;
+if(!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen))document.getElementById('kFs').style.display='none';
+</script>
 </body>
 </html>
