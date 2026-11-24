@@ -111,7 +111,7 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
   </section>
   <!-- UNIDADES -->
   <section class="sec" id="s-uni"><div class="card">
-    <h2><span id="uTit">Unidades</span><span><button class="btn s" id="bAj" title="Subir o bajar precios de varias unidades a la vez">Ajustar precios %</button> <button class="btn s" id="xU">Exportar Excel</button></span></h2>
+    <h2><span id="uTit">Unidades</span><span><button class="btn s" id="bAj" title="Subir o bajar precios de varias unidades a la vez">Ajustar precios %</button> <button class="btn s" id="bLista" title="Carga tipologías, etapas, estados y precios de la lista oficial">Aplicar lista de precios</button> <button class="btn s" id="xU">Exportar Excel</button></span></h2>
     <div class="bar"><input type="search" id="uQ" placeholder="Buscar…"><select id="uG"></select><select id="uT"></select>
       <select id="uE"><option value="">Todos los estados</option><option value="libre">Disponible</option><option value="reservado">Reservada</option><option value="senado">Señada</option><option value="vendido">Vendida</option><option value="bloqueado">Bloqueada</option></select></div>
     <div class="tw"><table><thead><tr><th data-k="orden" id="thU"></th><th data-k="grupo" id="thG"></th><th data-k="tip">Tipología</th><th data-k="m2">m²</th><th data-k="estado">Estado</th><th data-k="precio">Precio de lista</th><th>Mostrar precio</th><th data-k="vistas">Vistas</th><th></th></tr></thead><tbody id="uB"></tbody></table></div>
@@ -153,6 +153,7 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
   <div class="row"><div class="f"><label>Cliente</label><input id="vC" required></div><div class="f"><label>Documento</label><input id="vD"></div></div>
   <div class="row"><div class="f"><label>Teléfono</label><input id="vT" inputmode="tel"></div><div class="f"><label>Email</label><input id="vM" type="email"></div></div>
   <div class="row"><div class="f"><label>Precio cerrado</label><input id="vP" inputmode="numeric" required></div><div class="f"><label>Vendedor / inmobiliaria</label><input id="vV"></div></div>
+  <div class="row"><div class="f" style="flex:1 1 100%"><label>Forma de pago</label><select id="vPl"><option value="">Personalizada</option><option value="contado">Contado</option><option value="si">Sin intereses · anticipo 30 % + 60 cuotas</option><option value="ah">Plan Acción Hogar · cuotas fijas de reserva</option></select></div></div>
   <div class="row"><div class="f"><label>Anticipo %</label><input id="vA" type="number" min="0" max="100" value="30"></div><div class="f"><label>Cuotas (0 = contado)</label><input id="vN" type="number" min="0" max="240" value="0"></div></div>
   <p class="hint" id="vPlan"></p>
   <div class="f" style="margin-top:10px"><label>Notas</label><textarea id="vO" rows="2"></textarea></div>
@@ -168,7 +169,7 @@ td select,td input{padding:5px 8px;font-size:12.5px;width:auto}
 </form></div>
 <div class="toast" id="toast"></div>
 
-<script>window.PANEL={"producto": "Panel de ventas", "marca": "Barrio Vida Parque", "logoTexto": "/img/logo.png", "colorAcento": "#d82b8c", "moneda": "PYG", "locale": "es-PY", "unidad": "Casa", "grupo": "Etapa", "tipologias": {"T1": {"n": "Tipología 1", "precio": 435000000}, "T2": {"n": "Tipología 2", "precio": 465000000}, "T3": {"n": "Tipología 3", "precio": 520000000}}, "showroom": "/", "archivoUnidades": "/kta-unidades.json", "version": "1.0.0"};</script>
+<script>window.PANEL={"producto": "Panel de ventas", "marca": "Barrio Vida Parque", "logoTexto": "/img/logo.png", "colorAcento": "#d82b8c", "moneda": "PYG", "locale": "es-PY", "unidad": "Casa", "grupo": "Etapa", "tipologias": {"T1": {"n": "Tipología 1", "precio": 455000000}, "T2": {"n": "Tipología 2", "precio": 485000000}, "T3": {"n": "Tipología 3", "precio": 525000000}}, "lista": "17/11/2026", "accionHogar": {"cuota": 2000000, "meses": 60}, "showroom": "/", "archivoUnidades": "/kta-unidades.json", "version": "1.0.0"};</script>
 <script>
 /* ===== Configuración del proyecto (lo único que cambia entre proyectos) ===== */
 const PANEL = window.PANEL || {
@@ -312,14 +313,25 @@ $('#uB').addEventListener('click', e => { if (e.target.dataset.venta === undefin
 /* ---- registrar venta ---- */
 let VID = null;
 function abrirVenta(id) { VID = id; const u = D.unidades.find(x => x.id === id); $('#vTit').textContent = `Registrar venta · ${PANEL.unidad} ${id}`; $('#vSub').textContent = `${nomTip(u.tip)} · precio de lista ${money(precioDe(u))}`;
-  $('#fVen').reset(); $('#vF').value = new Date().toISOString().slice(0, 10); $('#vP').value = precioDe(u) || ''; plan(); $('#mVen').classList.add('on'); $('#vC').focus(); }
+  $('#fVen').reset(); $('#vPl').value = ''; $('#vF').value = new Date().toISOString().slice(0, 10); $('#vP').value = precioDe(u) || ''; plan(); $('#mVen').classList.add('on'); $('#vC').focus(); }
 function cuotasPlan() { const P = +$('#vP').value.replace(/\D/g, ''), a = +$('#vA').value, n = +$('#vN').value, f0 = new Date($('#vF').value || Date.now());
-  if (!P || !n) return []; const ant = Math.round(P * a / 100), resto = P - ant, c = Math.floor(resto / n), L = [];
+  if (!P || !n) return []; const L = [];
+  if ($('#vPl').value === 'ah' && PANEL.accionHogar) { const q = PANEL.accionHogar.cuota, m = Math.min(n, Math.floor(P / q));   // reserva con cuotas fijas; el saldo se financia con crédito al terminar la casa
+    for (let i = 1; i <= m; i++) { const f = new Date(f0); f.setMonth(f.getMonth() + i - 1); L.push({ concepto: 'Acción Hogar ' + i, fecha: f.toISOString().slice(0, 10), monto: q }); }
+    if (P - q * m > 0) L.push({ concepto: 'Saldo (crédito)', fecha: '', monto: P - q * m }); return L; }
+  const ant = Math.round(P * a / 100), resto = P - ant, c = Math.floor(resto / n);
   if (ant) L.push({ concepto: 'Anticipo', fecha: f0.toISOString().slice(0, 10), monto: ant });
   for (let i = 1; i <= n; i++) { const f = new Date(f0); f.setMonth(f.getMonth() + i); L.push({ concepto: 'Cuota ' + i, fecha: f.toISOString().slice(0, 10), monto: i === n ? resto - c * (n - 1) : c }); }
   return L; }
-function plan() { const L = cuotasPlan(); $('#vPlan').textContent = L.length ? `Plan: ${L[0].concepto === 'Anticipo' ? 'anticipo ' + money(L[0].monto) + ' + ' : ''}${L.filter(x => x.concepto !== 'Anticipo').length} cuotas de ${money(L[L.length - 1].monto)}` : 'Pago contado: sin plan de cuotas.'; }
+function plan() { const L = cuotasPlan(); if ($('#vPl').value === 'ah') { const q = L.filter(x => x.concepto.startsWith('Acción')); $('#vPlan').textContent = L.length ? `Plan Acción Hogar: ${q.length} cuotas de ${money(q[0] ? q[0].monto : 0)} (precio congelado) + saldo por crédito ${money(L.length > q.length ? L[L.length - 1].monto : 0)}` : 'Cargá el precio y la cantidad de meses.'; return; }
+  $('#vPlan').textContent = L.length ? `Plan: ${L[0].concepto === 'Anticipo' ? 'anticipo ' + money(L[0].monto) + ' + ' : ''}${L.filter(x => x.concepto !== 'Anticipo').length} cuotas de ${money(L[L.length - 1].monto)}` : 'Pago contado: sin plan de cuotas.'; }
 ['#vP', '#vA', '#vN', '#vF'].forEach(s => $(s).addEventListener('input', plan));
+$('#vPl').addEventListener('change', () => { const v = $('#vPl').value; if (v === 'contado') { $('#vA').value = 0; $('#vN').value = 0; } if (v === 'si') { $('#vA').value = 30; $('#vN').value = 60; } if (v === 'ah') { $('#vA').value = 0; $('#vN').value = (PANEL.accionHogar || {}).meses || 60; } plan(); });
+$('#bLista').addEventListener('click', async () => {
+  if (!confirm(`Aplicar la lista de precios ${PANEL.lista || ''}: actualiza tipología, etapa, estado y precio de lista de todas las ${PANEL.unidad.toLowerCase()}s. Los cambios de estado hechos a mano en el panel se reemplazan por los de la lista. ¿Seguimos?`)) return;
+  try { const L = await fetch(PANEL.archivoUnidades, { cache: 'no-store' }).then(r => r.json());
+    await api('/admin/importar', { m: 'POST', b: { unidades: L, actualizar: true } }); await cargar(); toast(`Lista aplicada: ${L.length} ${PANEL.unidad.toLowerCase()}s actualizadas`);
+  } catch (e) { toast('No se pudo aplicar la lista: ' + e.message, 1); } });
 $$('[data-close]').forEach(b => b.onclick = () => $$('.modal').forEach(m => m.classList.remove('on')));
 $('#fVen').onsubmit = async ev => { ev.preventDefault();
   try { await api('/admin/venta', { m: 'POST', b: { unidad_id: VID, estado: $('#vE').value, fecha: $('#vF').value, cliente: $('#vC').value, documento: $('#vD').value, telefono: $('#vT').value, email: $('#vM').value, precio_cerrado: $('#vP').value.replace(/\D/g, ''), vendedor: $('#vV').value, notas: $('#vO').value, cuotas: cuotasPlan() } });

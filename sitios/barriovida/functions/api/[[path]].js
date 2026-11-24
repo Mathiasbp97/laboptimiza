@@ -152,17 +152,17 @@ export async function onRequest(ctx) {
       const L = Array.isArray(body.unidades) ? body.unidades : [];
       if (!L.length || L.length > 3000) return err('Lista de unidades vacía o demasiado grande');
       const n = await db.prepare('SELECT COUNT(*) n FROM unidades').first();
-      if (n.n && !body.reemplazar) return err('Ya hay unidades cargadas. Confirmá si querés reemplazarlas.', 409);
+      if (n.n && !body.reemplazar && !body.actualizar) return err('Ya hay unidades cargadas. Confirmá si querés reemplazarlas.', 409);
       const t = ahora(), q = [];
       if (body.reemplazar) q.push(db.prepare('DELETE FROM unidades'));
       for (const x of L) {
         const id = txt(x.id, 16); if (!ID.test(id)) return err('Unidad con identificador inválido: ' + id);
         const est = ESTADOS.includes(x.estado) ? x.estado : 'libre', pr = x.precio_lista == null || x.precio_lista === '' ? null : Math.round(Number(x.precio_lista));
-        q.push(db.prepare('INSERT INTO unidades (id,grupo,orden,tip,m2,estado,precio_lista,mostrar_precio,updated_at) VALUES (?,?,?,?,?,?,?,?,?)')
+        q.push(db.prepare('INSERT INTO unidades (id,grupo,orden,tip,m2,estado,precio_lista,mostrar_precio,updated_at) VALUES (?,?,?,?,?,?,?,?,?)' + (body.actualizar ? ' ON CONFLICT(id) DO UPDATE SET grupo=excluded.grupo, orden=excluded.orden, tip=excluded.tip, m2=excluded.m2, estado=excluded.estado, precio_lista=excluded.precio_lista, updated_at=excluded.updated_at' : ''))
           .bind(id, txt(x.grupo, 60), Math.round(Number(x.orden) || 0), txt(x.tip, 30), Number(x.m2) || null, est, pr, x.mostrar_precio === 0 ? 0 : 1, t));
       }
       for (let i = 0; i < q.length; i += 90) await db.batch(q.slice(i, i + 90));
-      await log(db, yo.email, 'importar', { unidades: L.length, reemplazo: !!body.reemplazar });
+      await log(db, yo.email, body.actualizar ? 'lista de precios' : 'importar', { unidades: L.length, reemplazo: !!body.reemplazar });
       return json({ ok: true, n: L.length });
     }
 
