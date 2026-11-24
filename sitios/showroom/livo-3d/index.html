@@ -81,12 +81,29 @@ body:not(.night) #kta{color:rgba(20,24,28,.5)}
 #foto{position:fixed;inset:0;z-index:1;background:#0f1214;transition:opacity .9s;pointer-events:none;overflow:hidden}#foto:before{content:'';position:absolute;inset:-40px;background:url(aerea_m.webp) center/cover;filter:blur(28px) brightness(.55)}#foto img{position:absolute;display:block}
 body.foto #c3d{z-index:2}body.foto #lgd,body.foto #kta{opacity:0}#foto.off{opacity:0}
 #ftip{position:fixed;z-index:8;padding:10px 14px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}#ftip b{display:block;font-size:15px;margin-bottom:2px}#ftip.on{opacity:1}#ftip span{color:var(--mut)}
+#nivel{position:fixed;inset:0;z-index:4;background:#363f39;display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .6s}
+#nivel.on{opacity:1;pointer-events:auto}#nvBox{position:relative;transform:scale(.94);transition:transform .8s cubic-bezier(.2,.8,.2,1)}#nivel.on #nvBox{transform:none}
+#nvImg{display:block;max-width:calc(100vw - 320px);max-height:calc(100vh - 150px);border-radius:6px}
+#nvPins{position:absolute;inset:0}.pin{position:absolute;transform:translate(-50%,-50%);font:700 12px "Plus Jakarta Sans",sans-serif;color:#fff;padding:5px 9px 5px 7px;border-radius:99px;background:rgba(15,18,20,.82);border:1.5px solid #34d399;cursor:pointer;display:flex;align-items:center;gap:5px;transition:transform .15s,background .15s;white-space:nowrap}
+.pin i{width:8px;height:8px;border-radius:50%;background:#34d399}.pin.reservado{border-color:#fbbf24}.pin.reservado i{background:#fbbf24}.pin.vendido{border-color:#f87171;opacity:.8}.pin.vendido i{background:#f87171}
+.pin:hover,.pin.sel{transform:translate(-50%,-50%) scale(1.15);background:#c89b5c;z-index:2}
+#nvHead{position:fixed;left:50%;top:18px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;padding:8px 10px;z-index:6}#nvHead b{font-family:Marcellus,serif;font-weight:400;font-size:22px;display:block}#nvHead small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+#nvHead button{width:34px;height:34px;border-radius:10px;border:0;background:rgba(255,255,255,.08);color:#fff;cursor:pointer}#nvHead div{text-align:center;min-width:170px}
+#nvBtns{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:8px;z-index:6}#nvBtns button{font:600 13px "Plus Jakarta Sans",sans-serif;color:#fff;border:0;padding:11px 16px;cursor:pointer}
+body.nv #bar,body.nv #lgd{opacity:0;pointer-events:none}body.nv #top{z-index:7}
+#card .timg{width:100%;border-radius:10px;margin:2px 0 10px;display:block;cursor:zoom-in}#card .tabs{display:flex;gap:6px;margin-bottom:8px}#card .tabs button{flex:1;font:600 12px "Plus Jakarta Sans";padding:7px;border-radius:9px;border:0;background:rgba(255,255,255,.07);color:var(--ink);cursor:pointer}#card .tabs button.on{background:rgba(200,155,92,.3)}
+#card .desc{font-size:12.5px;color:var(--mut);line-height:1.45;margin:2px 0 6px}
+body.nv #card{z-index:8}
+@media (max-width:820px){#nivel{overflow-x:auto;place-items:center start}#nvBox{margin:0 12px}#nvImg{max-width:none;max-height:none;height:min(46vh,380px)}#card{max-height:calc(100vh - 240px);overflow:auto}.pin{font-size:10px;padding:3px 6px 3px 5px}.pin i{width:6px;height:6px}#nvHead{top:96px}#nvBtns{bottom:140px}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
 </head>
 <body>
 <div id="sky"></div>
 <div id="foto"><img src="aerea.webp" alt="LIVO Botánico"></div><div id="c3d"></div><div id="ftip" class="glass"></div>
+<section id="nivel"><div id="nvBox"><img id="nvImg" alt=""><div id="nvPins"></div></div>
+  <div id="nvHead" class="glass"><button id="nvUp" aria-label="Piso de arriba">▲</button><div><small id="nvK"></small><b id="nvT"></b></div><button id="nvDn" aria-label="Piso de abajo">▼</button></div>
+  <div id="nvBtns"><button id="nv3d" class="glass">Ver este piso en 3D</button><button id="nvFoto" class="glass">Vista real</button></div></section>
 <div id="load"><div><small>Showroom 3D interactivo</small><b>LIVO Botánico</b><div id="pb"><i></i></div></div></div>
 <header id="top" class="glass"><div><small>Showroom 3D · modelo BIM</small><h1>LIVO Botánico</h1><div class="demo">Desde el modelo Revit (IFC V02) · 75 departamentos</div></div></header>
 <nav id="floors" class="glass"><h3>Elegí un piso</h3><div id="fl"></div></nav>
@@ -179,7 +196,9 @@ function cargar(url, key) {
   return new Promise(res => loader.load(url, gl => { prog[key] = 1; setP(); res(gl); }, e => { if (e.total) { prog[key] = e.loaded / e.total; setP(); } }, () => res(null)));
 }
 let U = [];
-Promise.all([cargar('est.glb', 'a'), cargar('mue.glb', 'b'), fetch('units.json').then(r => r.json())]).then(([a, b, units]) => {
+let LD = null;
+Promise.all([cargar('est.glb', 'a'), cargar('mue.glb', 'b'), fetch('units.json').then(r => r.json()), fetch('livo_data.json').then(r => r.json())]).then(([a, b, units, ld]) => {
+  LD = ld;
   U = units;
   const todos = []; [a, b].forEach(gl => gl && gl.scene.traverse(o => { if (o.isMesh) todos.push(o); }));
   todos.forEach(o => { const m = /^p(\d)_(\w+)/.exec(o.name) || /^p(\d)_(\w+)/.exec(o.parent?.name || ''); if (!m) return;
@@ -228,8 +247,26 @@ $('#bFoto').onclick = () => { if (FM) return salirFoto(-1); enfocar(-1); control
 function bandaEn(e) { ptr.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera); const h = ray.intersectObjects(bandas)[0]; return h ? h.object : null; }
 function tip(b, e) { const t = $('#ftip'); bandas.forEach(x => x.userData.t = x === b ? .34 : 0); if (!b) { t.classList.remove('on'); renderer.domElement.style.cursor = ''; return; }
   const k = b.userData.k, us = U.filter(u => u.piso === k), lib = us.filter(u => u.estado === 'libre').length; renderer.domElement.style.cursor = 'pointer';
-  t.innerHTML = `<b>${PISOS[k].n}</b>${lib} disponibles de ${us.length} <span>· tocá para entrar</span>`; t.classList.add('on');
+  t.innerHTML = `<b>${PISOS[k].n}</b>${lib} disponibles de ${us.length} <span>· tocá para ver el piso</span>`; t.classList.add('on');
   t.style.left = Math.min(innerWidth - t.offsetWidth - 10, e.clientX + 16) + 'px'; t.style.top = Math.max(10, e.clientY - 56) + 'px'; }
+
+/* ---------- vista de nivel: corte isométrico realista con los deptos ---------- */
+const ISO = { 1: 'isoN13', 2: 'isoN13', 3: 'isoN13', 4: 'isoN4', 5: 'isoN5', 6: 'isoAZ' }; let NV = 0;
+function nivel(k) {
+  if (!ISO[k]) { cerrarNivel(); return FM ? salirFoto(k) : enfocar(k); }
+  NV = k; cerrar(); const key = ISO[k], pos = LD.POS3[key], us = U.filter(u => u.piso === k), lib = us.filter(u => u.estado === 'libre').length;
+  $('#nvK').textContent = lib + ' disponibles de ' + us.length; $('#nvT').textContent = PISOS[k].n;
+  const im = $('#nvImg'); if (!im.src.endsWith(key + '.webp')) im.src = 'img/' + key + '.webp';
+  $('#nvPins').innerHTML = us.map(u => { const p = pos[u.n]; return p ? `<button class="pin ${u.estado}" data-id="${u.id}" style="left:${p[0]}%;top:${p[1]}%"><i></i>${u.id}</button>` : ''; }).join('');
+  $('#nvPins').querySelectorAll('.pin').forEach(b => b.onclick = () => abrir(U.find(u => u.id === b.dataset.id)));
+  document.querySelectorAll('.fl').forEach(b => b.classList.toggle('on', +b.dataset.k === k));
+  $('#nivel').classList.add('on'); document.body.classList.add('nv'); $('#ftip').classList.remove('on'); $('#hint').classList.add('off'); centrarNv(); }
+function centrarNv() { if (innerWidth > 820) return; const n = $('#nivel'), im = $('#nvImg'); if (!im.complete || !im.naturalWidth) { im.onload = centrarNv; return; } requestAnimationFrame(() => n.scrollLeft = (n.scrollWidth - n.clientWidth) / 2); }
+function cerrarNivel() { NV = 0; $('#nivel').classList.remove('on'); document.body.classList.remove('nv'); }
+$('#nvUp').onclick = () => nivel(Math.min(6, NV + 1)); $('#nvDn').onclick = () => nivel(Math.max(1, NV - 1));
+$('#nv3d').onclick = () => { const k = NV; cerrarNivel(); FM ? salirFoto(k) : enfocar(k); };
+$('#nvFoto').onclick = () => { cerrarNivel(); cerrar(); if (!FM) { enfocar(-1); volar({ pos: new THREE.Vector3(...FOTO.pos), tgt: new THREE.Vector3(...FOTO.tgt) }, 900); FOVT = FOTO.fov; setTimeout(() => entrarFoto(), 950); } };
+addEventListener('keydown', e => { if (!NV) return; if (e.key === 'Escape') $('#nvFoto').onclick(); if (e.key === 'ArrowUp') $('#nvUp').onclick(); if (e.key === 'ArrowDown') $('#nvDn').onclick(); });
 
 /* ---------- unidades ---------- */
 const uMeshes = []; const uLabels = [];
@@ -254,7 +291,7 @@ function armarUI() {
   box.innerHTML = [...PISOS].reverse().map(p => { const us = U.filter(u => u.piso === p.k), lib = us.filter(u => u.estado === 'libre').length;
     return `<button class="fl" data-k="${p.k}"><i style="background:${us.length ? (lib ? 'var(--ok)' : 'var(--rd)') : 'var(--mut)'}"></i><b>${p.n}</b><span>${us.length ? lib + ' disp. / ' + us.length : (p.k ? 'Amenities' : 'Acceso')}</span></button>`; }).join('')
     + `<button class="fl all" data-k="-1"><b>Edificio completo</b></button>`;
-  box.querySelectorAll('.fl').forEach(b => b.onclick = () => FM ? salirFoto(+b.dataset.k) : enfocar(+b.dataset.k));
+  box.querySelectorAll('.fl').forEach(b => b.onclick = () => { const k = +b.dataset.k; if (ISO[k]) return nivel(k); cerrarNivel(); FM ? salirFoto(k) : enfocar(k); });
 }
 function enfocar(k) {
   FOCO = k; cerrar();
@@ -279,12 +316,15 @@ function volar(to, ms) { vuelo = { p0: camera.position.clone(), t0: controls.tar
 function abrir(u) {
   hover(u, true);
   const cuota = u.precio * (1 - CONFIG.anticipo) / CONFIG.cuotas;
-  $('#cardB').innerHTML = `<div class="k">${PISOS[u.piso].n} · ${u.tipo}</div><h2>Unidad ${u.id}</h2><span class="st ${u.estado}">${EST[u.estado]}</span>
-    <div class="row"><span>Superficie</span><b>${u.m2} m²</b></div>${u.terraza ? `<div class="row"><span>Terraza</span><b>${u.terraza} m²</b></div>` : ''}<div class="row"><span>Orientación</span><b>${u.orient === 'frente' ? 'Al frente' : 'Al fondo'}</b></div><div class="row"><span>Dormitorios</span><b>${u.dorm || 'Mono'}</b></div>
+  const TT = LD && LD.TIPOS[u.t];
+  $('#cardB').innerHTML = `<div class="k">${PISOS[u.piso].n} · ${TT ? TT.nombre : u.tipo}</div><h2>Depto ${u.id}</h2>${TT ? `<div class="tabs"><button class="on" data-i="${TT.img}">Render</button><button data-i="p2${u.t}">Planta</button></div><img class="timg" src="img/${TT.img}.webp" alt="Tipología ${u.t}"><p class="desc">${TT.desc}</p>` : ''}<span class="st ${u.estado}">${EST[u.estado]}</span>
+    <div class="row"><span>Superficie</span><b>${u.m2} m²</b></div>${u.terraza ? `<div class="row"><span>Terraza</span><b>${u.terraza} m²</b></div>` : ''}<div class="row"><span>Orientación</span><b>${u.orient === 'frente' ? 'Al frente' : 'Al fondo'}</b></div><div class="row"><span>Dormitorios · baños</span><b>${u.dorm || 'Mono'} · ${u.banos || 1}</b></div>
     ${u.estado !== 'vendido' ? (u.precio ? `<div class="price">${money(u.precio)}</div><div class="cuota">Anticipo ${CONFIG.anticipo * 100}% + ${CONFIG.cuotas} cuotas de ${money(cuota)}</div>` : '<div class="price">Consultar precio</div>') : '<div class="cuota" style="margin-top:12px">Esta unidad ya fue vendida. Mirá las disponibles en verde.</div>'}
-    <div class="btns">${u.estado !== 'vendido' ? `<a class="btn p" target="_blank" href="https://wa.me/${CONFIG.wa}?text=${encodeURIComponent('Hola! Me interesa el departamento ' + u.id + ' de LIVO Botánico')}">Consultar por WhatsApp</a>` : ''}<button class="btn g" id="bVer">Ver unidad de cerca</button></div>`;
+    <div class="btns">${u.estado !== 'vendido' ? `<a class="btn p" target="_blank" href="https://wa.me/${CONFIG.wa}?text=${encodeURIComponent('Hola! Me interesa el departamento ' + u.id + ' de LIVO Botánico')}">Consultar por WhatsApp</a>` : ''}${NV ? '' : '<button class="btn g" id="bVer">Ver unidad de cerca</button>'}</div>`;
   $('#card').classList.add('on');
-  $('#bVer').onclick = () => { const e = PISOS[u.piso].e; volar({ pos: new THREE.Vector3(u.c[0] + 9, e + 13, u.c[1] + 12), tgt: new THREE.Vector3(u.c[0], e, u.c[1]) }, 1200); };
+  document.querySelectorAll('#card .tabs button').forEach(b => b.onclick = () => { document.querySelectorAll('#card .tabs button').forEach(x => x.classList.toggle('on', x === b)); $('#card .timg').src = 'img/' + b.dataset.i + '.webp'; });
+  document.querySelectorAll('.pin').forEach(p => p.classList.toggle('sel', p.dataset.id === u.id));
+  if ($('#bVer')) $('#bVer').onclick = () => { const e = PISOS[u.piso].e; volar({ pos: new THREE.Vector3(u.c[0] + 9, e + 13, u.c[1] + 12), tgt: new THREE.Vector3(u.c[0], e, u.c[1]) }, 1200); };
 }
 function cerrar() { $('#card').classList.remove('on'); hover(null, true); }
 $('#cardX').onclick = cerrar;
@@ -300,7 +340,7 @@ const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null;
 renderer.domElement.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; controls.autoRotate = false; });
 renderer.domElement.addEventListener('pointerup', e => {
   if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
-  if (FM) { const b = bandaEn(e); if (b) { tip(null); salirFoto(b.userData.k); } return; }
+  if (FM) { const b = bandaEn(e); if (b) { tip(null); nivel(b.userData.k); } return; }
   ptr.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera);
   if (FOCO >= 0) { const h = ray.intersectObjects(uMeshes.filter(m => m.visible))[0]; if (h) return abrir(h.object.userData.u); }
   else { // clic en el edificio: elegir el piso según la altura del punto
