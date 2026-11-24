@@ -814,13 +814,15 @@ const hs = (txt, p, ir) => { const el = document.createElement('div'); el.classN
 hs('Parque central', D.park, 'parque'); hs('Acceso y seguridad 24 h', D.gate, 'casa');
 /* ---------- vista «Lotes»: cada lote coloreado por su cuota mensual ---------- */
 const QA = new THREE.Color(0x0b2a6b), QB = new THREE.Color(0x9cc3f5);
-function pintarCuotas(units) { const S = window.QS || { min: 0, max: 1 };
+let texL = null; const mapaPlano = on => { if (on && !texL) { texL = new THREE.TextureLoader().load('img/plan3d-lotes.webp'); texL.colorSpace = THREE.SRGBColorSpace; texL.anisotropy = tex.anisotropy; }
+  const t = on ? texL : tex; if (plan.material.map !== t) { plan.material.map = t; plan.material.needsUpdate = true; } };
+function pintarCuotas(units) { const S = window.QS || { min: 0, max: 1 }; mapaPlano(true);
   units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; const el = lotLbl[u.n].element;
-    if (!u.lt) { m.material.color.setHex(0xb8bdb9); m.userData.base = .5; m.material.opacity = .5; m.userData.ed.material.opacity = .35; el.className = 'l3 q casa'; el.innerHTML = `${u.n}<small>casa</small>`; return; }
+    if (!u.lt) { m.material.color.setHex(0xb8bdb9); m.userData.base = .5; m.material.opacity = .5; m.userData.ed.material.opacity = .35; el.style.background = el.style.color = ''; el.className = 'l3 q casa'; el.innerHTML = `${u.n}<small>casa</small>`; return; }
     if (u.estado !== 'libre') { m.material.color.setHex(u.estado === 'vendido' ? 0x8a9590 : 0xf59e0b); m.userData.base = .55; m.material.opacity = .55; m.userData.ed.material.opacity = .4; el.className = 'l3 q ' + u.estado; el.innerHTML = `${u.n}<small>${EST[u.estado].toLowerCase()}</small>`; return; }
     const c = cuotaU(u), t = Math.min(1, Math.max(0, (c - S.min) / ((S.max - S.min) || 1)));
-    m.material.color.copy(QA).lerp(QB, t); m.userData.base = .82; m.material.opacity = .82; m.userData.ed.material.opacity = .7;
-    el.className = 'l3 q'; el.innerHTML = u.oculto ? `${u.n}<small>consultar</small>` : `${u.n}<small>${mM(c)}</small>`; }); }
+    m.material.color.copy(QA).lerp(QB, t); m.userData.base = 0; m.material.opacity = 0; m.userData.ed.material.opacity = 0;
+    el.className = 'l3 q'; const lc = QA.clone().lerp(QB, t * .75); el.style.background = '#' + lc.getHexString(); el.style.color = t > .62 ? '#0b1a33' : '#fff'; el.innerHTML = u.oculto ? `${u.n}<small>consultar</small>` : `${u.n}<small>${mM(c)}</small>`; }); }
 /* ---------- API para el showroom ---------- */
 let SEL = null, F = 'todas';
 /* =====================================================================
@@ -892,7 +894,7 @@ function modo(m, despues) { if (!FOTO) return; DEST = m; if (m === MODO) { despu
     requestAnimationFrame(() => { fade.style.opacity = 0; despues && despues(); }); }, 300); }
 window.__bvp = { scene, camera, renderer, controls, lotMesh, lotLbl, satMats, THREE, VW };
 window.BVP3D = {
-  pintar(units, filtro) { F = filtro; if (window.QON) return pintarCuotas(units); units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; lotLbl[u.n].element.textContent = u.n; const off = filtro !== 'todas' && (filtro === 'libre' ? u.estado !== 'libre' : u.t !== filtro);
+  pintar(units, filtro) { F = filtro; if (window.QON) return pintarCuotas(units); mapaPlano(false); units.forEach(u => { const m = lotMesh[u.n]; if (!m) return; lotLbl[u.n].element.textContent = u.n; lotLbl[u.n].element.style.background = lotLbl[u.n].element.style.color = ''; const off = filtro !== 'todas' && (filtro === 'libre' ? u.estado !== 'libre' : u.t !== filtro);
     m.material.color.setHex(COL[u.estado] || 0xffffff); m.userData.base = off ? .02 : (u.estado === 'libre' ? .05 : .32); m.material.opacity = m.userData.base; m.userData.ed.material.opacity = off ? .1 : .6;
     lotLbl[u.n].element.className = 'l3 ' + u.estado + (off ? ' off' : ''); }); },
   sel(n) { if (SEL && lotMesh[SEL]) { lotMesh[SEL].material.opacity = lotMesh[SEL].userData.base; lotLbl[SEL].element.classList.remove('sel'); } SEL = n;
