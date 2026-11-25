@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Torres Pinedo · Showroom</title>
+<meta name="description" content="Showroom digital: disponibilidad en vivo, tipologías y recorridos 360°.">
+<meta name="theme-color" content="#0F1115">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!--
+CONTEXTO
+Showroom propio de Torres Pinedo (6 torres). Un solo archivo + assets estáticos:
+  pano/<id>_<cara>.webp   caras de cubo de cada 360 (f,b,l,r,u,d · 1536px)
+  planos/<tip>.png        planos por tipología (SA,SB,1A,1B,1C,2D,3D) y GEN (implantación)
+  tour.json               360s: nombre, grupo (tipología o AM=amenities), ubicación en plano y enlaces
+  unidades.glb            volumen real de cada unidad dentro de su torre (nombre T0t_Pff_nnn)
+Datos: respaldo embebido (UNI) + /api/public (panel KTA, base D1) que pisa estado/precio/tipología.
+Para unidades que fusionan módulos (2 y 3 dormitorios) completar CONFIG.fusiones con los volúmenes.
+Extender: nuevas tipologías en CONFIG.tipologias; nuevos 360 en tour.json.
+-->
+<style>
+:root{--bg:#0F1115;--bg2:#16181D;--bg3:#1D2026;--ln:rgba(255,255,255,.08);--tx:#ECEDEF;--tx2:#A3A8B3;--tx3:#6F7581;--ac:#C8A15A;--ok:#10B981;--wa:#F59E0B;--no:#EF4444;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+#top{position:fixed;inset:0 0 auto 0;height:60px;display:flex;align-items:center;gap:16px;padding:0 20px;z-index:40;background:linear-gradient(rgba(15,17,21,.92),rgba(15,17,21,.55) 70%,transparent);pointer-events:none}
+#top>*{pointer-events:auto}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em}
+.logo b{width:34px;height:34px;border-radius:10px;background:var(--ac);color:#111;display:grid;place-items:center;font-size:13px}
+.logo small{display:block;font-weight:500;color:var(--tx2);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+nav{display:flex;gap:4px;margin-left:auto;background:rgba(22,24,29,.8);border:1px solid var(--ln);border-radius:12px;padding:4px;backdrop-filter:blur(10px)}
+nav button{padding:8px 14px;border-radius:9px;color:var(--tx2);font-weight:500;transition:.15s}
+nav button:hover{color:var(--tx)}
+nav button.on{background:var(--bg3);color:var(--tx)}
+.vw{position:fixed;inset:0;display:none}
+.vw.on{display:block}
+canvas{display:block;touch-action:none}
+/* hero */
+#hero .ov{position:absolute;left:0;right:0;bottom:0;padding:48px 28px 34px;background:linear-gradient(transparent,rgba(15,17,21,.85));pointer-events:none}
+#hero h1{font-size:clamp(28px,4.6vw,54px);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+#hero p{color:var(--tx2);max-width:560px;margin:10px 0 20px;font-size:15px}
+#hero .ctas{display:flex;gap:10px;flex-wrap:wrap;pointer-events:auto}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;font-weight:600;transition:.15s;border:1px solid var(--ln);background:var(--bg2)}
+.btn:hover{background:var(--bg3)}
+.btn.p{background:var(--ac);color:#15120A;border-color:transparent}
+.btn.p:hover{filter:brightness(1.08)}
+.kpis{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.kpi{background:rgba(22,24,29,.75);border:1px solid var(--ln);border-radius:12px;padding:10px 14px;backdrop-filter:blur(8px)}
+.kpi b{display:block;font-size:20px}
+.kpi span{color:var(--tx2);font-size:12px}
+/* disponibilidad */
+#side{position:absolute;top:72px;left:16px;bottom:16px;width:290px;background:rgba(22,24,29,.92);border:1px solid var(--ln);border-radius:var(--r);padding:16px;overflow:auto;z-index:5;backdrop-filter:blur(10px)}
+#side h3{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--tx3);margin:16px 0 8px;font-weight:600}
+#side h3:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 11px;border-radius:9px;border:1px solid var(--ln);background:var(--bg);color:var(--tx2);font-size:13px;transition:.15s}
+.chip:hover{color:var(--tx)}
+.chip.on{background:var(--ac);color:#15120A;border-color:transparent;font-weight:600}
+.leg{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--tx2)}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.cnt{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.cnt div{background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:8px}
+.cnt b{display:block;font-size:17px}
+.cnt span{font-size:11px;color:var(--tx3)}
+#pisoBox{display:none}
+#piso{width:100%;accent-color:var(--ac)}
+.mode{position:absolute;top:72px;right:16px;z-index:5;display:flex;gap:4px;background:rgba(22,24,29,.9);border:1px solid var(--ln);border-radius:12px;padding:4px}
+.mode button{padding:7px 12px;border-radius:9px;color:var(--tx2)}
+.mode button.on{background:var(--bg3);color:var(--tx)}
+#tip{position:fixed;pointer-events:none;background:rgba(15,17,21,.95);border:1px solid var(--ln);border-radius:10px;padding:8px 10px;font-size:12px;z-index:60;display:none;white-space:nowrap}
+#tip b{font-size:13px}
+#lista{position:absolute;top:120px;left:322px;right:16px;bottom:16px;background:var(--bg2);border:1px solid var(--ln);border-radius:var(--r);display:none;flex-direction:column;z-index:6}
+#lista.on{display:flex}
+#lista .bar{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--ln);align-items:center}
+#q{flex:1;background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:9px 12px;outline:none}
+#q:focus{border-color:var(--ac)}
+.tw{overflow:auto;flex:1}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--bg2);text-align:left;color:var(--tx3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--ln);white-space:nowrap}
+th:hover{color:var(--tx)}
+td{padding:10px 12px;border-bottom:1px solid var(--ln)}
+tr.r{cursor:pointer;transition:.12s}
+tr.r:hover{background:var(--bg3)}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.st:before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.s-libre{color:var(--ok)}.s-reservado,.s-senado{color:var(--wa)}.s-vendido{color:var(--no)}.s-bloqueado{color:var(--tx3)}
+/* ficha */
+#ficha{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--bg2);border-left:1px solid var(--ln);z-index:50;transform:translateX(105%);transition:transform .2s ease;display:flex;flex-direction:column}
+#ficha.on{transform:none}
+#ficha .hd{padding:18px 20px;border-bottom:1px solid var(--ln);display:flex;align-items:flex-start;gap:10px}
+#ficha .hd h2{font-size:20px}
+#ficha .hd p{color:var(--tx2);font-size:13px;margin-top:2px}
+.x{margin-left:auto;width:34px;height:34px;border-radius:10px;border:1px solid var(--ln);display:grid;place-items:center;font-size:18px;color:var(--tx2)}
+.x:hover{color:var(--tx);background:var(--bg3)}
+#ficha .bd{padding:18px 20px;overflow:auto;flex:1}
+.plano{background:#F3F1EC;border-radius:12px;padding:10px;margin-bottom:14px;cursor:zoom-in}
+.plano img{width:100%;display:block}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.dl div{background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:10px}
+.dl span{display:block;font-size:11px;color:var(--tx3);margin-bottom:2px}
+.dl b{font-size:15px}
+.precio{background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-bottom:14px}
+.precio span{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
+.precio b{display:block;font-size:24px;margin-top:4px}
+.acts{display:grid;gap:8px}
+.acts .btn{justify-content:center}
+.form{display:none;gap:8px;margin-top:10px}
+.form.on{display:grid}
+.form input{background:var(--bg);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;outline:none}
+.form input:focus{border-color:var(--ac)}
+/* tipologias / amenities */
+.grid{position:absolute;inset:72px 0 0 0;overflow:auto;padding:8px 20px 30px}
+.grid h2{font-size:22px;margin:6px 0 4px}
+.grid>p{color:var(--tx2);margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--bg2);border:1px solid var(--ln);border-radius:var(--r);overflow:hidden;transition:.15s;display:flex;flex-direction:column}
+.card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
+.card .im{background:#F3F1EC;aspect-ratio:4/3;display:grid;place-items:center;padding:10px}
+.card .im img{width:100%;height:100%;object-fit:contain}
+.card .ph{aspect-ratio:16/10;background-size:cover;background-position:center}
+.card .c{padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card h4{font-size:15px}
+.card .m{color:var(--tx2);font-size:12px}
+.card .row{display:flex;gap:6px;margin-top:auto}
+.card .row .btn{padding:8px 12px;font-size:13px;flex:1;justify-content:center}
+/* 360 */
+#v360{position:fixed;inset:0;z-index:70;background:#000;display:none}
+#v360.on{display:block}
+#v360 .hd{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;align-items:center;gap:10px;background:linear-gradient(rgba(0,0,0,.7),transparent);z-index:3}
+#v360 .hd h3{font-size:16px}
+#v360 .hd p{font-size:12px;color:var(--tx2)}
+#tabs360{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3;max-width:calc(100% - 24px);overflow:auto;padding:4px;background:rgba(15,17,21,.75);border:1px solid var(--ln);border-radius:12px;backdrop-filter:blur(8px)}
+#tabs360 button{padding:7px 12px;border-radius:9px;color:var(--tx2);white-space:nowrap;font-size:13px}
+#tabs360 button.on{background:var(--ac);color:#15120A;font-weight:600}
+#mini{position:absolute;left:16px;bottom:76px;width:260px;background:#F3F1EC;border-radius:12px;z-index:3;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+#mini img{width:100%;display:block}
+#mini .pt{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#6F7581;border:2px solid #fff;cursor:pointer}
+#mini .pt.on{background:var(--ac)}
+#cone{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;pointer-events:none}
+.hs{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.hs i{width:38px;height:38px;border-radius:50%;border:2px solid #fff;background:rgba(200,161,90,.35);box-shadow:0 0 0 6px rgba(255,255,255,.12);transition:.15s}
+.hs:hover i{background:var(--ac);transform:scale(1.1)}
+.hs span{background:rgba(15,17,21,.85);padding:4px 9px;border-radius:8px;font-size:12px;white-space:nowrap}
+#c360{position:absolute;inset:0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;background:var(--bg3);border:1px solid var(--ln);padding:10px 16px;border-radius:12px;z-index:90;transition:.2s;font-weight:500}
+#toast.on{transform:translate(-50%,0);opacity:1}
+#load{position:fixed;inset:0;background:var(--bg);z-index:100;display:grid;place-items:center;transition:opacity .3s}
+#load div{width:160px;height:3px;background:var(--bg3);border-radius:3px;overflow:hidden}
+#load div i{display:block;height:100%;width:40%;background:var(--ac);animation:ld 1s infinite ease-in-out}
+@keyframes ld{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:95;display:none;place-items:center;padding:20px}
+#zoom.on{display:grid}
+#zoom img{max-width:100%;max-height:100%;background:#F3F1EC;border-radius:12px;padding:12px}
+#fsBtn{display:none}
+@media (max-width:820px){
+  #top{height:auto;padding:10px 12px;flex-wrap:wrap;gap:8px}
+  .logo small{display:none}
+  nav{order:3;width:100%;margin:0;overflow:auto}
+  nav button{flex:1;padding:8px 8px;font-size:13px;white-space:nowrap}
+  #side{top:auto;left:0;right:0;bottom:0;width:auto;max-height:44vh;border-radius:16px 16px 0 0;padding:12px 14px}
+  #side.min{max-height:62px;overflow:hidden}
+  #fsBtn{display:block;width:100%;text-align:center;color:var(--tx3);font-size:12px;padding:0 0 8px}
+  .mode{top:104px;right:10px}
+  #lista{top:150px;left:8px;right:8px;bottom:8px;z-index:7}
+  .grid{inset:104px 0 0 0;padding:8px 12px 30px}
+  #mini{width:170px;bottom:70px;left:10px}
+  #hero .ov{padding:30px 16px 24px}
+  .kpi b{font-size:17px}
+}
+@media (max-height:500px) and (orientation:landscape){
+  #top{flex-wrap:nowrap;padding:6px 12px}
+  nav{order:0;width:auto;margin-left:auto}
+  #side{top:56px;left:8px;bottom:8px;right:auto;width:250px;max-height:none;border-radius:14px}
+  #side.min{max-height:none}
+  #fsBtn{display:none}
+  .mode{top:56px}
+  #lista{top:100px;left:266px}
+  .grid{inset:56px 0 0 0}
+  #mini{width:150px;bottom:60px}
+  #hero p{display:none}
+  #hero .ov{padding:20px 16px 16px}
+}
+@media print{
+  body{overflow:visible;background:#fff;color:#111}
+  #top,#side,.mode,#v360,#hero,#tipos,#amen,canvas,#toast,#load{display:none!important}
+  #disp,#lista{position:static;display:block!important;border:0}
+  .tw{overflow:visible}
+  th,td{color:#111;border-color:#ddd}
+}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="load"><div><i></i></div></div>
+<header id="top">
+  <div class="logo"><b id="lgT">TP</b><div><span id="lgN">Torres Pinedo</span><small id="lgS">Showroom digital</small></div></div>
+  <nav id="nav">
+    <button data-v="hero" class="on">Proyecto</button>
+    <button data-v="disp">Disponibilidad</button>
+    <button data-v="tipos">Tipologías</button>
+    <button data-v="amen">Amenities</button>
+  </nav>
+</header>
+
+<section class="vw on" id="hero">
+  <div id="cHero" style="position:absolute;inset:0"></div>
+  <div class="ov">
+    <h1 id="hT">Seis torres, una vida simple.</h1>
+    <p id="hP">Recorré el proyecto en 360°, elegí tu unidad sobre las torres y mirá por dentro cada tipología.</p>
+    <div class="ctas">
+      <button class="btn p" onclick="go('disp')">Ver disponibilidad</button>
+      <button class="btn" onclick="go('tipos')">Tipologías</button>
+      <button class="btn" onclick="go('amen')">Amenities 360°</button>
+    </div>
+    <div class="kpis" id="hK"></div>
+  </div>
+</section>
+
+<section class="vw" id="disp">
+  <div id="c3d" style="position:absolute;inset:0"></div>
+  <aside id="side">
+    <button id="fsBtn" onclick="side.classList.toggle('min');dispatchEvent(new Event('resize'))">Filtros ▾</button>
+    <h3>Resumen</h3>
+    <div class="cnt" id="cnt"></div>
+    <h3>Torre</h3>
+    <div class="chips" id="fT"></div>
+    <div id="pisoBox"><h3>Piso <span id="pisoV" class="num" style="color:var(--tx)"></span></h3><input type="range" id="piso" min="0" max="9" value="9"></div>
+    <h3>Tipología</h3>
+    <div class="chips" id="fP"></div>
+    <h3>Estado</h3>
+    <div class="chips" id="fE"></div>
+    <h3>Referencias</h3>
+    <div class="leg"><span><i style="background:var(--ok)"></i>Disponible</span><span><i style="background:var(--wa)"></i>Reservado</span><span><i style="background:var(--no)"></i>Vendido</span><span><i style="background:#4B505A"></i>No disponible</span></div>
+  </aside>
+  <div class="mode"><button class="on" data-m="3d">Torres 3D</button><button data-m="lista">Lista</button></div>
+  <div id="lista">
+    <div class="bar"><input id="q" placeholder="Buscar unidad, torre o tipología…"><button class="btn" onclick="exportar()">Excel</button><button class="btn" onclick="print()">Imprimir</button></div>
+    <div class="tw"><table><thead><tr><th data-k="id">Unidad</th><th data-k="t">Torre</th><th data-k="p">Piso</th><th data-k="tip">Tipología</th><th data-k="m2">m²</th><th data-k="precio">Precio</th><th data-k="e">Estado</th></tr></thead><tbody id="tb"></tbody></table></div>
+  </div>
+</section>
+
+<section class="vw" id="tipos"><div class="grid"><h2>Tipologías</h2><p>Plano y recorrido 360° de cada tipología, con las unidades disponibles hoy.</p><div class="cards" id="cTip"></div></div></section>
+<section class="vw" id="amen"><div class="grid"><h2>Amenities y áreas comunes</h2><p>Recorré cada espacio en 360°.</p><div class="cards" id="cAm"></div></div></section>
+
+<aside id="ficha">
+  <div class="hd"><div><h2 id="fN"></h2><p id="fS"></p></div><button class="x" onclick="cerrarFicha()">×</button></div>
+  <div class="bd">
+    <div class="plano" id="fPl" onclick="zoomImg(this.querySelector('img').src)"><img alt="Plano"></div>
+    <div class="dl" id="fD"></div>
+    <div class="precio"><span>Precio</span><b class="num" id="fPr"></b><small id="fPn" style="color:var(--tx3)"></small></div>
+    <div class="acts">
+      <button class="btn p" id="f360">Recorrer en 360°</button>
+      <button class="btn" id="fWa">Consultar por WhatsApp</button>
+      <button class="btn" onclick="fForm.classList.toggle('on')">Quiero que me contacten</button>
+    </div>
+    <div class="form" id="fForm">
+      <input id="lN" placeholder="Nombre y apellido" autocomplete="name">
+      <input id="lT" placeholder="Teléfono" inputmode="tel" autocomplete="tel">
+      <input id="lE" placeholder="Email (opcional)" inputmode="email" autocomplete="email">
+      <button class="btn p" onclick="enviarLead()">Enviar</button>
+    </div>
+  </div>
+</aside>
+
+<div id="v360">
+  <div id="c360"></div>
+  <div class="hd"><div><h3 id="t360"></h3><p id="s360"></p></div><button class="x" onclick="cerrar360()">×</button></div>
+  <div id="mini"><img alt=""><svg id="cone" viewBox="-35 -35 70 70"><path d="M0 0 L-22 -30 A37 37 0 0 1 22 -30 Z" fill="rgba(200,161,90,.45)"/></svg></div>
+  <div id="tabs360"></div>
+</div>
+<div id="tip"></div>
+<div id="toast"></div>
+<div id="zoom" onclick="this.classList.remove('on')"><img alt=""></div>
+
+<script>
+/* ======================= CONFIG (rebrandeo y datos editables) ======================= */
+const CONFIG = {
+  producto:   "Showroom digital",
+  marca:      "Torres Pinedo",
+  logoTexto:  "TP",
+  colorAcento:"#C8A15A",
+  moneda:     "PYG",
+  locale:     "es-PY",
+  version:    "1.0.0",
+  whatsapp:   "",            // número con código de país, ej. 595981000000. Vacío = solo formulario
+  mostrarPrecios: true,      // si el panel no tiene precio cargado se muestra "Consultar"
+  tipologias: {
+    SA:{n:"Monoambiente A", d:0},  SB:{n:"Monoambiente B", d:0},
+    "1A":{n:"1 dormitorio A", d:1}, "1B":{n:"1 dormitorio B", d:1}, "1C":{n:"1 dormitorio C", d:1},
+    "2D":{n:"2 dormitorios", d:2},  "3D":{n:"3 dormitorios", d:3}
+  },
+  // Unidades que ocupan más de un módulo (2 y 3 dormitorios): id → volúmenes que pinta
+  fusiones: {},
+  pisos: 9
+};
+const UNI = [["T1-PB01","SA",37.25,"libre"],["T1-PB02","1C",46.52,"reservado"],["T1-PB03","1B",50.26,"libre"],["T1-PB04","SB",27.2,"libre"],["T1-PB05","1C",46.52,"libre"],["T1-PB06","1B",50.26,"libre"],["T1-PB07","SB",27.2,"libre"],["T1-PB08","1A",46.27,"libre"],["T1-PB09","SB",27.2,"libre"],["T1-101","SA",29.9,"libre"],["T1-102","1C",42.37,"libre"],["T1-103","1B",38.26,"libre"],["T1-104","SB",27.2,"libre"],["T1-105","1C",42.37,"libre"],["T1-106","1B",38.26,"libre"],["T1-107","SB",27.2,"libre"],["T1-108","1A",37.57,"libre"],["T1-109","SB",27.2,"libre"],["T1-201","SA",29.9,"libre"],["T1-202","1C",42.37,"libre"],["T1-203","1B",38.26,"libre"],["T1-204","SB",27.2,"libre"],["T1-205","1A",37.57,"reservado"],["T1-206","SB",27.2,"libre"],["T1-207","SA",29.9,"libre"],["T1-208","1C",42.37,"libre"],["T1-209","1B",38.26,"libre"],["T1-210","SB",27.2,"libre"],["T1-211","1A",37.57,"libre"],["T1-212","SB",27.2,"libre"],["T1-301","SA",29.9,"libre"],["T1-302","1C",42.37,"reservado"],["T1-303","1B",38.26,"libre"],["T1-304","SB",27.2,"libre"],["T1-305","1A",37.57,"reservado"],["T1-306","SB",27.2,"reservado"],["T1-307","SA",29.9,"reservado"],["T1-308","1C",42.37,"libre"],["T1-309","1B",38.26,"libre"],["T1-310","SB",27.2,"reservado"],["T1-311","1A",37.57,"libre"],["T1-312","SB",27.2,"libre"],["T1-401","SA",29.9,"libre"],["T1-402","1C",42.37,"libre"],["T1-403","1B",38.26,"libre"],["T1-404","SB",27.2,"libre"],["T1-405","1A",37.57,"libre"],["T1-406","SB",27.2,"libre"],["T1-407","SA",29.9,"libre"],["T1-408","1C",42.37,"libre"],["T1-409","1B",38.26,"reservado"],["T1-410","SB",27.2,"libre"],["T1-411","1A",37.57,"reservado"],["T1-412","SB",27.2,"libre"],["T1-501","SA",29.9,"libre"],["T1-502","1C",42.37,"libre"],["T1-503","1B",38.26,"libre"],["T1-504","SB",27.2,"libre"],["T1-505","1A",37.57,"libre"],["T1-506","SB",27.2,"libre"],["T1-507","SA",29.9,"libre"],["T1-508","1C",42.37,"libre"],["T1-509","1B",38.26,"libre"],["T1-510","SB",27.2,"libre"],["T1-511","1A",37.57,"reservado"],["T1-512","SB",27.2,"libre"],["T1-601","SA",29.9,"reservado"],["T1-602","1C",42.37,"libre"],["T1-603","1B",38.26,"libre"],["T1-604","SB",27.2,"libre"],["T1-605","1A",37.57,"libre"],["T1-606","SB",27.2,"libre"],["T1-607","SA",29.9,"libre"],["T1-608","1C",42.37,"libre"],["T1-609","1B",38.26,"libre"],["T1-610","SB",27.2,"libre"],["T1-611","1A",37.57,"libre"],["T1-612","SB",27.2,"reservado"],["T1-701","SA",29.9,"libre"],["T1-702","1C",42.37,"libre"],["T1-703","1B",38.26,"libre"],["T1-704","SB",27.2,"libre"],["T1-705","1A",37.57,"libre"],["T1-706","SB",27.2,"libre"],["T1-707","SA",29.9,"libre"],["T1-708","1C",42.37,"libre"],["T1-709","1B",38.26,"libre"],["T1-710","SB",27.2,"libre"],["T1-711","1A",37.57,"libre"],["T1-712","SB",27.2,"libre"],["T1-801","SA",29.9,"libre"],["T1-802","1C",42.37,"reservado"],["T1-803","1B",38.26,"reservado"],["T1-804","SB",27.2,"libre"],["T1-805","1A",37.57,"libre"],["T1-806","SB",27.2,"libre"],["T1-807","SA",29.9,"libre"],["T1-808","1C",42.37,"libre"],["T1-809","1B",38.26,"libre"],["T1-810","SB",27.2,"libre"],["T1-811","1A",37.57,"libre"],["T1-812","SB",27.2,"libre"],["T1-901","SA",29.9,"libre"],["T1-902","1C",42.37,"libre"],["T1-903","1B",38.26,"libre"],["T1-904","SB",27.2,"libre"],["T1-905","1A",37.57,"libre"],["T1-906","SB",27.2,"libre"],["T1-907","SA",29.9,"libre"],["T1-908","1C",42.37,"libre"],["T1-909","1B",38.26,"libre"],["T1-910","SB",27.2,"libre"],["T1-911","1A",37.57,"libre"],["T1-912","SB",27.2,"libre"],["T2-PB01","SA",37.25,"libre"],["T2-PB02","1C",46.52,"vendido"],["T2-PB03","1B",50.26,"bloqueado"],["T2-PB04","SB",27.2,"libre"],["T2-PB05","1C",46.52,"libre"],["T2-PB06","1B",50.26,"libre"],["T2-PB07","SB",27.2,"libre"],["T2-PB08","1A",46.27,"libre"],["T2-PB09","SB",27.2,"libre"],["T2-101","SA",29.9,"libre"],["T2-102","1C",42.37,"libre"],["T2-103","1B",38.26,"libre"],["T2-104","SB",27.2,"libre"],["T2-105","1C",42.37,"libre"],["T2-106","1B",38.26,"libre"],["T2-107","SB",27.2,"libre"],["T2-108","1A",37.57,"libre"],["T2-109","SB",27.2,"libre"],["T2-201","SA",29.9,"libre"],["T2-202","1C",42.37,"libre"],["T2-203","1B",38.26,"libre"],["T2-204","SB",27.2,"libre"],["T2-205","1A",37.57,"libre"],["T2-206","SB",27.2,"libre"],["T2-207","SA",29.9,"libre"],["T2-208","1C",42.37,"libre"],["T2-209","1B",38.26,"libre"],["T2-210","SB",27.2,"libre"],["T2-211","1A",37.57,"libre"],["T2-212","SB",27.2,"libre"],["T2-301","SA",29.9,"libre"],["T2-302","1C",42.37,"libre"],["T2-303","1B",38.26,"libre"],["T2-304","SB",27.2,"libre"],["T2-305","1A",37.57,"libre"],["T2-306","SB",27.2,"libre"],["T2-307","SA",29.9,"libre"],["T2-308","1C",42.37,"libre"],["T2-309","1B",38.26,"libre"],["T2-310","SB",27.2,"libre"],["T2-311","1A",37.57,"libre"],["T2-312","SB",27.2,"libre"],["T2-401","SA",29.9,"libre"],["T2-402","1C",42.37,"libre"],["T2-403","1B",38.26,"libre"],["T2-404","SB",27.2,"libre"],["T2-405","1A",37.57,"libre"],["T2-406","SB",27.2,"libre"],["T2-407","SA",29.9,"libre"],["T2-408","1C",42.37,"libre"],["T2-409","1B",38.26,"libre"],["T2-410","SB",27.2,"libre"],["T2-411","1A",37.57,"libre"],["T2-412","SB",27.2,"libre"],["T2-501","SA",29.9,"libre"],["T2-502","1C",42.37,"libre"],["T2-503","1B",38.26,"libre"],["T2-504","SB",27.2,"libre"],["T2-505","1A",37.57,"libre"],["T2-506","SB",27.2,"libre"],["T2-507","SA",29.9,"libre"],["T2-508","1C",42.37,"libre"],["T2-509","1B",38.26,"libre"],["T2-510","SB",27.2,"libre"],["T2-511","1A",37.57,"libre"],["T2-512","SB",27.2,"libre"],["T2-601","SA",29.9,"libre"],["T2-602","1C",42.37,"libre"],["T2-603","1B",38.26,"libre"],["T2-604","SB",27.2,"libre"],["T2-605","1A",37.57,"libre"],["T2-606","SB",27.2,"libre"],["T2-607","SA",29.9,"libre"],["T2-608","1C",42.37,"libre"],["T2-609","1B",38.26,"libre"],["T2-610","SB",27.2,"libre"],["T2-611","1A",37.57,"libre"],["T2-612","SB",27.2,"libre"],["T2-701","SA",29.9,"libre"],["T2-702","1C",42.37,"libre"],["T2-703","1B",38.26,"libre"],["T2-704","SB",27.2,"libre"],["T2-705","1A",37.57,"libre"],["T2-706","SB",27.2,"libre"],["T2-707","SA",29.9,"libre"],["T2-708","1C",42.37,"libre"],["T2-709","1B",38.26,"libre"],["T2-710","SB",27.2,"libre"],["T2-711","1A",37.57,"libre"],["T2-712","SB",27.2,"libre"],["T2-801","SA",29.9,"libre"],["T2-802","1C",42.37,"libre"],["T2-803","1B",38.26,"libre"],["T2-804","SB",27.2,"libre"],["T2-805","1A",37.57,"libre"],["T2-806","SB",27.2,"libre"],["T2-807","SA",29.9,"libre"],["T2-808","1C",42.37,"libre"],["T2-809","1B",38.26,"libre"],["T2-810","SB",27.2,"libre"],["T2-811","1A",37.57,"libre"],["T2-812","SB",27.2,"libre"],["T2-901","SA",29.9,"libre"],["T2-902","1C",42.37,"libre"],["T2-903","1B",38.26,"libre"],["T2-904","SB",27.2,"libre"],["T2-905","1A",37.57,"libre"],["T2-906","SB",27.2,"libre"],["T2-907","SA",29.9,"libre"],["T2-908","1C",42.37,"libre"],["T2-909","1B",38.26,"libre"],["T2-910","SB",27.2,"libre"],["T2-911","1A",37.57,"libre"],["T2-912","SB",27.2,"libre"],["T3-PB01","SA",37.25,"libre"],["T3-PB02","1C",46.52,"libre"],["T3-PB03","1B",50.26,"libre"],["T3-PB04","SB",27.2,"libre"],["T3-PB05","1C",46.52,"libre"],["T3-PB06","1B",50.26,"libre"],["T3-PB07","SB",27.2,"libre"],["T3-PB08","1A",46.27,"libre"],["T3-101","SA",29.9,"libre"],["T3-102","1C",42.37,"libre"],["T3-103","1B",38.26,"libre"],["T3-104","SB",27.2,"libre"],["T3-105","1C",42.37,"libre"],["T3-106","1B",38.26,"libre"],["T3-107","SB",27.2,"libre"],["T3-108","1A",37.57,"libre"],["T3-201","SA",29.9,"libre"],["T3-202","1C",42.37,"libre"],["T3-203","1B",38.26,"libre"],["T3-204","SB",27.2,"libre"],["T3-205","1A",37.57,"libre"],["T3-206","SB",27.2,"libre"],["T3-207","SA",29.9,"libre"],["T3-208","1C",42.37,"libre"],["T3-209","1B",38.26,"libre"],["T3-210","SB",27.2,"libre"],["T3-301","SA",29.9,"libre"],["T3-302","1C",42.37,"libre"],["T3-303","1B",38.26,"libre"],["T3-304","SB",27.2,"libre"],["T3-305","1A",37.57,"libre"],["T3-306","SB",27.2,"libre"],["T3-307","SA",29.9,"libre"],["T3-308","1C",42.37,"libre"],["T3-309","1B",38.26,"libre"],["T3-310","SB",27.2,"libre"],["T3-401","SA",29.9,"libre"],["T3-402","1C",42.37,"libre"],["T3-403","1B",38.26,"libre"],["T3-404","SB",27.2,"libre"],["T3-405","1A",37.57,"libre"],["T3-406","SB",27.2,"libre"],["T3-407","SA",29.9,"libre"],["T3-408","1C",42.37,"libre"],["T3-409","1B",38.26,"libre"],["T3-410","SB",27.2,"libre"],["T3-501","SA",29.9,"libre"],["T3-502","1C",42.37,"libre"],["T3-503","1B",38.26,"libre"],["T3-504","SB",27.2,"libre"],["T3-505","1A",37.57,"libre"],["T3-506","SB",27.2,"libre"],["T3-507","SA",29.9,"libre"],["T3-508","1C",42.37,"libre"],["T3-509","1B",38.26,"libre"],["T3-510","SB",27.2,"libre"],["T3-601","SA",29.9,"libre"],["T3-602","1C",42.37,"libre"],["T3-603","1B",38.26,"libre"],["T3-604","SB",27.2,"libre"],["T3-605","1A",37.57,"libre"],["T3-606","SB",27.2,"libre"],["T3-607","SA",29.9,"libre"],["T3-608","1C",42.37,"libre"],["T3-609","1B",38.26,"libre"],["T3-610","SB",27.2,"libre"],["T3-701","SA",29.9,"libre"],["T3-702","1C",42.37,"libre"],["T3-703","1B",38.26,"libre"],["T3-704","SB",27.2,"libre"],["T3-705","1A",37.57,"libre"],["T3-706","SB",27.2,"libre"],["T3-707","SA",29.9,"libre"],["T3-708","1C",42.37,"libre"],["T3-709","1B",38.26,"libre"],["T3-710","SB",27.2,"libre"],["T3-801","SA",29.9,"libre"],["T3-802","1C",42.37,"libre"],["T3-803","1B",38.26,"libre"],["T3-804","SB",27.2,"libre"],["T3-805","1A",37.57,"libre"],["T3-806","SB",27.2,"libre"],["T3-807","SA",29.9,"libre"],["T3-808","1C",42.37,"libre"],["T3-809","1B",38.26,"libre"],["T3-810","SB",27.2,"libre"],["T3-901","SA",29.9,"libre"],["T3-902","1C",42.37,"libre"],["T3-903","1B",38.26,"libre"],["T3-904","SB",27.2,"libre"],["T3-905","1A",37.57,"libre"],["T3-906","SB",27.2,"libre"],["T3-907","SA",29.9,"libre"],["T3-908","1C",42.37,"libre"],["T3-909","1B",38.26,"libre"],["T3-910","SB",27.2,"libre"],["T4-PB01","SA",37.25,"libre"],["T4-PB02","1C",46.52,"libre"],["T4-PB03","1B",50.26,"libre"],["T4-PB04","SB",27.2,"libre"],["T4-PB05","1C",46.52,"libre"],["T4-PB06","1B",50.26,"libre"],["T4-PB07","SB",27.2,"libre"],["T4-PB08","1A",46.27,"libre"],["T4-101","SA",29.9,"libre"],["T4-102","1C",42.37,"libre"],["T4-103","1B",38.26,"libre"],["T4-104","SB",27.2,"libre"],["T4-105","1C",42.37,"libre"],["T4-106","1B",38.26,"libre"],["T4-107","SB",27.2,"libre"],["T4-108","1A",37.57,"libre"],["T4-201","SA",29.9,"libre"],["T4-202","1C",42.37,"libre"],["T4-203","1B",38.26,"libre"],["T4-204","SB",27.2,"libre"],["T4-205","1A",37.57,"libre"],["T4-206","SB",27.2,"libre"],["T4-207","SA",29.9,"libre"],["T4-208","1C",42.37,"libre"],["T4-209","1B",38.26,"libre"],["T4-210","SB",27.2,"libre"],["T4-301","SA",29.9,"libre"],["T4-302","1C",42.37,"libre"],["T4-303","1B",38.26,"libre"],["T4-304","SB",27.2,"libre"],["T4-305","1A",37.57,"libre"],["T4-306","SB",27.2,"libre"],["T4-307","SA",29.9,"libre"],["T4-308","1C",42.37,"libre"],["T4-309","1B",38.26,"libre"],["T4-310","SB",27.2,"libre"],["T4-401","SA",29.9,"libre"],["T4-402","1C",42.37,"libre"],["T4-403","1B",38.26,"libre"],["T4-404","SB",27.2,"libre"],["T4-405","1A",37.57,"libre"],["T4-406","SB",27.2,"libre"],["T4-407","SA",29.9,"libre"],["T4-408","1C",42.37,"libre"],["T4-409","1B",38.26,"libre"],["T4-410","SB",27.2,"libre"],["T4-501","SA",29.9,"libre"],["T4-502","1C",42.37,"libre"],["T4-503","1B",38.26,"libre"],["T4-504","SB",27.2,"libre"],["T4-505","1A",37.57,"libre"],["T4-506","SB",27.2,"libre"],["T4-507","SA",29.9,"libre"],["T4-508","1C",42.37,"libre"],["T4-509","1B",38.26,"libre"],["T4-510","SB",27.2,"libre"],["T4-601","SA",29.9,"libre"],["T4-602","1C",42.37,"libre"],["T4-603","1B",38.26,"libre"],["T4-604","SB",27.2,"libre"],["T4-605","1A",37.57,"libre"],["T4-606","SB",27.2,"libre"],["T4-607","SA",29.9,"libre"],["T4-608","1C",42.37,"libre"],["T4-609","1B",38.26,"libre"],["T4-610","SB",27.2,"libre"],["T4-701","SA",29.9,"libre"],["T4-702","1C",42.37,"libre"],["T4-703","1B",38.26,"libre"],["T4-704","SB",27.2,"libre"],["T4-705","1A",37.57,"libre"],["T4-706","SB",27.2,"libre"],["T4-707","SA",29.9,"libre"],["T4-708","1C",42.37,"libre"],["T4-709","1B",38.26,"libre"],["T4-710","SB",27.2,"libre"],["T4-801","SA",29.9,"libre"],["T4-802","1C",42.37,"libre"],["T4-803","1B",38.26,"libre"],["T4-804","SB",27.2,"libre"],["T4-805","1A",37.57,"libre"],["T4-806","SB",27.2,"libre"],["T4-807","SA",29.9,"libre"],["T4-808","1C",42.37,"libre"],["T4-809","1B",38.26,"libre"],["T4-810","SB",27.2,"libre"],["T4-901","SA",29.9,"libre"],["T4-902","1C",42.37,"libre"],["T4-903","1B",38.26,"libre"],["T4-904","SB",27.2,"libre"],["T4-905","1A",37.57,"libre"],["T4-906","SB",27.2,"libre"],["T4-907","SA",29.9,"libre"],["T4-908","1C",42.37,"libre"],["T4-909","1B",38.26,"libre"],["T4-910","SB",27.2,"libre"],["T5-PB01","SA",37.25,"libre"],["T5-PB02","1C",46.52,"libre"],["T5-PB03","1B",50.26,"libre"],["T5-PB04","SB",27.2,"libre"],["T5-PB05","1C",46.52,"libre"],["T5-PB06","1B",50.26,"libre"],["T5-101","SA",29.9,"libre"],["T5-102","1C",42.37,"libre"],["T5-103","1B",38.26,"libre"],["T5-104","SB",27.2,"libre"],["T5-105","1C",42.37,"libre"],["T5-106","1B",38.26,"libre"],["T5-201","SA",29.9,"libre"],["T5-202","1C",42.37,"libre"],["T5-203","1B",38.26,"libre"],["T5-204","SB",27.2,"libre"],["T5-205","1A",37.57,"libre"],["T5-206","SB",27.2,"libre"],["T5-207","SA",29.9,"libre"],["T5-208","1C",42.37,"libre"],["T5-301","SA",29.9,"libre"],["T5-302","1C",42.37,"libre"],["T5-303","1B",38.26,"libre"],["T5-304","SB",27.2,"libre"],["T5-305","1A",37.57,"libre"],["T5-306","SB",27.2,"libre"],["T5-307","SA",29.9,"libre"],["T5-308","1C",42.37,"libre"],["T5-401","SA",29.9,"libre"],["T5-402","1C",42.37,"libre"],["T5-403","1B",38.26,"libre"],["T5-404","SB",27.2,"libre"],["T5-405","1A",37.57,"libre"],["T5-406","SB",27.2,"libre"],["T5-407","SA",29.9,"libre"],["T5-408","1C",42.37,"libre"],["T5-501","SA",27.2,"libre"],["T5-502","1C",42.37,"libre"],["T5-503","1B",38.26,"libre"],["T5-504","SB",27.2,"libre"],["T5-505","1A",37.57,"libre"],["T5-506","SB",27.2,"libre"],["T5-507","SA",29.9,"libre"],["T5-508","1C",42.37,"libre"],["T5-601","SA",29.9,"libre"],["T5-602","1C",42.37,"libre"],["T5-603","1B",38.26,"libre"],["T5-604","SB",27.2,"libre"],["T5-605","1A",37.57,"libre"],["T5-606","SB",27.2,"libre"],["T5-607","SA",29.9,"libre"],["T5-608","1C",42.37,"libre"],["T5-701","SA",29.9,"libre"],["T5-702","1C",42.37,"libre"],["T5-703","1B",38.26,"libre"],["T5-704","SB",27.2,"libre"],["T5-705","1A",37.57,"libre"],["T5-706","SB",27.2,"libre"],["T5-707","SA",29.9,"libre"],["T5-708","1C",42.37,"libre"],["T5-801","SA",29.9,"libre"],["T5-802","1C",42.37,"libre"],["T5-803","1B",38.26,"libre"],["T5-804","SB",27.2,"libre"],["T5-805","1A",37.57,"libre"],["T5-806","SB",27.2,"libre"],["T5-807","SA",29.9,"libre"],["T5-808","1C",42.37,"libre"],["T5-901","SA",29.9,"libre"],["T5-902","1C",42.37,"libre"],["T5-903","1B",38.26,"libre"],["T5-904","SB",27.2,"libre"],["T5-905","1A",37.57,"libre"],["T5-906","SB",27.2,"libre"],["T5-907","SA",29.9,"libre"],["T5-908","1C",42.37,"libre"],["T6-PB01","SA",37.25,"libre"],["T6-PB02","1C",46.52,"libre"],["T6-PB03","1B",50.26,"libre"],["T6-PB04","SB",27.2,"libre"],["T6-PB05","1C",46.52,"libre"],["T6-PB06","1B",50.26,"libre"],["T6-101","SA",29.9,"libre"],["T6-102","1C",42.37,"libre"],["T6-103","1B",38.26,"libre"],["T6-104","SB",27.2,"libre"],["T6-105","1C",42.37,"libre"],["T6-106","1B",38.26,"libre"],["T6-201","SA",29.9,"libre"],["T6-202","1C",42.37,"libre"],["T6-203","1B",38.26,"libre"],["T6-204","SB",27.2,"libre"],["T6-205","1A",37.57,"libre"],["T6-206","SB",27.2,"libre"],["T6-207","SA",29.9,"libre"],["T6-208","1C",42.37,"libre"],["T6-301","SA",29.9,"libre"],["T6-302","1C",42.37,"libre"],["T6-303","1B",38.26,"libre"],["T6-304","SB",27.2,"libre"],["T6-305","1A",37.57,"libre"],["T6-306","SB",27.2,"libre"],["T6-307","SA",29.9,"libre"],["T6-308","1C",42.37,"libre"],["T6-401","SA",29.9,"libre"],["T6-402","1C",42.37,"libre"],["T6-403","1B",38.26,"libre"],["T6-404","SB",27.2,"libre"],["T6-405","1A",37.57,"libre"],["T6-406","SB",27.2,"libre"],["T6-407","SA",29.9,"libre"],["T6-408","1C",42.37,"libre"],["T6-501","SA",27.2,"libre"],["T6-502","1C",42.37,"libre"],["T6-503","1B",38.26,"libre"],["T6-504","SB",27.2,"libre"],["T6-505","1A",37.57,"libre"],["T6-506","SB",27.2,"libre"],["T6-507","SA",29.9,"libre"],["T6-508","1C",42.37,"libre"],["T6-601","SA",29.9,"libre"],["T6-602","1C",42.37,"libre"],["T6-603","1B",38.26,"libre"],["T6-604","SB",27.2,"libre"],["T6-605","1A",37.57,"libre"],["T6-606","SB",27.2,"libre"],["T6-607","SA",29.9,"libre"],["T6-608","1C",42.37,"libre"],["T6-701","SA",29.9,"libre"],["T6-702","1C",42.37,"libre"],["T6-703","1B",38.26,"libre"],["T6-704","SB",27.2,"libre"],["T6-705","1A",37.57,"libre"],["T6-706","SB",27.2,"libre"],["T6-707","SA",29.9,"libre"],["T6-708","1C",42.37,"libre"],["T6-801","SA",29.9,"libre"],["T6-802","1C",42.37,"libre"],["T6-803","1B",38.26,"libre"],["T6-804","SB",27.2,"libre"],["T6-805","1A",37.57,"libre"],["T6-806","SB",27.2,"libre"],["T6-807","SA",29.9,"libre"],["T6-808","1C",42.37,"libre"],["T6-901","SA",29.9,"libre"],["T6-902","1C",42.37,"libre"],["T6-903","1B",38.26,"libre"],["T6-904","SB",27.2,"libre"],["T6-905","1A",37.57,"libre"],["T6-906","SB",27.2,"libre"],["T6-907","SA",29.9,"libre"],["T6-908","1C",42.37,"libre"]];
+</script>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const ESTN={libre:"Disponible",reservado:"Reservado",senado:"Señado",vendido:"Vendido",bloqueado:"No disponible"};
+const fmt=n=>n?new Intl.NumberFormat(CONFIG.locale,{style:"currency",currency:CONFIG.moneda,maximumFractionDigits:0}).format(n):"";
+let U=UNI.map(a=>({id:a[0],tip:a[1],m2:a[2],e:a[3],precio:null}));
+function deco(u){const m=u.id.match(/^T(\d)-(PB)?(\d+)$/);u.t=+m[1];u.p=m[2]?0:Math.floor(+m[3]/100);u.pl=u.p?("Piso "+u.p):"Planta baja";u.puerta=m[3];u.patio=!u.p;u.vols=CONFIG.fusiones[u.id]||[u.id];return u}
+U.forEach(deco);
+document.documentElement.style.setProperty("--ac",CONFIG.colorAcento);
+$("#lgT").textContent=CONFIG.logoTexto;$("#lgN").textContent=CONFIG.marca;$("#lgS").textContent=CONFIG.producto;document.title=CONFIG.marca+" · "+CONFIG.producto;
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2200)}
+function zoomImg(src){$("#zoom img").src=src;$("#zoom").classList.add("on")}
+function tipN(u){return (CONFIG.tipologias[u.tip]||{n:u.tip}).n+(u.patio?" + patio":"")}
+function evento(tipo,unidad){try{fetch("/api/evento",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({tipo,unidad,origen:"showroom"})}).catch(()=>{})}catch(e){}}
+async function leerPanel(){
+  try{
+    const r=await fetch("/api/public?t="+Date.now(),{cache:"no-store"}); if(!r.ok) throw 0;
+    const j=await r.json(); if(!j.unidades||!j.unidades.length) throw 0;
+    const M=Object.fromEntries(U.map(u=>[u.id,u]));
+    j.unidades.forEach(f=>{let u=M[f.id]; if(!u){u=deco({id:f.id,tip:f.tip,m2:f.m2,e:f.estado});if(!/^T\d-/.test(f.id))return;U.push(u);M[f.id]=u}
+      u.e=f.estado||u.e; if(f.tip)u.tip=f.tip; if(f.m2)u.m2=f.m2; u.precio=f.precio||null});
+    // las unidades fusionadas ocultan los módulos que absorben
+    const abs=new Set(); Object.entries(CONFIG.fusiones).forEach(([k,v])=>v.forEach(x=>x!==k&&abs.add(x)));
+    U=U.filter(u=>!abs.has(u.id)); return true;
+  }catch(e){return false}
+}
+</script>
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+const TOUR=await fetch("tour.json").then(r=>r.json());
+await leerPanel();
+const COL={libre:0x10B981,reservado:0xF59E0B,senado:0xF59E0B,vendido:0xEF4444,bloqueado:0x4B505A};
+const F={t:0,tip:"",e:"",piso:CONFIG.pisos};
+window.go=v=>{$$(".vw").forEach(x=>x.classList.toggle("on",x.id===v));$$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="disp"){initTorres();resize3d()} if(v==="hero")heroRun=true; else heroRun=false; history.replaceState(null,"","#"+v)};
+$$("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+
+/* ---------- KPIs ---------- */
+function kpis(){const L=U.filter(u=>u.e==="libre").length;
+  $("#hK").innerHTML=`<div class="kpi"><b class="num">6</b><span>torres</span></div><div class="kpi"><b class="num">${U.length}</b><span>unidades</span></div><div class="kpi"><b class="num">${L}</b><span>disponibles hoy</span></div><div class="kpi"><b class="num">${Object.keys(CONFIG.tipologias).length}</b><span>tipologías</span></div>`}
+kpis();
+
+/* ---------- Visor 360 (caras de cubo) ---------- */
+function mkPano(host){
+  const r=new THREE.WebGLRenderer({antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(r.domElement);
+  const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(75,1,.1,100),g=new THREE.Group();sc.add(g);
+  const S=10,faces={f:[0,0,-S,0,0],r:[S,0,0,0,-Math.PI/2],l:[-S,0,0,0,Math.PI/2],b:[0,0,S,0,Math.PI],u:[0,S,0,Math.PI/2,0],d:[0,-S,0,-Math.PI/2,0]};
+  const mats={};Object.entries(faces).forEach(([k,[x,y,z,rx,ry]])=>{const m=new THREE.MeshBasicMaterial({color:0x111111});mats[k]=m;
+    const p=new THREE.Mesh(new THREE.PlaneGeometry(2*S+.02,2*S+.02),m);p.position.set(x,y,z);p.rotation.set(rx,ry,0,"YXZ");g.add(p)});
+  const st={lon:0,lat:0,fov:75,id:null,auto:0};const TL=new THREE.TextureLoader();
+  function load(id,yaw){st.id=id;if(yaw!=null){st.lon=yaw;st.lat=0}
+    Object.keys(faces).forEach(k=>TL.load(`pano/${id}_${k}.webp`,t=>{if(st.id!==id)return;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;mats[k].map=t;mats[k].color.set(0xffffff);mats[k].needsUpdate=true}))}
+  let drag=null;const el=r.domElement;
+  el.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,lon:st.lon,lat:st.lat};el.setPointerCapture(e.pointerId);st.auto=0});
+  el.addEventListener("pointermove",e=>{if(!drag)return;const k=st.fov/el.clientHeight;st.lon=drag.lon-(e.clientX-drag.x)*k;st.lat=Math.max(-85,Math.min(85,drag.lat+(e.clientY-drag.y)*k))});
+  el.addEventListener("pointerup",()=>drag=null);
+  el.addEventListener("wheel",e=>{e.preventDefault();st.fov=Math.max(35,Math.min(95,st.fov+e.deltaY*.04))},{passive:false});
+  let pinch=0;el.addEventListener("touchmove",e=>{if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(pinch)st.fov=Math.max(35,Math.min(95,st.fov-(d-pinch)*.1));pinch=d;drag=null}},{passive:true});
+  el.addEventListener("touchend",()=>pinch=0);
+  function dir(yaw,pitch){const y=THREE.MathUtils.degToRad(yaw),p=THREE.MathUtils.degToRad(pitch);return new THREE.Vector3(Math.sin(y)*Math.cos(p),Math.sin(p),-Math.cos(y)*Math.cos(p))}
+  function frame(){const w=host.clientWidth,h=host.clientHeight;if(r.domElement.width!==Math.round(w*r.getPixelRatio())||r.domElement.height!==Math.round(h*r.getPixelRatio())){r.setSize(w,h)}
+    cam.aspect=w/h;cam.fov=st.fov;cam.updateProjectionMatrix();st.lon+=st.auto;cam.lookAt(dir(st.lon,st.lat));r.render(sc,cam)}
+  function proj(yaw,pitch){const v=dir(yaw,pitch);const c=v.clone().project(cam);const fw=new THREE.Vector3();cam.getWorldDirection(fw);
+    return {x:(c.x+1)/2*host.clientWidth,y:(1-c.y)/2*host.clientHeight,vis:fw.dot(v)>.2}}
+  return {st,load,frame,proj,el}
+}
+/* Hero: vista aérea */
+const HERO=mkPano($("#cHero"));const aereas=Object.keys(TOUR).filter(k=>TOUR[k].g==="AM"&&/A.rea/.test(TOUR[k].n));
+HERO.load(aereas[0]||Object.keys(TOUR)[0],0);HERO.st.auto=.025;HERO.st.fov=70;let heroRun=true;
+
+/* Recorrido 360 a pantalla completa */
+const V=mkPano($("#c360"));let vOn=false,vGrupo=null;
+const GN={AM:"Amenities y áreas comunes"};
+window.abrir360=(grupo,id,sub)=>{vGrupo=grupo;const ids=Object.keys(TOUR).filter(k=>TOUR[k].g===grupo);
+  if(!id){id=ids.find(k=>/Living|Social|Peatonal|Hall/.test(TOUR[k].n))||ids[0]}
+  $("#t360").textContent=grupo==="AM"?GN.AM:(CONFIG.tipologias[grupo]||{n:grupo}).n;$("#s360").textContent=sub||"Arrastrá para mirar alrededor · tocá los círculos para moverte";
+  $("#tabs360").innerHTML=ids.map(k=>`<button data-k="${k}">${TOUR[k].n}</button>`).join("");
+  $$("#tabs360 button").forEach(b=>b.onclick=()=>ir(b.dataset.k));
+  $("#v360").classList.add("on");vOn=true;ir(id);evento("vista","360-"+grupo)};
+window.cerrar360=()=>{$("#v360").classList.remove("on");vOn=false;$$(".hs").forEach(h=>h.remove())};
+let HS=[];
+function ir(id,yaw){const p=TOUR[id];V.load(id,yaw!=null?yaw:V.st.lon);
+  $$("#tabs360 button").forEach(b=>b.classList.toggle("on",b.dataset.k===id));
+  $$(".hs").forEach(h=>h.remove());HS=p.adj.filter(a=>TOUR[a.to]).map(a=>{const d=document.createElement("div");d.className="hs";
+    const dst=TOUR[a.to];d.innerHTML=`<i></i><span>${dst.g===p.g||dst.g==="AM"&&p.g==="AM"?dst.n:(dst.g==="AM"?dst.n:"Ir a "+dst.n)}</span>`;
+    d.onclick=()=>{if(dst.g!==vGrupo&&dst.g!=="AM"){abrir360(dst.g,a.to)}else if(dst.g!==vGrupo){abrir360("AM",a.to)}else ir(a.to)};$("#v360").appendChild(d);return {d,a}});
+  const L=p.loc[0];const mini=$("#mini");
+  if(L){mini.style.display="block";const img=mini.querySelector("img");const src=`planos/${L.m}.png`;if(!img.src.endsWith(src))img.src=src;
+    mini.querySelectorAll(".pt").forEach(x=>x.remove());
+    Object.keys(TOUR).filter(k=>TOUR[k].loc[0]&&TOUR[k].loc[0].m===L.m&&TOUR[k].g===p.g).forEach(k=>{const l=TOUR[k].loc[0];const d=document.createElement("button");
+      d.className="pt"+(k===id?" on":"");d.title=TOUR[k].n;d.style.left=(l.x/921*100)+"%";d.style.top=(l.y/500*100)+"%";d.onclick=()=>ir(k);mini.appendChild(d)});
+    const c=$("#cone");c.style.left=(L.x/921*100)+"%";c.style.top=(L.y/500*100)+"%";c._a=L.a}else mini.style.display="none"}
+
+/* ---------- Torres 3D ---------- */
+let R3,SC,CAM,CTL,MESH={},MASAS=[],inited=false,hover=null;const ray=new THREE.Raycaster(),mp=new THREE.Vector2();
+function initTorres(){if(inited)return;inited=true;const host=$("#c3d");
+  R3=new THREE.WebGLRenderer({antialias:true});R3.setPixelRatio(Math.min(devicePixelRatio,2));R3.shadowMap.enabled=true;host.appendChild(R3.domElement);
+  SC=new THREE.Scene();SC.background=new THREE.Color(0x0F1115);SC.fog=new THREE.Fog(0x0F1115,900,2600);
+  CAM=new THREE.PerspectiveCamera(40,1,1,4000);
+  CTL=new OrbitControls(CAM,R3.domElement);window._3d={CAM,CTL};CTL.target.set(14,28,-28);CAM.position.copy(CTL.target).add(new THREE.Vector3(20,150,400).multiplyScalar(distK()));CTL.enableDamping=true;CTL.maxPolarAngle=Math.PI*.49;CTL.minDistance=40;CTL.maxDistance=1100;CTL.update();
+  SC.add(new THREE.HemisphereLight(0xffffff,0x30343c,1.1));const sun=new THREE.DirectionalLight(0xffffff,1.4);sun.position.set(-160,260,180);sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-260,right:260,top:200,bottom:-200,far:800});SC.add(sun);
+  const gtx=new THREE.TextureLoader().load("planos/GEN.png",t=>{t.colorSpace=THREE.SRGBColorSpace});
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0x1A1D23,roughness:1}));ground.rotation.x=-Math.PI/2;ground.scale.set(2000,2000,1);ground.receiveShadow=true;SC.add(ground);
+  const PL=GEN_FIT;const plan=new THREE.Mesh(new THREE.PlaneGeometry(PL.w,PL.h),new THREE.MeshBasicMaterial({map:gtx,transparent:true,opacity:.55}));
+  plan.rotation.set(-Math.PI/2,0,PL.r);plan.position.set(PL.x,.3,PL.z);SC.add(plan);
+  const MASA=new THREE.MeshStandardMaterial({color:0xB9B4AA,roughness:.85});
+  new GLTFLoader().load("unidades.glb",g=>{g.scene.traverse(o=>{if(!o.isMesh)return;o.geometry.computeVertexNormals();
+      const ms=(o.name+" "+(o.parent?o.parent.name:"")).match(/MASA_T(\d)_P(B|\d\d)/);if(ms){o.material=MASA;o.castShadow=o.receiveShadow=true;o.userData.masa={t:+ms[1],p:ms[2]==="B"?0:+ms[2]};MASAS.push(o);return}
+      const n=o.name.match(/T0(\d)_P(B|\d\d)_(\d+)/)||(o.parent&&o.parent.name.match(/T0(\d)_P(B|\d\d)_(\d+)/));if(!n)return;
+      const id=n[2]==="B"?`T${n[1]}-PB${n[3]}`:`T${n[1]}-${n[3]}`;o.castShadow=o.receiveShadow=true;
+      o.material=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.5,metalness:0,transparent:true,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});o.userData.vid=id;MESH[id]=o});
+    SC.add(g.scene);pintar();const LD=$("#load");if(LD){LD.style.opacity=0;setTimeout(()=>LD.remove(),300)}});
+  R3.domElement.addEventListener("pointermove",e=>{const b=R3.domElement.getBoundingClientRect();mp.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);pick(e)});
+  R3.domElement.addEventListener("pointerleave",()=>{$("#tip").style.display="none";hover=null;pintar()});
+  let dn=null;R3.domElement.addEventListener("pointerdown",e=>dn={x:e.clientX,y:e.clientY});
+  R3.domElement.addEventListener("pointerup",e=>{if(dn&&Math.hypot(e.clientX-dn.x,e.clientY-dn.y)<6){const b=R3.domElement.getBoundingClientRect();mp.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);const u=pick(e,true);if(u)ficha(u)}dn=null});
+}
+const VOL2U={};function mapVol(){Object.keys(VOL2U).forEach(k=>delete VOL2U[k]);U.forEach(u=>u.vols.forEach(v=>VOL2U[v]=u))}mapVol();
+function pasa(u){return (!F.t||u.t===F.t)&&(!F.tip||u.tip===F.tip)&&(!F.e||(F.e==="libre"?u.e==="libre":u.e!=="libre"))}
+function pick(e,click){const vis=Object.values(MESH).filter(m=>m.visible);ray.setFromCamera(mp,CAM);const h=ray.intersectObjects(vis,false)[0];
+  const u=h?VOL2U[h.object.userData.vid]:null;const tp=$("#tip");
+  if(u&&!click&&matchMedia("(hover:hover)").matches){tp.style.display="block";tp.style.left=(e.clientX+14)+"px";tp.style.top=(e.clientY+14)+"px";
+    tp.innerHTML=`<b>Torre ${u.t} · ${u.p?"Unidad "+u.puerta:"PB "+u.puerta}</b><br>${tipN(u)} · ${u.m2} m²<br><span class="st s-${u.e}">${ESTN[u.e]}</span>`}else tp.style.display="none";
+  if(hover!==u){hover=u;pintar()}R3.domElement.style.cursor=u?"pointer":"grab";return u}
+function pintar(){MASAS.forEach(o=>{const a=o.userData.masa;o.visible=!F.t||a.t!==F.t||a.p<=F.piso});Object.entries(MESH).forEach(([vid,m])=>{const u=VOL2U[vid];m.visible=!!u&&(!F.t||u.t!==F.t||u.p<=F.piso);if(!u)return;const ok=pasa(u);
+  m.material.color.setHex(ok?COL[u.e]:0xCFCBC2);m.material.opacity=ok?1:.0;m.visible=m.visible&&ok;m.material.depthWrite=ok;if(hover===u)m.material.color.set(CONFIG.colorAcento);m.material.emissive=new THREE.Color(hover===u?0x2a2a2a:0)});contar()}
+function contar(){const L=U.filter(u=>(!F.t||u.t===F.t)&&(!F.tip||u.tip===F.tip));const c=e=>L.filter(u=>e.includes(u.e)).length;
+  $("#cnt").innerHTML=`<div><b class="num" style="color:var(--ok)">${c(["libre"])}</b><span>Disponibles</span></div><div><b class="num" style="color:var(--wa)">${c(["reservado","senado"])}</b><span>Reservadas</span></div><div><b class="num" style="color:var(--no)">${c(["vendido"])}</b><span>Vendidas</span></div>`;lista()}
+function chips(el,ops,key,cb){el.innerHTML=ops.map(([v,n])=>`<button class="chip${F[key]===v?" on":""}" data-v="${v}">${n}</button>`).join("");
+  el.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{F[key]=key==="t"?+b.dataset.v:b.dataset.v;el.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b));cb&&cb();pintar()})}
+chips($("#fT"),[[0,"Todas"],...[1,2,3,4,5,6].map(t=>[t,"Torre "+t])],"t",enfocar);
+chips($("#fP"),[["","Todas"],...Object.entries(CONFIG.tipologias).filter(([k])=>U.some(u=>u.tip===k)).map(([k,v])=>[k,v.n])],"tip");
+chips($("#fE"),[["","Todos"],["libre","Disponibles"],["otro","Reservadas/vendidas"]],"e");
+$("#piso").max=CONFIG.pisos;$("#piso").oninput=e=>{F.piso=+e.target.value;$("#pisoV").textContent=F.piso?F.piso:"PB";pintar()};
+const TC={};function torreCentro(t){if(TC[t])return TC[t];const b=new THREE.Box3();Object.entries(MESH).forEach(([k,m])=>{if(k.startsWith("T"+t+"-"))b.expandByObject(m)});return TC[t]=b.getCenter(new THREE.Vector3())}
+let anim=null;function enfocar(){$("#pisoBox").style.display=F.t?"block":"none";F.piso=CONFIG.pisos;$("#piso").value=F.piso;$("#pisoV").textContent=F.piso;if(!inited)return;
+  const tgt=F.t?torreCentro(F.t):new THREE.Vector3(14,28,-28);const off=(F.t?new THREE.Vector3(45,80,190):new THREE.Vector3(20,150,400)).multiplyScalar(distK());
+  anim={t0:performance.now(),a:CTL.target.clone(),b:tgt,ca:CAM.position.clone(),cb:tgt.clone().add(off)}}
+function resize3d(){if(!R3)return;const h=$("#c3d"),w=h.clientWidth,H=h.clientHeight;R3.setSize(w,H);CAM.aspect=w/H;
+  const sd=$("#side").getBoundingClientRect(),mob=sd.width>=w-2;CAM.clearViewOffset();
+  if(mob)CAM.setViewOffset(w,H,0,Math.min(sd.height,H*.45)/2,w,H);else CAM.setViewOffset(w,H,-(sd.right)/2,0,w,H);CAM.updateProjectionMatrix()}
+function distK(){const h=$("#c3d");const a=h.clientWidth/Math.max(1,h.clientHeight);return a<1?Math.min(2.2,1.15/a):a<1.4?1.25:1}
+addEventListener("resize",resize3d);
+
+/* ---------- Lista ---------- */
+let SK="id",SD=1;
+function lista(){const q=$("#q").value.toLowerCase().trim();let L=U.filter(pasa).filter(u=>!q||(u.id+" torre "+u.t+" "+tipN(u)+" "+ESTN[u.e]).toLowerCase().includes(q));
+  const ord=["T","P"];L.sort((a,b)=>{let x=a[SK],y=b[SK];if(SK==="id"){x=a.t*1e4+a.p*100+(+a.puerta%100);y=b.t*1e4+b.p*100+(+b.puerta%100)}if(SK==="tip"){x=tipN(a);y=tipN(b)}return (x>y?1:x<y?-1:0)*SD});
+  $("#tb").innerHTML=L.map(u=>`<tr class="r" data-id="${u.id}"><td><b>${u.p?u.puerta:"PB "+u.puerta}</b></td><td class="num">${u.t}</td><td>${u.pl}</td><td>${tipN(u)}</td><td class="num">${u.m2}</td><td class="num">${precioTxt(u)}</td><td><span class="st s-${u.e}">${ESTN[u.e]}</span></td></tr>`).join("")||`<tr><td colspan="7" style="color:var(--tx3);padding:24px">Ninguna unidad coincide con los filtros.</td></tr>`;
+  $$("#tb tr.r").forEach(r=>r.onclick=()=>ficha(U.find(u=>u.id===r.dataset.id)));window._L=L}
+$("#q").oninput=lista;$$("th").forEach(th=>th.onclick=()=>{SD=SK===th.dataset.k?-SD:1;SK=th.dataset.k;lista()});
+$$(".mode button").forEach(b=>b.onclick=()=>{$$(".mode button").forEach(x=>x.classList.toggle("on",x===b));$("#lista").classList.toggle("on",b.dataset.m==="lista")});
+function precioTxt(u){return u.e!=="libre"?"—":(CONFIG.mostrarPrecios&&u.precio?fmt(u.precio):"Consultar")}
+window.exportar=async()=>{if(!window.XLSX){await new Promise((ok,ko)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";s.onload=ok;s.onerror=ko;document.head.appendChild(s)})}
+  const rows=window._L.map(u=>({Unidad:u.id,Torre:u.t,Piso:u.p||"PB",Tipologia:tipN(u),m2:u.m2,Precio:u.e==="libre"&&u.precio?u.precio:"",Estado:ESTN[u.e]}));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"Disponibilidad");XLSX.writeFile(wb,CONFIG.marca.replace(/\s+/g,"_")+"_disponibilidad.xlsx");toast("Excel descargado")};
+
+/* ---------- Ficha ---------- */
+let FU=null;
+window.ficha=u=>{FU=u;$("#fN").textContent=`Torre ${u.t} · ${u.p?"Unidad "+u.puerta:"Planta baja "+u.puerta}`;$("#fS").textContent=tipN(u);
+  const pl=$("#fPl");pl.style.display=TOUR_PLANO(u.tip)?"block":"none";pl.querySelector("img").src=`planos/${u.tip}_c.png`;
+  $("#fD").innerHTML=`<div><span>Superficie</span><b class="num">${u.m2} m²</b></div><div><span>Ubicación</span><b>${u.pl}</b></div><div><span>Dormitorios</span><b>${(CONFIG.tipologias[u.tip]||{}).d?CONFIG.tipologias[u.tip].d:"Monoambiente"}</b></div><div><span>Estado</span><b class="st s-${u.e}">${ESTN[u.e]}</b></div>`;
+  $("#fPr").textContent=precioTxt(u);$("#fPn").textContent=u.e==="libre"&&!u.precio?"Pedí el precio y el plan de pago vigente.":"";
+  const tiene360=Object.values(TOUR).some(p=>p.g===u.tip);$("#f360").style.display=tiene360?"":"none";$("#f360").onclick=()=>abrir360(u.tip,null,`Torre ${u.t} · ${u.p?"Unidad "+u.puerta:"PB "+u.puerta} · ${tipN(u)}`);
+  $("#fWa").style.display=CONFIG.whatsapp?"":"none";$("#fWa").onclick=()=>{evento("consulta",u.id);open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(`Hola, me interesa la unidad ${u.p?u.puerta:"PB "+u.puerta} de la Torre ${u.t} (${tipN(u)}, ${u.m2} m²) de ${CONFIG.marca}.`)}`,"_blank")};
+  $("#fForm").classList.remove("on");$("#ficha").classList.add("on");evento("vista",u.id);
+  if(inited&&$("#disp").classList.contains("on")){hover=u;pintar()}};
+window.cerrarFicha=()=>{$("#ficha").classList.remove("on");hover=null;if(inited)pintar()};
+const TOUR_PLANO=t=>["SA","SB","1A","1B","1C","2D","3D"].includes(t);
+window.enviarLead=async()=>{const n=$("#lN").value.trim(),t=$("#lT").value.trim();if(n.split(/\s+/).length<2||t.replace(/\D/g,"").length<6){toast("Completá nombre, apellido y teléfono");return}
+  try{const r=await fetch("/api/consulta",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({nombre:n,telefono:t,email:$("#lE").value.trim(),unidad:FU&&FU.id,intencion:"compra",origen:"showroom"})});if(!r.ok)throw 0;
+    toast("¡Listo! Te contactamos a la brevedad");$("#fForm").classList.remove("on")}catch(e){toast("No se pudo enviar. Probá de nuevo.")}};
+
+/* ---------- Tipologías y amenities ---------- */
+function tarjetas(){$("#cTip").innerHTML=Object.entries(CONFIG.tipologias).map(([k,v])=>{const L=U.filter(u=>u.tip===k),d=L.filter(u=>u.e==="libre").length;
+    const m=L.map(u=>u.m2).filter(Boolean);const mn=Math.min(...m),mx=Math.max(...m);const rng=m.length?(mn===mx?`${mn} m²`:`${mn}–${mx} m²`):"Próximamente en disponibilidad";
+    return `<div class="card"><div class="im" onclick="zoomImg('planos/${k}_c.png')" style="cursor:zoom-in"><img src="planos/${k}_c.png" alt="${v.n}" loading="lazy"></div><div class="c"><h4>${v.n}</h4><div class="m">${rng}${L.length?` · <b style="color:var(--ok)">${d}</b> disponibles`:""}</div>
+    <div class="row"><button class="btn p" onclick="abrir360('${k}')">360°</button>${L.length?`<button class="btn" onclick="verTip('${k}')">Ver unidades</button>`:""}</div></div></div>`}).join("");
+  $("#cAm").innerHTML=Object.entries(TOUR).filter(([k,p])=>p.g==="AM").map(([k,p])=>`<div class="card"><div class="ph" style="background-image:url(thumbs/${k}.jpg)"></div><div class="c"><h4>${p.n}</h4><div class="row"><button class="btn p" onclick="abrir360('AM','${k}')">Recorrer 360°</button></div></div></div>`).join("")}
+tarjetas();
+window.verTip=k=>{F.tip=k;chips($("#fP"),[["","Todas"],...Object.entries(CONFIG.tipologias).filter(([x])=>U.some(u=>u.tip===x)).map(([x,v])=>[x,v.n])],"tip");go("disp");pintar()};
+
+/* ---------- Loop ---------- */
+function loop(t){requestAnimationFrame(loop);
+  if(heroRun&&!vOn)HERO.frame();
+  if(vOn){V.frame();HS.forEach(({d,a})=>{const p=V.proj(a.yaw,a.pitch);d.style.display=p.vis?"flex":"none";d.style.left=p.x+"px";d.style.top=p.y+"px"});
+    const c=$("#cone");c.style.transform=`rotate(${(c._a||0)+V.st.lon}deg)`}
+  if(inited&&$("#disp").classList.contains("on")){if(anim){const k=Math.min(1,(t-anim.t0)/700),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;CTL.target.lerpVectors(anim.a,anim.b,e);CAM.position.lerpVectors(anim.ca,anim.cb,e);if(k>=1)anim=null}
+    CTL.update();R3.render(SC,CAM)}}
+requestAnimationFrame(loop);
+const h=location.hash.slice(1);if(["disp","tipos","amen"].includes(h))go(h);
+if(!$("#disp").classList.contains("on")){$("#load").style.opacity=0;setTimeout(()=>$("#load")&&$("#load").remove(),300)}
+addEventListener("keydown",e=>{if(e.key==="Escape"){if(vOn)cerrar360();else cerrarFicha()}});
+</script>
+<script>const GEN_FIT={"x": 12.9, "z": 2.5, "w": 539.7, "h": 293, "r": 0};</script>
+</body>
+</html>
