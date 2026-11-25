@@ -301,7 +301,8 @@ canvas{max-height:300px}
         <div class="card"><div class="ph"><div><h3>Descargas</h3><span class="sub">Generadas con los datos en vivo, al momento</span></div></div><div class="pb dl">
           <button class="btn btn-p" id="pdfRes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Informe para directorio (PDF con gráficos)</button>
           <button class="btn btn-g" id="xlsAll">Excel completo · unidades, ventas, cuotas, flujo</button>
-          <button class="btn btn-g" id="jsonBk">Respaldo de datos (JSON)</button></div></div>
+          <button class="btn btn-g" id="jsonBk">Respaldo de datos (JSON)</button>
+          <label class="btn btn-g" title="Carga o actualiza las ventas y cobros desde el archivo de estados de cuenta (JSON) preparado a partir del Excel de administración">Importar estados de cuenta<input type="file" id="impEC" accept=".json,application/json" hidden></label></div></div>
       </div>
     </div>
 
@@ -845,6 +846,19 @@ window.ktaPantallaCompleta = function () {
   else if (e.requestFullscreen) e.requestFullscreen().catch(() => {});
   else if (e.webkitRequestFullscreen) e.webkitRequestFullscreen();
 };
+
+/* ---------- importar estados de cuenta (archivo JSON preparado desde el Excel de administración) ---------- */
+$('#impEC').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  let D; try { D = JSON.parse(await f.text()); } catch (x) { return toast('El archivo no es un JSON válido', 1); }
+  const V = Array.isArray(D) ? D : D.ventas; if (!Array.isArray(V) || !V.length) return toast('El archivo no trae ventas', 1);
+  const cob = V.reduce((a, v) => a + v.cuotas.reduce((b, c) => b + (c.pagado ? c.monto_pagado || c.monto : 0), 0), 0);
+  if (!confirm(`Importar ${V.length} ventas del estado de cuenta${D.fecha ? ' al ' + D.fecha.split('-').reverse().join('/') : ''} (cobrado total USD ${cob.toLocaleString('es-PY')}).\n\nPara cada unidad del archivo se reemplaza la venta activa y su plan de pagos. Las demás unidades no se tocan. ¿Seguimos?`)) return;
+  let ok = 0; const mal = [];
+  for (const v of V) { try { await api('/admin/venta', { method: 'POST', body: v }); ok++; toast(`Importando… ${ok}/${V.length}`); } catch (x) { mal.push(`${v.unidad_id}: ${x.message}`); } }
+  await cargar(); toast(mal.length ? `${ok} importadas · ${mal.length} con error` : `Listo: ${ok} ventas actualizadas al estado de cuenta`, mal.length ? 1 : 0);
+  if (mal.length) alert('No se pudieron importar:\n' + mal.join('\n'));
+});
 </script>
 </body>
 </html>

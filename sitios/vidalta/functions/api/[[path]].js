@@ -173,7 +173,7 @@ export async function onRequest(ctx) {
       const cuotas = Array.isArray(body.cuotas) ? body.cuotas : [];
       const suma = cuotas.reduce((a, c) => a + Math.round(Number(c.monto) || 0), 0);
       const total = precio + Math.round(Number(body.cochera_usd) || 0);
-      if (cuotas.length && Math.abs(suma - total) > 1) return err(`El plan de pago suma USD ${suma.toLocaleString('es-PY')} y el total es USD ${total.toLocaleString('es-PY')}`);
+      if (cuotas.length && Math.abs(suma - total) > 1 && !(body.financiado && suma > total)) return err(`El plan de pago suma USD ${suma.toLocaleString('es-PY')} y el total es USD ${total.toLocaleString('es-PY')}`);
       const t = ahora();
       await db.prepare('UPDATE ventas SET activo=0, updated_at=? WHERE unidad_id=? AND activo=1').bind(t, id).run();
       const r = await db.prepare(`INSERT INTO ventas (unidad_id,estado,cliente,documento,telefono,email,fecha,precio_cerrado,cochera,cochera_usd,vendedor,notas,activo,created_at,updated_at,creado_por)
