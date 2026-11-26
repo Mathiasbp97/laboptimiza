@@ -557,7 +557,7 @@ function ventaHTML(v) {
     <div><label class="f">Anticipo %</label><input id="gAnt" type="number" value="30"></div><div><label class="f">Fecha anticipo</label><input id="gAntF" type="date" value="${hoy()}"></div>
     <div><label class="f">Cuotas mensuales (n)</label><input id="gN" type="number" value="${mesesEntrega()}"></div><div><label class="f">1ª cuota</label><input id="gNF" type="date" value="${primerMes()}"></div>
     <div><label class="f"><span class="tip" title="Pagos extra (por ejemplo, semestrales) dentro del período de obra">Refuerzos</span> (n × USD)</label><div style="display:flex;gap:6px"><input id="gRn" type="number" value="0" style="width:60px"><input id="gRm" type="number" value="0"></div></div><div><label class="f">Refuerzo cada (meses)</label><input id="gRc" type="number" value="6"></div>
-    <div><label class="f">Saldo a la entrega %</label><input id="gSal" type="number" value="40"></div><div><label class="f">Fecha entrega</label><input id="gSalF" type="date" value="${CONFIG.entrega}"></div>
+    <div><label class="f">Saldo a la entrega %</label><input id="gSal" type="number" value="30" min="0" max="30" step="5" title="Máximo 30%"></div><div><label class="f">Fecha entrega</label><input id="gSalF" type="date" value="${CONFIG.entrega}"></div>
   </div><div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn btn-g" id="gGen">Generar plan</button><button class="btn btn-g" id="gAdd">+ Fila</button><button class="btn btn-g" id="gCont">Pago contado</button></div>
   <p class="hint">Las cuotas se calculan para que el total cierre exacto con el precio (depto + cochera). Después podés editar cualquier fila. GAO no financia después de la entrega.</p></div>
   <div class="tw" style="max-height:none;margin-top:12px"><table class="plan" id="tPlan"></table></div><div id="planSum"></div>`;
@@ -574,6 +574,7 @@ function bindVenta() {
 }
 function generarPlan() {
   const T = totalVenta(); if (!T) return toast('Cargá el precio cerrado', 1);
+  if ((+$('#gSal').value || 0) > 30) { $('#gSal').value = 30; return toast('El saldo a la entrega puede ser como máximo 30%', 1); }
   const sena = Math.round(+$('#gSena').value || 0), ant = Math.round(T * (+$('#gAnt').value || 0) / 100), sal = Math.round(T * (+$('#gSal').value || 0) / 100);
   const rn = Math.max(0, +$('#gRn').value || 0), rm = Math.round(+$('#gRm').value || 0), rc = Math.max(1, +$('#gRc').value || 6), n = Math.max(0, Math.round(+$('#gN').value || 0));
   const resto = T - sena - Math.max(0, ant - sena) - sal - rn * rm;
