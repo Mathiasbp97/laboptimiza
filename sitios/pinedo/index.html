@@ -261,7 +261,8 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
 #torreSvg.drag{cursor:grabbing}
 .tw{fill:transparent;stroke:transparent;transition:fill .25s,stroke .25s;cursor:pointer}
 .tw.hi{fill:rgba(255,255,255,.08);stroke:rgba(255,255,255,.55);stroke-width:4;stroke-dasharray:14 10}
-.twl{pointer-events:none}
+.twl{cursor:pointer}.twl rect{transition:fill .2s}.twl.venta:hover rect{fill:#2BB0DA}
+body.ov #floorList{opacity:0;pointer-events:none;transform:translate(24px,-50%)}#floorList{transition:opacity .3s,transform .3s}
 .twl rect{fill:rgba(11,13,18,.78);stroke:rgba(255,255,255,.18);stroke-width:2}
 .twl text{font-family:"Plus Jakarta Sans",Inter;font-weight:800;fill:#F4F1EC}
 .twl.prox text.s{fill:rgba(244,241,236,.6)}
@@ -346,7 +347,7 @@ table.ct{width:100%;border-collapse:collapse;font-size:14px}
  <div style="display:flex;gap:8px">
   <button class="tbtn g" id="bBuscar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="lbl">Buscar depto</span></button>
   <button class="tbtn g" id="bUbi" title="Ubicación"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="lbl">Ubicación</span></button>
-  <button class="tbtn g" id="bAmen" title="Amenities"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg><span class="lbl">Amenities</span></button>
+  <button class="tbtn g" id="bAmen" title="Vista aérea 360°" aria-label="Vista aérea 360°"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg><span class="lbl">Amenities</span></button>
   <a class="tbtn p" id="bInteres" target="_blank" rel="noopener"><span class="lbl">Registrar interés</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   <button class="tbtn g" id="bLang" aria-label="Idioma"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><b id="bLangT" style="font-size:12px;letter-spacing:.04em">ES</b></button>
   <button class="tbtn g" id="bMenu" aria-label="Menú"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -489,7 +490,8 @@ const CONFIG = {
   galeria: [ { n: "Acceso y fachada", img: "img/g-fachada.webp" }, { n: "Piscina", img: "img/g-piscina.webp" }, { n: "Quincho", img: "img/g-comedor.webp" }, { n: "Living", img: "img/g-living.webp" },
     { n: "Paseo verde", img: "img/g-paseo.webp" }, { n: "Espacios comunes", img: "img/g-amen.webp" }, { n: "Ubicación", img: "img/g-ubicacion.webp" }, { n: "Terminaciones", img: "img/g-detalles.webp" } ],
   // Formas de pago oficiales (mismo esquema que LIVO). La tasa es interna: NO se muestra en el sitio ni en los PDF.
-  cotizador: { modo: 'obra', entMin: 20, ent: 20, obraCuotas: 30, anios: 15, aniosMin: 3, aniosMax: 15, tasaAnual: 16 },
+  cotizador: { modo: 'obra', entMin: 20, ent: 20, coch: '', refF: 0, ref: 0, refMax: 50,   // refMax: tope de refuerzos, % del saldo
+                obraCuotas: 30, anios: 15, aniosMin: 3, aniosMax: 15, tasaAnual: 16 },
   idiomas:   ['es', 'en', 'pt', 'nl'],
   inmobiliarias: [],
   ubicacion: { lat: -25.32379, lon: -57.51773, zoom: 17,
@@ -529,7 +531,7 @@ const I18N = {
     'Tocá un departamento para ver su ficha, recorrer los ambientes y simular el pago.': ['Tap an apartment to see its details, walk through the rooms and simulate the payment.', 'Toque um apartamento para ver a ficha, percorrer os ambientes e simular o pagamento.', 'Tik op een appartement voor de details, een rondleiding en een betaalsimulatie.'],
     'Recorré el departamento': ['Walk through the apartment', 'Percorra o apartamento', 'Loop door het appartement'], 'Simulá tu pago': ['Simulate your payment', 'Simule seu pagamento', 'Simuleer je betaling'], 'Durante obra': ['During construction', 'Durante a obra', 'Tijdens de bouw'], 'Financiación propia': ['In-house financing', 'Financiamento próprio', 'Eigen financiering'],
     'Entrega + 30 cuotas': ['Down payment + 30 instalments', 'Entrada + 30 parcelas', 'Aanbetaling + 30 termijnen'], 'Hasta 15 años': ['Up to 15 years', 'Até 15 anos', 'Tot 15 jaar'], 'Entrega': ['Down payment', 'Entrada', 'Aanbetaling'], 'Plazo': ['Term', 'Prazo', 'Looptijd'],
-    'Saldo financiado': ['Financed balance', 'Saldo financiado', 'Gefinancierd saldo'], 'Cuotas iguales, sin interés, a partir del mes siguiente a la firma.': ['Equal interest-free instalments starting the month after signing.', 'Parcelas iguais, sem juros, a partir do mês seguinte à assinatura.', 'Gelijke renteloze termijnen vanaf de maand na ondertekening.'],
+    'Saldo financiado': ['Financed balance', 'Saldo financiado', 'Gefinancierd saldo'], 'Sumar cochera': ['Add a parking space', 'Adicionar vaga', 'Parkeerplaats toevoegen'], 'Sin cochera': ['No parking', 'Sem vaga', 'Zonder parkeerplaats'], 'Refuerzos': ['Extra payments', 'Reforços', 'Extra betalingen'], 'Sin refuerzos': ['No extra payments', 'Sem reforços', 'Geen extra betalingen'], 'Cada 6 meses': ['Every 6 months', 'A cada 6 meses', 'Elke 6 maanden'], 'Cada 12 meses': ['Every 12 months', 'A cada 12 meses', 'Elke 12 maanden'], 'Departamento': ['Apartment', 'Apartamento', 'Appartement'], 'Cuotas iguales, sin interés, a partir del mes siguiente a la firma.': ['Equal interest-free instalments starting the month after signing.', 'Parcelas iguais, sem juros, a partir do mês seguinte à assinatura.', 'Gelijke renteloze termijnen vanaf de maand na ondertekening.'],
     'Financiación propia de la desarrolladora, en guaraníes, de 3 a 15 años. Cuota fija mensual.': ["Developer's own financing in guaraníes, 3 to 15 years. Fixed monthly instalment.", 'Financiamento próprio da incorporadora, em guaranis, de 3 a 15 anos. Parcela fixa mensal.', 'Eigen financiering van de ontwikkelaar in guaraní, 3 tot 15 jaar. Vaste maandtermijn.'],
     'Cubierta': ['Indoor area', 'Área coberta', 'Binnenoppervlak'], 'Dormitorios · baños': ['Bedrooms · bathrooms', 'Quartos · banheiros', 'Slaapkamers · badkamers'],
     'Orientación': ['Orientation', 'Orientação', 'Oriëntatie'], 'Anticipo %': ['Down payment %', 'Entrada %', 'Aanbetaling %'],
@@ -584,7 +586,7 @@ const I18N = {
     ['Ver la vista desde el piso', ['See the view from floor', 'Ver a vista do andar', 'Bekijk het uitzicht vanaf verdieping']],
     ['Todos los del piso', ['All on floor', 'Todos do andar', 'Alle op verdieping']], ['Me interesa el', ['I’m interested in', 'Tenho interesse no', 'Interesse in']],
     ['o más alto', ['or higher', 'ou mais alto', 'of hoger']], ['\\(todos\\)', ['(all)', '(todos)', '(alle)']],
-    ['Entrega \\((\\d+)%\\)', ['Down payment ($1%)', 'Entrada ($1%)', 'Aanbetaling ($1%)']], ['(\\d+) cuotas durante la obra', ['$1 instalments during construction', '$1 parcelas durante a obra', '$1 termijnen tijdens de bouw']], ['(\\d+) cuotas fijas \\((\\d+) años\\)', ['$1 fixed instalments ($2 years)', '$1 parcelas fixas ($2 anos)', '$1 vaste termijnen ($2 jaar)']], ['^(\\d+) años$', ['$1 years', '$1 anos', '$1 jaar']], ['Financiado a (\\d+) años', ['Financed over $1 years', 'Financiado em $1 anos', 'Gefinancierd over $1 jaar']], ['cuotas de obra', ['construction instalments', 'parcelas de obra', 'bouwtermijnen']], ['cuota de obra', ['construction instalment', 'parcela de obra', 'bouwtermijn']],
+    ['(\\d+) refuerzos \\(cada (\\d+) meses\\)', ['$1 extra payments (every $2 months)', '$1 reforços (a cada $2 meses)', '$1 extra betalingen (elke $2 maanden)']], ['Entrega \\((\\d+)%\\)', ['Down payment ($1%)', 'Entrada ($1%)', 'Aanbetaling ($1%)']], ['(\\d+) cuotas durante la obra', ['$1 instalments during construction', '$1 parcelas durante a obra', '$1 termijnen tijdens de bouw']], ['(\\d+) cuotas fijas \\((\\d+) años\\)', ['$1 fixed instalments ($2 years)', '$1 parcelas fixas ($2 anos)', '$1 vaste termijnen ($2 jaar)']], ['^(\\d+) años$', ['$1 years', '$1 anos', '$1 jaar']], ['Financiado a (\\d+) años', ['Financed over $1 years', 'Financiado em $1 anos', 'Gefinancierd over $1 jaar']], ['cuotas de obra', ['construction instalments', 'parcelas de obra', 'bouwtermijnen']], ['cuota de obra', ['construction instalment', 'parcela de obra', 'bouwtermijn']],
     ['depto elegido · sumá otro', ['unit chosen · add another', 'apto escolhido · adicione outro', 'appartement gekozen · voeg er een toe']], ['deptos elegidos', ['units chosen', 'aptos escolhidos', 'appartementen gekozen']],
     ['agregado a la comparación', ['added to the comparison', 'adicionado à comparação', 'toegevoegd aan de vergelijking']], ['Podés comparar hasta (\\d+) departamentos', ['You can compare up to $1 apartments', 'Você pode comparar até $1 apartamentos', 'Je kunt tot $1 appartementen vergelijken']],
     ['No hay departamentos disponibles con esos filtros\\. Probá subir el precio máximo o elegir otro piso\\.', ['No apartments available with those filters. Try a higher maximum price or another floor.', 'Não há apartamentos disponíveis com esses filtros. Tente aumentar o preço máximo ou escolher outro andar.', 'Geen appartementen met deze filters. Verhoog de maximumprijs of kies een andere verdieping.']],
@@ -653,7 +655,7 @@ function OPS() { return OPC.map(o => { const L = o.u.map(pid => DB.unidades.find
   return { opc: true, id: L.map(u => u.id).join('+'), pid: o.id, u: L, torre: L[0].torre, piso: L[0].piso, letra: o.tip, tipo: t.tipo, dorm: t.dorm, banos: t.banos, m2: o.m2, precio: L.reduce((s, u) => s + u.precio, 0), estado: ok ? 'disponible' : 'nodisp' }; }).filter(Boolean); }
 const todas = () => [...DB.unidades, ...OPS()];
 const buscarU = id => todas().find(u => u.id === id || u.pid === id) || (/^\d{3}$/.test(id) ? todas().find(u => u.id === 'T1-' + id) : null);   // links viejos ?u=101 → Torre 1
-const UI = { view: 'torre', piso: 9, sel: null, amb: null, cot: { ...CONFIG.cotizador }, admin: false, cmp: [], filtro: null, fx: [], tx: null, torre: 1 };
+const UI = { view: 'torre', piso: 9, sel: null, amb: null, cot: { ...CONFIG.cotizador }, admin: false, cmp: [], filtro: null, fx: [], tx: null, torre: 1, ov: true, anim: false };   // ov = vista general de las 6 torres
 const del = p => DB.unidades.filter(u => u.piso === p && u.torre === UI.torre);
 
 // ---------- 1. TORRES ----------
@@ -662,9 +664,9 @@ function poly(p, t = 1) { const o = TW(t), s = o.slabs, top = s[9 - p], bot = s[
 function libresT(t) { return enVenta(t) ? DB.unidades.filter(u => u.torre === t && u.estado === 'disponible').length : 0; }
 function renderTorre() {
   $('#towers').innerHTML = CONFIG.torres.map(o => `<polygon class="tw" data-t="${o.t}" points="${o.x0},${o.top} ${o.x1},${o.top} ${o.x1},${o.slabs[10]} ${o.x0},${o.slabs[10]}"/>`).join('');
-  $('#floors').innerHTML = CONFIG.enVenta.map(t => Array.from({ length: 10 }, (_, p) => `<polygon class="fl${matchPiso(p) ? ' match' : ''}${UI.fx.some(id => pisoDe(id) === p) ? ' fx' : ''}" data-p="${p}" data-t="${t}" points="${poly(p, t)}"/>`).join('')).join('');
+  $('#floors').innerHTML = (UI.ov ? [] : [UI.torre]).filter(enVenta).map(t => Array.from({ length: 10 }, (_, p) => `<polygon class="fl${matchPiso(p) ? ' match' : ''}${UI.fx.some(id => pisoDe(id) === p) ? ' fx' : ''}" data-p="${p}" data-t="${t}" points="${poly(p, t)}"/>`).join('')).join('');
   $('#twLbl').innerHTML = CONFIG.torres.map(o => { const v = enVenta(o.t), cx = (o.x0 + o.x1) / 2, n = libresT(o.t), w = v ? 300 : 280;
-    return `<g class="twl ${v ? 'venta' : 'prox'}" transform="translate(${cx} ${o.slabs[10] + 78})"><rect x="${-w / 2}" y="-40" width="${w}" height="${v ? 84 : 84}" rx="42"/><text text-anchor="middle" y="-2" font-size="30">Torre ${o.t}</text><text class="s" text-anchor="middle" y="30" font-size="22" font-weight="600">${v ? n + ' disponibles' : 'Próxima etapa'}</text></g>`; }).join('');
+    return `<g class="twl ${v ? 'venta' : 'prox'}${UI.ov || o.t !== UI.torre ? '' : ' cur'}" data-t="${o.t}" transform="translate(${cx} ${o.slabs[10] + 78 + (UI.ov ? 50 : 0)}) scale(${UI.ov ? 1.7 : 1})"><rect x="${-w / 2}" y="-40" width="${w}" height="${v ? 84 : 84}" rx="42"/><text text-anchor="middle" y="-2" font-size="30">Torre ${o.t}</text><text class="s" text-anchor="middle" y="30" font-size="22" font-weight="600">${v ? n + ' disponibles' : 'Próxima etapa'}</text></g>`; }).join('');
   const U = DB.unidades, n = U.length, d = U.filter(u => u.estado === 'disponible'), O = OPS().filter(o => o.estado === 'disponible');
   const desde = d.length ? Math.min(...d.map(u => u.precio).filter(Boolean)) : 0;
   $('#heroCard').innerHTML = `<div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);font-weight:700">${esc(CONFIG.proyecto.sub)}</div>
@@ -677,6 +679,9 @@ function renderTorre() {
     return `<div class="frow${matchPiso(p) ? ' match' : ''}" data-p="${p}"><b class="num">${p ? 'Piso ' + String(p).padStart(2, '0') : 'Planta baja'}</b><span style="display:flex;align-items:center;gap:10px"><span class="dots">${D.map(u => `<i class="${UI.fx.includes(u.id) ? 'fx' : ''}" style="background:${COL[u.estado]}"></i>`).join('')}</span><span class="num" style="color:var(--mu);font-size:12px;width:16px;text-align:right">${nd}</span></span></div>`; }).join('')
     : `<p style="padding:4px 10px 12px;color:var(--mu);font-size:13px;line-height:1.5">La Torre ${UI.torre} es una próxima etapa. La lista vigente es de la Torre ${CONFIG.enVenta.join(', ')}.</p><button class="btn p" id="bProx" style="margin:0 4px 6px;width:calc(100% - 8px)">Avisame cuando salga</button><button class="btn g" id="bVerT1" style="margin:0 4px;width:calc(100% - 8px)">Ver la Torre ${CONFIG.enVenta[0]}</button>`);
   if ($('#bProx')) { $('#bProx').onclick = () => abrirLead(null, UI.torre); $('#bVerT1').onclick = () => irTorre(CONFIG.enVenta[0]); }
+  document.body.classList.toggle('ov', UI.ov); $('#hint').textContent = UI.ov ? 'Tocá una torre para acercarte y ver sus pisos' : 'Deslizá para ver las otras torres · tocá un piso para ver los departamentos';
+  if (UI.view === 'torre') $('#bBack').style.visibility = UI.ov ? 'hidden' : 'visible';
+  $$('#twLbl .twl').forEach(g => g.onclick = () => irTorre(+g.dataset.t));
   $('#tChips').innerHTML = CONFIG.torres.map(o => `<button data-t="${o.t}" class="${UI.torre === o.t ? 'on' : ''}">Torre ${o.t}${enVenta(o.t) ? '' : '<small>próx.</small>'}</button>`).join('');
   $$('#tChips button').forEach(b => b.onclick = () => irTorre(+b.dataset.t));
   $$('#floors .fl, #floorList .frow').forEach(el => {
@@ -689,9 +694,9 @@ function renderTorre() {
   $('#torreSvg').onmousemove = e => { if (UI.hf != null || UI.ht) tipAt(e); };
   fitTorre();
 }
-function hiTorre(t, e) { UI.ht = t; $$('#towers .tw').forEach(f => f.classList.toggle('hi', +f.dataset.t === t && !enVenta(t)));
-  const tip = $('#floorTip'); if (!t || enVenta(t)) { if (UI.hf == null) tip.style.opacity = 0; return; }
-  tip.innerHTML = `<b>Torre ${t}</b>Próxima etapa · tocá para recibir novedades`; tip.style.opacity = 1; if (e && e.clientX) tipAt(e); }
+function hiTorre(t, e) { UI.ht = t; $$('#towers .tw').forEach(f => f.classList.toggle('hi', +f.dataset.t === t && (UI.ov || !enVenta(t))));
+  const tip = $('#floorTip'); if (!t || (enVenta(t) && !UI.ov)) { if (UI.hf == null) tip.style.opacity = 0; return; }
+  const nT = libresT(t); tip.innerHTML = enVenta(t) ? `<b>Torre ${t}</b>${nT} disponible${nT === 1 ? '' : 's'} · tocá para ver los pisos` : `<b>Torre ${t}</b>Próxima etapa · tocá para recibir novedades`; tip.style.opacity = 1; if (e && e.clientX) tipAt(e); }
 function hiFloor(p, e) {
   UI.hf = p; $$('#floors .fl').forEach(f => f.classList.toggle('hi', p != null && +f.dataset.p === p)); $$('#floorList .frow').forEach(f => f.classList.toggle('hi', p != null && +f.dataset.p === p));
   const tip = $('#floorTip'); if (p == null) { tip.style.opacity = 0; return; }
@@ -704,20 +709,34 @@ function tipAt(e) { const t = $('#floorTip'); t.style.left = Math.min(innerWidth
 function vb() { const svg = $('#torreSvg'), r = svg.getBoundingClientRect(), mobP = innerWidth < 860 && innerHeight > innerWidth, y1 = mobP ? RD.y1 + 230 : RD.y1, H = y1 - RD.y0, W = H * (r.width || innerWidth) / (r.height || innerHeight); return { W, H }; }
 function clampTx(x) { const { W } = vb(), lo = -400, hi = Math.max(lo, RD.w + 400 - W); return Math.max(lo, Math.min(hi, x)); }
 function centroT(t) { const o = TW(t), { W } = vb(), mob = innerWidth < 860 && innerHeight > innerWidth; return (o.x0 + o.x1) / 2 - W / 2 - (mob ? 0 : W * .04); }
-function fitTorre() { const { W, H } = vb(); if (W >= RD.w + 200) UI.tx = (RD.w - W) / 2; else if (UI.tx == null) UI.tx = centroT(UI.torre); UI.tx = clampTx(UI.tx);
-  $('#torreSvg').setAttribute('viewBox', `${UI.tx} ${RD.y0} ${W} ${H}`); }
-function irTorre(t, sinMover) { UI.torre = t; if (!sinMover) { const a = UI.tx, b = clampTx(centroT(t)), t0 = performance.now();
+function ovRect() { // encuadra las 6 torres en el espacio libre (sin tapar la tarjeta del proyecto)
+  const svg = $('#torreSvg'), r = svg.getBoundingClientRect(), Wp = r.width || innerWidth, Hp = r.height || innerHeight, desk = innerWidth >= 860 || innerWidth > innerHeight, land = innerWidth < 860 && innerWidth > innerHeight, hc = $('#heroCard').getBoundingClientRect();
+  const L = desk && hc.width ? Math.min(Wp * .34, hc.right + 18) : 8, T = land ? 64 : desk ? 118 : 104, Rm = desk ? 16 : 8, B = desk ? 54 : (hc.height ? Math.max(70, Hp - hc.top + 10) : 70);
+  const T0 = CONFIG.torres, bx0 = Math.min(...T0.map(o => o.x0)) - 130, bx1 = Math.max(...T0.map(o => o.x1)) + 130, by0 = Math.min(...T0.map(o => o.top)) - 40, by1 = Math.max(...T0.map(o => o.slabs[10])) + 78 + 70 + 100;
+  const aw = Math.max(120, Wp - L - Rm), ah = Math.max(120, Hp - T - B), k = Math.min(aw / (bx1 - bx0), ah / (by1 - by0));
+  return { x: bx0 - (L + (aw - (bx1 - bx0) * k) / 2) / k, y: by0 - (T + (ah - (by1 - by0) * k) / 2) / k, W: Wp / k, H: Hp / k }; }
+function torreRect() { const { W, H } = vb(); if (W >= RD.w + 200) UI.tx = (RD.w - W) / 2; else if (UI.tx == null) UI.tx = centroT(UI.torre); UI.tx = clampTx(UI.tx); return { x: UI.tx, y: RD.y0, W, H }; }
+const setVB = q => $('#torreSvg').setAttribute('viewBox', `${q.x} ${q.y} ${q.W} ${q.H}`);
+function curVB() { const v = ($('#torreSvg').getAttribute('viewBox') || '').split(/\s+/).map(Number); return v.length === 4 && v.every(isFinite) ? { x: v[0], y: v[1], W: v[2], H: v[3] } : torreRect(); }
+function fitTorre() { if (UI.anim) return; setVB(UI.ov ? ovRect() : torreRect()); }
+function animVB(a, b, ms = 750) { UI.anim = true; const t0 = performance.now(), L = (p, q, e) => p + (q - p) * e;
+  (function an(n) { const k = Math.min(1, (n - t0) / ms), e = k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2;
+    setVB({ x: L(a.x, b.x, e), y: L(a.y, b.y, e), W: L(a.W, b.W, e), H: L(a.H, b.H, e) }); if (k < 1) requestAnimationFrame(an); else { UI.anim = false; fitTorre(); } })(t0); }
+function irTorre(t, sinMover) { UI.torre = t;
+  if (UI.ov) { const a = curVB(); UI.ov = false; UI.tx = null; UI.anim = true; renderTorre(); UI.tx = clampTx(centroT(t)); animVB(a, torreRect()); return; }
+  if (!sinMover) { const a = UI.tx, b = clampTx(centroT(t)), t0 = performance.now();
     (function an(n) { const k = Math.min(1, (n - t0) / 600), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2; UI.tx = a + (b - a) * e; fitTorre(); if (k < 1) requestAnimationFrame(an); })(t0); }
   renderTorre(); }
+function verTodas() { if (UI.ov) return; const a = curVB(); UI.ov = true; hiFloor(null); UI.anim = true; renderTorre(); animVB(a, ovRect()); }
 const TDRAG = { on: false, x: 0, moved: false };
 (() => { const svg = $('#torreSvg');
-  svg.addEventListener('pointerdown', e => { TDRAG.on = true; TDRAG.x = e.clientX; TDRAG.sx = UI.tx; TDRAG.moved = false; });
+  svg.addEventListener('pointerdown', e => { if (UI.ov || UI.anim) return; TDRAG.on = true; TDRAG.x = e.clientX; TDRAG.sx = UI.tx; TDRAG.moved = false; });
   addEventListener('pointermove', e => { if (!TDRAG.on) return; const dx = e.clientX - TDRAG.x; if (Math.abs(dx) > 6) { TDRAG.moved = true; svg.classList.add('drag'); }
     if (TDRAG.moved) { UI.tx = clampTx(TDRAG.sx - dx * vb().W / svg.getBoundingClientRect().width); fitTorre(); } });
   addEventListener('pointerup', () => { if (!TDRAG.on) return; TDRAG.on = false; svg.classList.remove('drag');
     if (TDRAG.moved) { const { W } = vb(), c = UI.tx + W / 2, t = CONFIG.torres.reduce((a, o) => Math.abs((o.x0 + o.x1) / 2 - c) < Math.abs((a.x0 + a.x1) / 2 - c) ? o : a); if (t.t !== UI.torre) { UI.torre = t.t; renderTorre(); } }
     setTimeout(() => TDRAG.moved = false, 30); });
-  svg.addEventListener('wheel', e => { if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) { e.preventDefault(); UI.tx = clampTx(UI.tx + (e.deltaX || e.deltaY)); fitTorre(); } }, { passive: false });
+  svg.addEventListener('wheel', e => { if (UI.ov) return; if (Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey) { e.preventDefault(); UI.tx = clampTx(UI.tx + (e.deltaX || e.deltaY)); fitTorre(); } }, { passive: false });
 })();
 
 // ---------- 2. PLANTA ----------
@@ -756,19 +775,29 @@ function renderListaPiso(D) {
 function selUnidad(id) { UI.sel = UI.sel === id ? null : id; if (UI.sel) { const u = buscarU(id); DB.vistas[id] = (DB.vistas[id] || 0) + 1; save(); evento('vista', u ? u.pid : id); } renderPlanta(); $('#sideBody').scrollTop = 0; }
 function pmt(i, n, pv) { return i === 0 ? pv / n : pv * i / (1 - Math.pow(1 + i, -n)); }
 const mil = x => Math.ceil(x / 1000 - 1e-9) * 1000;   // cuotas redondeadas hacia arriba a miles (como LIVO)
-function cotizar(u, modo) { const c = UI.cot, m = modo || c.modo, P = u.precio || 0, e = Math.min(90, Math.max(c.entMin, +c.ent || c.entMin)), ent = Math.round(P * e / 100), S = P - ent;
-  if (m === 'obra') { const n = c.obraCuotas, cuota = mil(S / n); return { m, P, e, ent, S, n, cuota, total: ent + cuota * n, c }; }
-  const anios = Math.min(c.aniosMax, Math.max(c.aniosMin, Math.round(+c.anios || c.aniosMax))), n = anios * 12, cuota = mil(pmt(c.tasaAnual / 1200, n, S));
-  return { m, P, e, ent, S, n, anios, cuota, total: ent + cuota * n, c }; }
+// cochera opcional: la más económica disponible del tipo elegido, en la misma torre
+const cochDe = (u, tip) => DB.cocheras.filter(c => c.torre === u.torre && c.tip === tip && c.estado === 'disponible' && c.precio).sort((a, b) => a.precio - b.precio)[0] || null;
+function cotizar(u, modo) { const c = UI.cot, m = modo || c.modo, cs = c.coch ? cochDe(u, c.coch) : null, Pd = u.precio || 0, P = Pd + (cs ? cs.precio : 0),
+    e = Math.min(90, Math.max(c.entMin, +c.ent || c.entMin)), ent = Math.round(P * e / 100), S = P - ent, i = c.tasaAnual / 1200;
+  const anios = m === 'obra' ? 0 : Math.min(c.aniosMax, Math.max(c.aniosMin, Math.round(+c.anios || c.aniosMax))), n = m === 'obra' ? c.obraCuotas : anios * 12;
+  // refuerzos: pagos extra cada 6 o 12 meses dentro del plazo; bajan la cuota (en financiación se descuentan a la misma tasa)
+  const f = +c.refF || 0, nRef = f ? Math.floor(n / f) : 0; let ref = nRef ? Math.max(0, Math.round(+c.ref || 0)) : 0, tope = false;
+  if (nRef && ref * nRef > S * c.refMax / 100) { ref = Math.floor(S * c.refMax / 100 / nRef / 1000) * 1000; tope = true; }
+  const pvRef = m === 'obra' ? ref * nRef : Array.from({ length: nRef }, (_, k) => ref / (1 + i) ** ((k + 1) * f)).reduce((a, x) => a + x, 0);
+  const cuota = m === 'obra' ? mil((S - ref * nRef) / n) : mil(pmt(i, n, S - pvRef));
+  return { m, Pd, P, cs, e, ent, S, n, anios, cuota, f, nRef, ref, tope, total: ent + cuota * n + ref * nRef, c }; }
 function qOut(q) {
-  return q.m === 'obra'
+  const top = q.cs ? `<div class="row"><span>Departamento</span><b class="num">${money(q.Pd)}</b></div><div class="row"><span>Cochera ${esc(CONFIG.cocheras[q.cs.tip] || '')}</span><b class="num">${money(q.cs.precio)}</b></div><div class="row"><span>Total</span><b class="num">${money(q.P)}</b></div>` : '';
+  const ref = q.nRef ? `<div class="row"><span>${q.nRef} refuerzos (cada ${q.f} meses)</span><b class="num">${money(q.ref)} c/u</b></div>` : '';
+  const tope = q.tope ? `<p class="qnota">Los refuerzos pueden sumar hasta el ${q.c.refMax}% del saldo; se ajustaron a ${money(q.ref)}.</p>` : '';
+  return top + (q.m === 'obra'
     ? `<div class="row"><span>Entrega (${q.e}%)</span><b class="num">${money(q.ent)}</b></div>
-   <div class="row"><span>${q.n} cuotas durante la obra</span><b class="num">${money(q.cuota)} / mes</b></div>
+   <div class="row"><span>${q.n} cuotas durante la obra</span><b class="num">${money(q.cuota)} / mes</b></div>${ref}${tope}
    <p class="qnota">Cuotas iguales, sin interés, a partir del mes siguiente a la firma.</p>`
     : `<div class="row"><span>Entrega (${q.e}%)</span><b class="num">${money(q.ent)}</b></div>
-   <div class="row"><span>${q.n} cuotas fijas (${q.anios} años)</span><b class="num">${money(q.cuota)} / mes</b></div>
-   <div class="row"><span>Saldo financiado</span><b class="num">${money(q.S)}</b></div>
-   <p class="qnota">Financiación propia de la desarrolladora, en guaraníes, de 3 a 15 años. Cuota fija mensual.</p>`;
+   <div class="row"><span>${q.n} cuotas fijas (${q.anios} años)</span><b class="num">${money(q.cuota)} / mes</b></div>${ref}
+   <div class="row"><span>Saldo financiado</span><b class="num">${money(q.S)}</b></div>${tope}
+   <p class="qnota">Financiación propia de la desarrolladora, en guaraníes, de 3 a 15 años. Cuota fija mensual.</p>`);
 }
 const panosDe = g => Object.entries(TOUR || {}).filter(([k, p]) => p.g === g);
 function renderFicha(u) {
@@ -787,7 +816,10 @@ function renderFicha(u) {
    <div class="sec">Simulá tu pago <span class="tip-i no-print" data-t="Simulación referencial. Durante obra: entrega mínima del 20% y el resto en 30 cuotas. Financiación propia: entrega mínima del 20% y cuotas fijas de 3 a 15 años. Sujeto a aprobación de la desarrolladora.">?</span></div>
    <div class="no-print"><div class="qseg" id="qSeg"><button data-m="obra" class="${q.m === 'obra' ? 'on' : ''}">Durante obra<small>Entrega + 30 cuotas</small></button><button data-m="propia" class="${q.m === 'propia' ? 'on' : ''}">Financiación propia<small>Hasta 15 años</small></button></div>
     <label class="qlab">Entrega <b id="qEv">${q.e}%</b></label><input type="range" min="${q.c.entMin}" max="90" step="5" data-c="ent" value="${q.e}">
-    <div id="qPlz" style="${q.m === 'propia' ? '' : 'display:none'}"><label class="qlab">Plazo <b id="qAv">${q.anios || q.c.anios} años</b></label><input type="range" min="${q.c.aniosMin}" max="${q.c.aniosMax}" step="1" data-c="anios" value="${q.anios || q.c.anios}"></div></div>
+    <div id="qPlz" style="${q.m === 'propia' ? '' : 'display:none'}"><label class="qlab">Plazo <b id="qAv">${q.anios || q.c.anios} años</b></label><input type="range" min="${q.c.aniosMin}" max="${q.c.aniosMax}" step="1" data-c="anios" value="${q.anios || q.c.anios}"></div>
+    ${(() => { const T = Object.entries(CONFIG.cocheras).map(([k, n]) => [k, n, cochDe(u, k)]).filter(x => x[2]); return T.length ? `<label class="qlab">Sumar cochera</label><select data-c="coch"><option value="">Sin cochera</option>${T.map(([k, n, c]) => `<option value="${k}"${UI.cot.coch === k ? ' selected' : ''}>${n} · ${money(c.precio)}</option>`).join('')}</select>` : ''; })()}
+    <label class="qlab">Refuerzos <span class="q" data-t="Pagos extra cada 6 o 12 meses que bajan la cuota mensual. Pueden sumar hasta el ${UI.cot.refMax}% del saldo.">?</span></label>
+    <div class="f2"><select data-c="refF"><option value="0"${!+UI.cot.refF ? ' selected' : ''}>Sin refuerzos</option><option value="6"${+UI.cot.refF === 6 ? ' selected' : ''}>Cada 6 meses</option><option value="12"${+UI.cot.refF === 12 ? ' selected' : ''}>Cada 12 meses</option></select><input data-c="ref" inputmode="numeric" placeholder="Monto de cada refuerzo" value="${+UI.cot.ref ? (+UI.cot.ref).toLocaleString('es-PY') : ''}"></div></div>
    <div id="qOut">${u.precio ? qOut(q) : '<p style="color:var(--mu);font-size:13px">Pedí el precio y el plan de pago vigente.</p>'}</div>
    ${cmin ? `<div class="sec">Cochera</div><div class="optc"><div>Cocheras desde <b class="num">${money(cmin)}</b><br><small>${coch.length} disponibles en planta baja y planta alta</small></div><button class="tbtn g" id="bCoch" style="padding:8px 12px">Ver</button></div>` : ''}
    <div class="sec">Incluye</div><ul class="inc">${CONFIG.incluye.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
@@ -801,7 +833,9 @@ function renderFicha(u) {
   $$('#sideBody .amb button').forEach(b => b.onclick = () => abrir360(T.g || u.letra, b.dataset.k, `${opc ? u.id : 'Depto ' + u.id} · ${u.tipo}`));
   const qUpd = () => { const q = cotizar(u); $('#qEv').textContent = q.e + '%'; if ($('#qAv')) $('#qAv').textContent = (q.anios || UI.cot.anios) + ' años'; $('#qPlz').style.display = q.m === 'propia' ? '' : 'none';
     $$('#qSeg button').forEach(b => b.classList.toggle('on', b.dataset.m === q.m)); if (u.precio) { $('#qOut').innerHTML = qOut(q); if (LANG !== 'es') traducirNodo($('#qOut')); } };
-  $$('#sideBody [data-c]').forEach(i => i.oninput = () => { const v = parseFloat(i.value); UI.cot[i.dataset.c] = isFinite(v) ? v : UI.cot[i.dataset.c]; qUpd(); });
+  $$('#sideBody [data-c]').forEach(i => { const k = i.dataset.c; i.oninput = i.onchange = () => { if (k === 'coch') UI.cot.coch = i.value;
+      else if (k === 'ref') { const v = +i.value.replace(/\D/g, '') || 0; UI.cot.ref = v; const p = i.selectionStart, L0 = i.value.length; i.value = v ? v.toLocaleString('es-PY') : ''; try { i.setSelectionRange(p + i.value.length - L0, p + i.value.length - L0); } catch (e) {} }
+      else { const v = parseFloat(i.value); UI.cot[k] = isFinite(v) ? v : UI.cot[k]; } qUpd(); }; });
   $$('#qSeg button').forEach(b => b.onclick = () => { UI.cot.modo = b.dataset.m; qUpd(); });
   if ($('#bCoch')) $('#bCoch').onclick = verCocheras;
   $('#bPdf').onclick = () => pdfFicha(u); $('#bPrint').onclick = () => print();
@@ -847,12 +881,12 @@ function ptOnSvg(svgSel, x, y) { const svg = $(svgSel), pt = svg.createSVGPoint(
 // ---------- navegación ----------
 function setView(v) {
   UI.view = v; $$('.view').forEach(x => x.classList.remove('on')); $({ torre: '#vTorre', planta: '#vPlanta' }[v]).classList.add('on'); if (v === 'torre') fitTorre();
-  $('#bBack').style.visibility = v === 'torre' ? 'hidden' : 'visible'; if (typeof badgeFiltro === 'function') badgeFiltro();
+  if (v === 'planta' && UI.ov) { UI.ov = false; UI.tx = null; } $('#bBack').style.visibility = v === 'torre' && UI.ov ? 'hidden' : 'visible'; if (typeof badgeFiltro === 'function') badgeFiltro();
   $('#bBackLbl').textContent = 'Torres';
 }
-$('#bBack').onclick = () => { if ($('#v360').classList.contains('on')) return cerrar360(); if (UI.view === 'planta') { setView('torre'); renderTorre(); } };
-$('#bAmen').onclick = () => abrirAmb('a');
-addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('#zoomI').classList.contains('on')) return $('#zoomI').classList.remove('on'); if ($('#v360').classList.contains('on')) return cerrar360(); if (UI.view !== 'torre' && !$$('.modal.on').length) $('#bBack').click(); });
+$('#bBack').onclick = () => { if ($('#v360').classList.contains('on')) return cerrar360(); if (UI.view === 'planta') { setView('torre'); renderTorre(); } else if (!UI.ov) verTodas(); };
+$('#bAmen').onclick = () => abrirAerea();
+addEventListener('keydown', e => { if (e.key !== 'Escape') return; if ($('#zoomI').classList.contains('on')) return $('#zoomI').classList.remove('on'); if ($('#v360').classList.contains('on')) return cerrar360(); if ((UI.view !== 'torre' || !UI.ov) && !$$('.modal.on').length) $('#bBack').click(); });
 addEventListener('resize', () => { fitTorre(); });
 
 // ---------- menú ----------
@@ -1105,8 +1139,10 @@ async function pdfFicha(u) {
   if (u.opc) body.push([tr('Unidades'), u.u.map(x => `${x.id} (${tr(x.tipo)}, ${x.m2} m2${x.precio ? ', ' + money(x.precio) : ''})`).join(' + ')]);
   doc.autoTable({ startY: y0 + 14, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Unidad'), tr('Detalle')]], body });
   if (ver && u.precio) doc.autoTable({ startY: doc.lastAutoTable.finalY + 5, theme: 'grid', headStyles: { fillColor: AC }, head: [[tr('Forma de pago') + ' (' + tr('simulación') + ')', tr('Monto')]],
-    body: q.m === 'obra' ? [[tr('Durante obra'), ''], [`${tr('Entrega')} (${q.e}%)`, money(q.ent)], [`${q.n} ${tr('cuotas durante la obra')}`, `${money(q.cuota)} / ${tr('mes')}`]]
-      : [[tr('Financiación propia'), ''], [`${tr('Entrega')} (${q.e}%)`, money(q.ent)], [`${q.n} ${tr('cuotas fijas')} (${q.anios} ${tr('años')})`, `${money(q.cuota)} / ${tr('mes')}`], [tr('Saldo financiado'), money(q.S)]] });
+    body: [...(q.cs ? [[tr('Departamento'), money(q.Pd)], [tr('Cochera') + ' ' + (CONFIG.cocheras[q.cs.tip] || ''), money(q.cs.precio)], [tr('Total'), money(q.P)]] : []),
+      [q.m === 'obra' ? tr('Durante obra') : tr('Financiación propia'), ''], [`${tr('Entrega')} (${q.e}%)`, money(q.ent)],
+      q.m === 'obra' ? [`${q.n} ${tr('cuotas durante la obra')}`, `${money(q.cuota)} / ${tr('mes')}`] : [`${q.n} ${tr('cuotas fijas')} (${q.anios} ${tr('años')})`, `${money(q.cuota)} / ${tr('mes')}`],
+      ...(q.nRef ? [[`${q.nRef} ${tr('refuerzos')} (${tr('cada')} ${q.f} ${tr('meses')})`, money(q.ref) + ' c/u']] : []), ...(q.m === 'obra' ? [] : [[tr('Saldo financiado'), money(q.S)]])] });
   doc.setFontSize(10); doc.setTextColor(30); doc.text(contacto(), 14, doc.lastAutoTable.finalY + 8); doc.setTextColor(...AC); doc.textWithLink(tr('Ver este departamento en el showroom'), 14, doc.lastAutoTable.finalY + 14, { url: linkUnidad(u) + (BROKER ? '&b=' + BROKER.slug : '') });
   pie(); doc.save(`torres-pinedo-${u.id.replace('+', '-')}.pdf`); toast(tr('Ficha descargada'));
 }
