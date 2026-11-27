@@ -61,6 +61,7 @@ input:focus,select:focus{border-color:var(--ac)}
 body.heroMin #heroCard .hb,body.heroMin #heroCard>div:nth-child(2){display:none}body.heroMin #heroCard{padding:10px 48px 10px 16px;width:auto}body.heroMin #heroCard h1{font-size:18px;margin:0!important}body.heroMin #hMin{transform:rotate(180deg);top:50%;margin-top:-15px}
 #heroCard h1{font-size:25px;padding-right:30px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
 #heroCard p{color:var(--mu);font-size:12.5px;margin-top:6px;line-height:1.5}
+#heroCard>div:first-of-type{padding-right:36px;letter-spacing:.09em!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#heroCard .stats{grid-template-columns:1fr 1fr}#heroCard .stat{min-width:0}#heroCard .stat small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#heroCard .stat:last-child{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
 .stat{background:rgba(0,0,0,.28);border:1px solid var(--bd);border-radius:12px;padding:10px}
 .stat small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
@@ -718,7 +719,8 @@ function clampTx(x) { const { W } = vb(), lo = -400, hi = Math.max(lo, RD.w + 40
 function centroT(t) { const o = TW(t), { W } = vb(), mob = innerWidth < 860 && innerHeight > innerWidth; return (o.x0 + o.x1) / 2 - W / 2 - (mob ? 0 : W * .04); }
 function ovRect() { // encuadra las 6 torres en el espacio libre (sin tapar la tarjeta del proyecto)
   const svg = $('#torreSvg'), r = svg.getBoundingClientRect(), Wp = r.width || innerWidth, Hp = r.height || innerHeight, desk = innerWidth >= 860 || innerWidth > innerHeight, land = innerWidth < 860 && innerWidth > innerHeight, hc = $('#heroCard').getBoundingClientRect();
-  const L = desk ? 20 : 6, T = land ? 60 : desk ? 112 : 104, Rm = L, B = desk ? (land ? 52 : 64) : (hc.height ? Math.max(70, Hp - hc.top + 10) : 70);   // centrado y a pantalla completa
+  const hcOn = desk && !land && hc.width && !document.body.classList.contains('heroMin');   // tarjeta desplegada: las torres se corren a su derecha
+  const L = hcOn ? hc.right + 14 : desk ? 20 : 6, T = land ? 60 : desk ? 112 : 104, Rm = desk ? 20 : 6, B = desk ? (land ? 52 : 64) : (hc.height ? Math.max(70, Hp - hc.top + 10) : 70);   // centrado y a pantalla completa
   const T0 = CONFIG.torres, bx0 = Math.min(...T0.map(o => o.x0)) - 130, bx1 = Math.max(...T0.map(o => o.x1)) + 130, by0 = Math.min(...T0.map(o => o.top)) - 40, by1 = Math.max(...T0.map(o => o.slabs[10])) + 78 + 50 + 80;
   const aw = Math.max(120, Wp - L - Rm), ah = Math.max(120, Hp - T - B), k = Math.min(aw / (bx1 - bx0), ah / (by1 - by0));
   return { x: bx0 - (L + (aw - (bx1 - bx0) * k) / 2) / k, y: by0 - (T + (ah - (by1 - by0) * k) / 2) / k, W: Wp / k, H: Hp / k }; }
