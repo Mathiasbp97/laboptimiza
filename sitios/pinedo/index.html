@@ -816,7 +816,7 @@ function renderFicha(u) {
    <div class="price num">${pr}${ver && u.precio ? `<small>${money(u.precio / u.m2)} / m²</small>` : ''}</div>
    <div style="font-size:12px;color:var(--mu);margin-top:2px">${opc ? 'Suma de las unidades ' + u.u.map(x => `${x.id} (${x.tipo}, ${x.m2} m²)`).join(' + ') : 'Precio de lista ' + CONFIG.listaFecha}</div>
    <div class="grid2"><div class="cell"><small>Superficie</small><b class="num">${String(u.m2).replace('.', ',')} m²</b></div><div class="cell"><small>Dormitorios · baños</small><b>${u.dorm || 'Studio'} · ${u.banos}</b></div><div class="cell"><small>Ubicación</small><b>Torre ${u.torre} · ${u.piso ? 'Piso ' + u.piso : 'PB'}</b></div><div class="cell"><small>${u.piso === 0 ? 'Extra' : 'Tipología'}</small><b>${u.piso === 0 ? 'Patio propio' : esc(T.tipo || u.letra)}</b></div></div>
-   <a class="lamb no-print" id="bLam"><img src="img/lam_${u.letra}.webp" alt="Plano de la tipología" loading="lazy"><span>Ampliar plano</span></a>
+   <a class="lamb no-print" id="bLam"><img src="${lamDe(u)}" alt="Plano de la tipología" loading="lazy"><span>Ampliar plano</span></a>
    ${ops.length ? `<div class="sec">Más dormitorios uniendo con la de al lado</div>${ops.map(o => { const otra = o.u.find(x => x.id !== u.id), ok = o.estado === 'disponible';
      return `<div class="optc${ok ? ' on' : ''}"><div><b>+ ${otra.id} → ${o.tipo}</b> · ${String(o.m2).replace('.', ',')} m²<br><small>${ok ? money(o.precio) + ' en total' : 'No disponible: la ' + otra.id + ' está ' + ESTN[otra.estado].toLowerCase()}</small></div>${ok ? `<button class="tbtn g" data-op="${o.id}" style="padding:8px 12px">Ver</button>` : ''}</div>`; }).join('')}` : ''}
    ${P360.length ? `<div class="sec no-print">Recorré la tipología en 360°</div><div class="amb no-print">${P360.map(([k, p]) => `<button data-k="${k}" style="background-image:url(thumbs/${k}.jpg)"><span>${esc(p.n)}</span></button>`).join('')}</div>` : ''}
@@ -835,7 +835,7 @@ function renderFicha(u) {
    <div class="btns3 no-print"><button class="btn g${UI.cmp.includes(u.id) ? ' on' : ''}" id="bCmp">${UI.cmp.includes(u.id) ? 'En comparación ✓' : 'Comparar'}</button><button class="btn g" id="bShare">Compartir link</button>
     <button class="btn g" id="bPdf">Ficha PDF</button><button class="btn g" id="bPrint">Imprimir ficha</button></div>`;
   $('#bLista').onclick = () => selUnidad(u.id);
-  $('#bLam').onclick = () => zoomImg(`img/lam_${u.letra}.webp`);
+  $('#bLam').onclick = () => zoomImg(lamDe(u));
   $$('#sideBody [data-op]').forEach(b => b.onclick = () => selUnidad(b.dataset.op));
   $$('#sideBody .amb button').forEach(b => b.onclick = () => abrir360(T.g || u.letra, b.dataset.k, `${opc ? u.id : 'Depto ' + u.id} · ${u.tipo}`));
   const qUpd = () => { const q = cotizar(u); $('#qEv').textContent = q.e + '%'; if ($('#qAv')) $('#qAv').textContent = (q.anios || UI.cot.anios) + ' años'; $('#qPlz').style.display = q.m === 'propia' ? '' : 'none';
@@ -849,6 +849,9 @@ function renderFicha(u) {
   if ($('#bLead')) $('#bLead').onclick = () => abrirLead(u);
   $('#bCmp').onclick = () => toggleCmp(u.id); $('#bShare').onclick = () => compartir(u);
 }
+// Planta 3D de la tipología; en planta baja, la versión con patio (si existe).
+const LAM_PATIO = ['SA', '1A', '1B', '1C', '2D', '3D'];
+const lamDe = u => `img/lam_${u.letra}${u.piso === 0 && LAM_PATIO.includes(u.letra) ? '_P' : ''}.webp`;
 function zoomImg(src) { $('#zoomI img').src = src; $('#zoomI').classList.add('on'); }
 $('#zoomI').onclick = () => $('#zoomI').classList.remove('on');
 
@@ -1138,7 +1141,7 @@ async function pdfFicha(u) {
   const { doc, AC, pie, banda } = pdfBase(), q = cotizar(u), nom = u.opc ? u.id.replace('+', ' + ') : (u.piso ? tr('Depto') + ' ' : 'PB ') + u.id;
   banda(`${CONFIG.proyecto.nombre} · ${nom}`, `Torre ${u.torre} · ${tr(u.tipo)} · ${u.piso ? tr('Piso') + ' ' + u.piso : 'Planta baja'} · ${CONFIG.proyecto.ubicacion}`);
   let y0 = 34;
-  try { const im = await cover(`img/lam_${u.letra}.webp`, 16 / 9, 1600); doc.addImage(im, 'JPEG', 14, 33, 182, 102.4); y0 = 33 + 102.4 + 6; } catch (e) {}
+  try { const im = await cover(lamDe(u), 16 / 9, 1600); doc.addImage(im, 'JPEG', 14, 33, 182, 102.4); y0 = 33 + 102.4 + 6; } catch (e) {}
   const ver = u.estado === 'disponible';
   doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...AC); doc.text(ver ? (u.precio ? money(u.precio) : tr('Consultar')) : tr(ESTN[u.estado]), 14, y0 + 4); doc.setTextColor(110); doc.setFontSize(9); doc.setFont('helvetica', 'normal');
   doc.text(ver && u.precio ? `${money(u.precio / u.m2)} / m2 · ${tr('Precio de lista')} ${CONFIG.listaFecha}` : '', 14, y0 + 10);
