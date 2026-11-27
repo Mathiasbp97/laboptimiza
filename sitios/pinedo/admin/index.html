@@ -228,7 +228,7 @@ $('#bOut').onclick = salir;
 $('#bQr').onclick = () => ktaQR(new URL(PANEL.showroom, location.origin).href, PANEL.marca, 'Escaneá para recorrer el showroom');
 async function importarSiFalta() {
   if (D.unidades.length) return;
-  try { const L = await fetch(PANEL.archivoUnidades, { cache: 'no-store' }).then(r => r.json());
+  try { const L = await api('/admin/iniciales');   // lista oficial (solo con sesión; ya no es un archivo público)
     if (!Array.isArray(L) || !L.length) return;
     await api('/admin/importar', { m: 'POST', b: { unidades: L } }); await cargar(); toast(`Se cargaron ${L.length} ${PANEL.unidad.toLowerCase()}s del showroom`);
   } catch (e) { toast('No se pudieron cargar las unidades iniciales: ' + e.message, 1); } }

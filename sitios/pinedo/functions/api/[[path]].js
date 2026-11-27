@@ -1,3 +1,4 @@
+import INICIALES from '../_datos/iniciales.js';   // unidades iniciales del panel (no públicas)
 // ============================================================================
 // KTA · API del panel del showroom · Cloudflare Pages Functions + D1 (binding: DB)
 // Una base de datos por proyecto: cada desarrolladora ve solo lo suyo.
@@ -65,6 +66,8 @@ async function usuarioDe(req, db) {
   return await db.prepare('SELECT s.email, u.nombre FROM sesiones s JOIN usuarios u ON u.email=s.email WHERE s.token=? AND s.exp>?').bind(t, ahora()).first() || null;
 }
 const log = (db, email, accion, detalle) => db.prepare('INSERT INTO historial (ts,email,accion,detalle) VALUES (?,?,?,?)').bind(ahora(), email, accion, typeof detalle === 'string' ? detalle : JSON.stringify(detalle)).run();
+// Torres que todavía no muestran precios ni disponibilidad en el sitio (el panel las maneja igual). Para habilitarlas, sacarlas de acá.
+const PROXIMAS = /^[TC][2-6]-/;
 const publico = e => (e === 'senado' ? 'reservado' : e === 'bloqueado' ? 'vendido' : e);
 
 export async function onRequest(ctx) {
@@ -84,7 +87,7 @@ export async function onRequest(ctx) {
     // ---------- PÚBLICO ----------
     if (m === 'GET' && ruta === '/public') {
       const { results } = await db.prepare('SELECT id,grupo,orden,tip,m2,estado,precio_lista,precio_contado,mostrar_precio,updated_at FROM unidades ORDER BY grupo,orden').all();
-      const unidades = results.map(u => { const ver = u.estado === 'libre' && u.mostrar_precio; return { id: u.id, tip: u.tip, m2: u.m2, estado: publico(u.estado), precio: ver ? u.precio_lista : null, contado: ver ? u.precio_contado ?? null : null, oculto: !u.mostrar_precio }; });
+      const unidades = results.filter(u => !PROXIMAS.test(u.id)).map(u => { const ver = u.estado === 'libre' && u.mostrar_precio; return { id: u.id, tip: u.tip, m2: u.m2, estado: publico(u.estado), precio: ver ? u.precio_lista : null, contado: ver ? u.precio_contado ?? null : null, oculto: !u.mostrar_precio }; });
       const act = results.reduce((a, u) => (u.updated_at > a ? u.updated_at : a), '');
       return json({ unidades, actualizado: act }, 200, { 'cache-control': 'public, max-age=15' });
     }
@@ -150,6 +153,7 @@ export async function onRequest(ctx) {
       return json({ yo, unidades: u.results, ventas: v.results, cuotas: c.results, eventos: e.results, porDia: d.results, consultas: q.results, inmobiliarias: b.results, historial: h.results, usuarios: us.results });
     }
 
+    if (m === 'GET' && ruta === '/admin/iniciales') return json(INICIALES);
     if (m === 'POST' && ruta === '/admin/importar') {
       const L = Array.isArray(body.unidades) ? body.unidades : [];
       if (!L.length || L.length > 3000) return err('Lista de unidades vacía o demasiado grande');
