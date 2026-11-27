@@ -796,7 +796,7 @@ function renderFicha(u) {
    <div class="grid2"><div class="cell"><small>Cubierta</small><b class="num">${u.m2} m²</b></div><div class="cell"><small>Balcón</small><b class="num">${u.balcon} m²</b></div><div class="cell"><small>Dormitorios · baños</small><b>${u.dorm} · ${u.banos}</b></div><div class="cell"><small>Orientación</small><b>${esc(u.orient)}</b></div></div>
    <button class="btn g no-print" id="bVista" style="margin-top:14px">Ver la vista desde el piso ${u.piso}</button>
    <div class="sec no-print">Recorré el departamento</div>
-   <div class="amb no-print">${Object.keys(pins).map(k => `<button data-k="${k}" style="background-image:url(${CONFIG.ambientes[k].img.replace('.jpg', '-t.jpg')})"><span>${esc(CONFIG.ambientes[k].n)}</span></button>`).join('')}</div>
+   <div class="amb no-print">${livingPrimero(Object.keys(pins)).map(k => `<button data-k="${k}" style="background-image:url(${CONFIG.ambientes[k].img.replace('.jpg', '-t.jpg')})"><span>${esc(CONFIG.ambientes[k].n)}</span></button>`).join('')}</div>
    <div class="sec">Simulá tu pago <span class="tip-i no-print" data-t="Contado con descuento, cuotas sin interés durante la obra con saldo a la entrega, o financiación propia de la desarrolladora. Simulación referencial.">?</span></div>
    <div class="no-print"><div class="qseg" id="qSeg"><button data-m="contado" class="${q.m === 'contado' ? 'on' : ''}">Contado<small>${q.c.contadoDesc}% de descuento</small></button><button data-m="obra" class="${q.m === 'obra' ? 'on' : ''}">Durante obra<small>${q.c.obraCuotas} cuotas sin interés</small></button><button data-m="propia" class="${q.m === 'propia' ? 'on' : ''}">Financiación<small>Hasta ${q.c.aniosMax} años</small></button></div>
     <div id="qCuo" style="${q.m === 'contado' ? 'display:none' : ''}">
@@ -838,7 +838,9 @@ $('#fUp').onclick = () => irPiso(UI.piso + 1); $('#fDn').onclick = () => irPiso(
 
 // ---------- 3. AMBIENTES ----------
 const pan = { x: 0, v: 0, drag: false, lx: 0, min: 0 };
-function listaAmb(modo) { return modo === 'a' ? CONFIG.amenities.map((a, i) => ({ k: 'a' + i, ...a })) : modo === 'v' ? CONFIG.vistas.map((a, i) => ({ k: 'v' + i, ...a })) : Object.entries(CONFIG.ambientes).map(([k, a]) => ({ k, ...a })); }
+// El recorrido siempre se muestra empezando por el living/comedor.
+const livingPrimero = ks => [...ks].sort((a, b) => (/living|estar|comedor|social/i.test(CONFIG.ambientes[b]?.n || b) ? 1 : 0) - (/living|estar|comedor|social/i.test(CONFIG.ambientes[a]?.n || a) ? 1 : 0));
+function listaAmb(modo) { return modo === 'a' ? CONFIG.amenities.map((a, i) => ({ k: 'a' + i, ...a })) : modo === 'v' ? CONFIG.vistas.map((a, i) => ({ k: 'v' + i, ...a })) : livingPrimero(Object.keys(CONFIG.ambientes)).map(k => ({ k, ...CONFIG.ambientes[k] })); }
 const ORDEN = Object.keys(CONFIG.ambientes);
 function ruta(a, b) { const i = ORDEN.indexOf(a), j = ORDEN.indexOf(b), r = []; if (i < 0 || j < 0) return r; const d = j > i ? 1 : -1; for (let k = i; k !== j; k += d) r.push(`${ORDEN[k]}>${ORDEN[k + d]}`); return r; }
 function abrirAmb(modo, k) {
