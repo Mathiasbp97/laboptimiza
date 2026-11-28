@@ -923,7 +923,7 @@ window.__bvp = { scene, camera, renderer, controls, lotMesh, lotLbl, satMats, TH
   function loop() { raf = requestAnimationFrame(loop); const w = host.clientWidth, h = host.clientHeight; if (R.domElement.width !== Math.round(w * R.getPixelRatio()) || R.domElement.height !== Math.round(h * R.getPixelRatio())) R.setSize(w, h, false);
     if (auto) lon += .04; C3.fov = fov; C3.aspect = w / h; C3.updateProjectionMatrix();
     const ph = THREE.MathUtils.degToRad(90 - lat), th = THREE.MathUtils.degToRad(lon); C3.lookAt(Math.sin(ph) * Math.cos(th), Math.cos(ph), Math.sin(ph) * Math.sin(th)); R.render(S3, C3); }
-  window.ver360 = src => { cancelAnimationFrame(raf); if (!src) return; if (!R) arm(); hint.style.opacity = 1; auto = true; if (cur !== src) { lon = 180; lat = 0; fov = innerWidth < innerHeight ? 85 : 75; }
+  window.ver360 = src => { cancelAnimationFrame(raf); if (!src) return; if (!R) arm(); hint.style.opacity = 1; auto = true; if (cur !== src) { lon = 120; lat = 0;   /* arranca mirando el living (sofá) */ fov = innerWidth < innerHeight ? 85 : 75; }
     if (cur !== src) { cur = src; new THREE.TextureLoader().load(src, t => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; mesh.material.map = t; mesh.material.needsUpdate = true; }); }
     loop(); }; }
 window.BVP3D = {
